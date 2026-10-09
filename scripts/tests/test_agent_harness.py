@@ -189,9 +189,29 @@ class AgentHarnessTests(unittest.TestCase):
         self.assertEqual(training[0], "/v1/training/jobs/{job_id}")
         self.assertEqual(catalog[0], "/v1/base-models")
 
-    def test_tinker_sdk_base_is_an_allowed_non_openapi_url(self) -> None:
-        self.assertTrue(CHECKS._path_matches_route("/tinker", {}))
+    def test_sdk_compatibility_base_is_an_allowed_non_openapi_url(self) -> None:
+        self.assertTrue(
+            CHECKS._path_matches_route("/v1/training/compat/tinker", {})
+        )
+        self.assertFalse(CHECKS._path_matches_route("/tinker", {}))
         self.assertFalse(CHECKS._path_matches_route("/not-a-public-route", {}))
+
+    def test_training_preview_rename_still_requires_the_deployed_route(self) -> None:
+        deployed = {"GET": [CHECKS.re.compile(r"^/v1/training\-jobs/?$")]}
+
+        self.assertTrue(
+            CHECKS._path_matches_route("/v1/training/jobs", deployed, "GET")
+        )
+        self.assertFalse(
+            CHECKS._path_matches_route("/v1/training/jobs", {}, "GET")
+        )
+        self.assertTrue(
+            CHECKS._path_matches_route(
+                "/v1/training/jobs/job-1/forward",
+                {},
+                "POST",
+            )
+        )
 
     def test_schema_validation_rejects_missing_required_field(self) -> None:
         document = {

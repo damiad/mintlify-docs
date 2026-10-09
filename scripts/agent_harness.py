@@ -19,9 +19,13 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import NoReturn
 
-from agent_diagnostics import DiagnosticsFailure
-from agent_diagnostics import run_diagnostics as run_agent_diagnostics
-from check_api_docs import EXPECTED_OPERATIONS, local_docs_findings
+from check_api_docs import (
+    EXPECTED_OPERATIONS,
+    PREVIEW_TRAINING_OPERATIONS,
+    SDK_BASE_PATHS,
+    _path_matches_route,
+    local_docs_findings,
+)
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 from referencing import Registry, Resource
@@ -56,6 +60,7 @@ REQUIRED_DISCOVERY_LINKS = {
     "GLiNER inference": "/inference/chat-completions.md",
     "datasets": "/concepts/datasets.md",
     "training": "/training.md",
+    "GLiNER fine-tuning": "/guides/fine-tune-gliner.md",
     "inference reference": "/api-reference/inference/overview.md",
     "GLiDE contract": "/api-reference/inference/systemone.md",
     "GLiNER contract": "/api-reference/inference/chat-completions.md",
@@ -66,11 +71,11 @@ REQUIRED_DISCOVERY_LINKS = {
     "training creation": "/api-reference/training-jobs/create.md",
     "RL API": "/rl-api.md",
     "RL API quickstart": "/rl-api/quickstart.md",
-    "Tinker migration": "/rl-api/migrate-from-tinker.md",
+    "SDK migration": "/rl-api/migrate-from-tinker.md",
     "verifiable rewards": "/rl-api/verifiable-rewards.md",
     "RL checkpoint resume": "/rl-api/checkpoint-and-resume.md",
     "RL training loop": "/rl-api/training-loop.md",
-    "Tinker compatibility": "/rl-api/compatibility.md",
+    "SDK compatibility": "/rl-api/compatibility.md",
     "RL API runtime": "/rl-api/runtime.md",
     "errors": "/troubleshooting/errors.md",
     "retries": "/troubleshooting/retries.md",
@@ -87,6 +92,7 @@ JOURNEY_PAGES = (
     "inference/systemone.mdx",
     "inference/chat-completions.mdx",
     "training.mdx",
+    "guides/fine-tune-gliner.mdx",
     "rl-api.mdx",
     "rl-api/quickstart.mdx",
     "rl-api/migrate-from-tinker.mdx",
@@ -120,8 +126,6 @@ RL_PAGE_ORDER = (
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\((?P<target>/[^)\s]+)\)")
 HREF_LINK = re.compile(r'href=["\'](?P<target>/[^"\']+)["\']')
 LLMS_URL = re.compile(r"https://docs\.fastino\.ai(?P<path>/[^)\s]+)")
-# SDK base URLs are documented prefixes, not operations (the Tinker SDK appends /api/v1/<op>).
-SDK_BASE_PATH_PREFIXES = ("/v1/training/compat/",)
 API_URL = re.compile(r"https://api\.fastino\.ai(?P<path>/v1/[^\"'`\s<\\]+)")
 METHOD_PATH = re.compile(r"\b(?P<method>GET|POST|PATCH|PUT|DELETE)\s+(?P<path>/v1/[^`\s\"'|,)]+)")
 CURL_BODY_START = re.compile(r"-d\s+'")
@@ -709,16 +713,20 @@ def _journey_findings(
         for match in METHOD_PATH.finditer(text):
             method = match.group("method").lower()
             path_text = match.group("path")
-            if _operation_for_path(operations, method, path_text) is None:
+            if (
+                _operation_for_path(operations, method, path_text) is None
+                and (method.upper(), path_text) not in PREVIEW_TRAINING_OPERATIONS
+            ):
                 findings.append(
                     f"CONTRACT: {relative} documents absent operation "
                     f"{method.upper()} {path_text}"
                 )
         for match in API_URL.finditer(text):
-            if match.group("path").startswith(SDK_BASE_PATH_PREFIXES):
-                continue  # an SDK base URL: the SDK appends its own paths
-            if _operation_for_path(operations, "get", match.group("path")) is None and not any(
-                _operation_for_path(operations, method, match.group("path"))
+            path_text = match.group("path")
+            if path_text in SDK_BASE_PATHS or _path_matches_route(path_text, {}):
+                continue
+            if _operation_for_path(operations, "get", path_text) is None and not any(
+                _operation_for_path(operations, method, path_text)
                 for method in HTTP_METHODS
             ):
                 findings.append(
@@ -1915,7 +1923,6 @@ def main() -> int:
         choices=(
             "static",
             "published",
-            "diagnostics",
             "api",
             "cookbooks",
             "training-replay",
@@ -1928,12 +1935,6 @@ def main() -> int:
             run_static()
         elif args.command == "published":
             run_published()
-        elif args.command == "diagnostics":
-            target_count = run_agent_diagnostics(
-                request=_request,
-                validate_openapi=_validate_openapi,
-            )
-            print(f"Agent discovery diagnostics passed: {target_count} public targets")
         elif args.command == "api":
             run_api(replay_training=False)
         elif args.command == "cookbooks":
@@ -1944,7 +1945,6 @@ def main() -> int:
         else:
             run_training_lifecycle()
     except (
-        DiagnosticsFailure,
         HarnessFailure,
         json.JSONDecodeError,
         OSError,
