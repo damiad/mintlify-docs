@@ -1,11 +1,11 @@
 ---
 title: "Create a training job"
 sidebarTitle: "Create a job"
-description: "Call POST /v1/training-jobs to start an asynchronous Fastino fine-tuning job from a base model and datasets, with LoRA or full training and an epoch limit."
-api: "POST /v1/training-jobs"
+description: "Call POST /v1/training/jobs to start an asynchronous Fastino fine-tuning job from a base model and datasets, with LoRA or full training and an epoch limit."
+api: "POST /v1/training/jobs"
 ---
 
-`POST /v1/training-jobs`
+`POST /v1/training/jobs`
 
 Creates an asynchronous training job and returns its job record. This endpoint is limited to 20 requests per minute per user.
 
@@ -164,7 +164,7 @@ Creates an asynchronous training job and returns its job record. This endpoint i
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.fastino.ai/v1/training-jobs \
+curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

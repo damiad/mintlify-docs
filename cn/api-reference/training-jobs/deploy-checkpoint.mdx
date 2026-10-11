@@ -2,10 +2,10 @@
 title: "部署训练检查点"
 sidebarTitle: "部署检查点"
 description: "使用列表端点返回的检查点 ID，将 Fastino 训练任务中一个可部署的检查点部署到托管的多模型推理端点。"
-api: "POST /v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy"
+api: "POST /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy"
 ---
 
-`POST /v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`
+`POST /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`
 
 将一个可部署的检查点部署到托管的多模型推理端点。
 
@@ -27,7 +27,7 @@ api: "POST /v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy"
 
 ```bash cURL
 curl -X POST \
-  https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID/checkpoints/CHECKPOINT_ID/deploy \
+  https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/checkpoints/CHECKPOINT_ID/deploy \
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 

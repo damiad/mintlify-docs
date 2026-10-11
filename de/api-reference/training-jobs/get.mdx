@@ -2,10 +2,10 @@
 title: "Trainingsjob abrufen"
 sidebarTitle: "Job-Status abrufen"
 description: "Rufen Sie Status, Konfiguration, Metriken und Artefaktbereitschaft eines Trainingsjobs ab."
-api: "GET /v1/training-jobs/{job_id}"
+api: "GET /v1/training/jobs/{job_id}"
 ---
 
-`GET /v1/training-jobs/{job_id}`
+`GET /v1/training/jobs/{job_id}`
 
 Gibt einen für das Team des Aufrufers sichtbaren Trainingsjob zurück.
 
@@ -22,7 +22,7 @@ Gibt einen für das Team des Aufrufers sichtbaren Trainingsjob zurück.
 <RequestExample>
 
 ```bash cURL
-curl https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID \
+curl https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID \
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 

@@ -1,11 +1,11 @@
 ---
 title: "Trainingsjobs auflisten"
 sidebarTitle: "Jobs auflisten"
-description: "Listen Sie mit GET /v1/training-jobs Ihre Trainingsjobs auf, filtern Sie nach Job-Status oder Projekt-ID und paginieren Sie mit limit und offset."
-api: "GET /v1/training-jobs"
+description: "Listen Sie mit GET /v1/training/jobs Ihre Trainingsjobs auf, filtern Sie nach Job-Status oder Projekt-ID und paginieren Sie mit limit und offset."
+api: "GET /v1/training/jobs"
 ---
 
-`GET /v1/training-jobs`
+`GET /v1/training/jobs`
 
 Gibt die für den authentifizierten Account sichtbaren Trainingsjobs zurück.
 
@@ -34,7 +34,7 @@ Gibt die für den authentifizierten Account sichtbaren Trainingsjobs zurück.
 <RequestExample>
 
 ```bash cURL
-curl "https://api.fastino.ai/v1/training-jobs?status=complete&limit=50&offset=0" \
+curl "https://api.fastino.ai/v1/training/jobs?status=complete&limit=50&offset=0" \
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 

@@ -2,10 +2,10 @@
 title: "获取训练任务"
 sidebarTitle: "获取任务状态"
 description: "获取 Fastino 训练任务的状态、完成百分比、当前 epoch、失败详情、训练指标和工件就绪情况，用于轮询任务进度。"
-api: "GET /v1/training-jobs/{job_id}"
+api: "GET /v1/training/jobs/{job_id}"
 ---
 
-`GET /v1/training-jobs/{job_id}`
+`GET /v1/training/jobs/{job_id}`
 
 返回一个对调用者所在团队可见的训练任务。
 
@@ -22,7 +22,7 @@ api: "GET /v1/training-jobs/{job_id}"
 <RequestExample>
 
 ```bash cURL
-curl https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID \
+curl https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID \
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 

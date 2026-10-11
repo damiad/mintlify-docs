@@ -1,11 +1,11 @@
 ---
 title: "更新训练任务的项目"
 sidebarTitle: "更新项目"
-description: "调用 PATCH /v1/training-jobs/{job_id}，将训练任务分配到项目，或发送 null 取消分配。相关的部署和推理记录保持不变。"
-api: "PATCH /v1/training-jobs/{job_id}"
+description: "调用 PATCH /v1/training/jobs/{job_id}，将训练任务分配到项目，或发送 null 取消分配。相关的部署和推理记录保持不变。"
+api: "PATCH /v1/training/jobs/{job_id}"
 ---
 
-`PATCH /v1/training-jobs/{job_id}`
+`PATCH /v1/training/jobs/{job_id}`
 
 仅更新任务的 `project_id`。
 
@@ -26,7 +26,7 @@ api: "PATCH /v1/training-jobs/{job_id}"
 <RequestExample>
 
 ```bash cURL
-curl -X PATCH https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID \
+curl -X PATCH https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"project_id": "YOUR_PROJECT_ID"}'

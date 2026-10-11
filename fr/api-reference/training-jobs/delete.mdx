@@ -1,11 +1,11 @@
 ---
 title: "Supprimer un job d'entraînement"
 sidebarTitle: "Supprimer un job"
-description: "Appelez DELETE /v1/training-jobs/{job_id} pour supprimer définitivement un job, ses checkpoints et artefacts. Un job actif est d'abord arrêté."
-api: "DELETE /v1/training-jobs/{job_id}"
+description: "Appelez DELETE /v1/training/jobs/{job_id} pour supprimer définitivement un job, ses checkpoints et artefacts. Un job actif est d'abord arrêté."
+api: "DELETE /v1/training/jobs/{job_id}"
 ---
 
-`DELETE /v1/training-jobs/{job_id}`
+`DELETE /v1/training/jobs/{job_id}`
 
 Supprime le job et ses artefacts stockés. Si le job est actif, le service l'arrête également.
 
@@ -26,7 +26,7 @@ Supprime le job et ses artefacts stockés. Si le job est actif, le service l'arr
 <RequestExample>
 
 ```bash cURL
-curl -X DELETE https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID \
+curl -X DELETE https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID \
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 
