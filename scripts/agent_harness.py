@@ -19,6 +19,8 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import NoReturn
 
+from agent_diagnostics import DiagnosticsFailure
+from agent_diagnostics import run_diagnostics as run_agent_diagnostics
 from check_api_docs import EXPECTED_OPERATIONS, local_docs_findings
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
@@ -1848,6 +1850,7 @@ def main() -> int:
         choices=(
             "static",
             "published",
+            "diagnostics",
             "api",
             "cookbooks",
             "training-replay",
@@ -1860,6 +1863,12 @@ def main() -> int:
             run_static()
         elif args.command == "published":
             run_published()
+        elif args.command == "diagnostics":
+            target_count = run_agent_diagnostics(
+                request=_request,
+                validate_openapi=_validate_openapi,
+            )
+            print(f"Agent discovery diagnostics passed: {target_count} public targets")
         elif args.command == "api":
             run_api(replay_training=False)
         elif args.command == "cookbooks":
@@ -1870,6 +1879,7 @@ def main() -> int:
         else:
             run_training_lifecycle()
     except (
+        DiagnosticsFailure,
         HarnessFailure,
         json.JSONDecodeError,
         OSError,
