@@ -60,8 +60,14 @@ La respuesta contiene una `presigned_url` de corta duración, un `dataset_id` y 
 el ID del dataset como el número de versión.
 
 ```bash
-curl -X PUT --upload-file training.jsonl "$PRESIGNED_URL"
+curl -X PUT "$PRESIGNED_URL" \
+  -H "Content-Type: application/octet-stream" \
+  --upload-file training.jsonl
 ```
+
+<Warning>
+La URL de subida está firmada para `application/octet-stream`. Un `Content-Type` distinto o ausente devuelve `403 SignatureDoesNotMatch`.
+</Warning>
 
 ### 2. Procesar el archivo subido
 
@@ -106,6 +112,7 @@ modelo base que se pueda entrenar actualmente.
 | Estado | Causa | Acción |
 | --- | --- | --- |
 | `401` | API key ausente o no válida | Envía `X-API-Key: $FASTINO_API_KEY` |
+| `403 SignatureDoesNotMatch` durante la subida | Tipo de contenido de subida ausente o incorrecto | Envía `Content-Type: application/octet-stream` |
 | `404` | El nombre del dataset no existe | Confirma el nombre exacto y espera a que termine el procesamiento |
 | `422` | Filas o tipo de dataset no válidos | Corrige la estructura JSONL indicada por la validación |
 
