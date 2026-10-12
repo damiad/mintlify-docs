@@ -44,8 +44,7 @@ jobs:
     name: Authenticated inference and cookbooks
     if: >-
       (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
-      github.ref == 'refs/heads/main' &&
-      vars.ENABLE_DOCS_API_CANARY == 'true'
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +68,8 @@ jobs:
     if: >-
       (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
       github.ref == 'refs/heads/main' &&
-      vars.ENABLE_DOCS_TRAINING_READS == 'true'
+      vars.FASTINO_DOCS_CANARY_DATASET != '' &&
+      vars.FASTINO_DOCS_CANARY_DATASET_VERSION != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1277,22 +1277,6 @@ def run_training_reads() -> None:
     print(f"Training reads passed: trainable={training_model}")
 
 
-def run_api(*, replay_training: bool) -> None:
-    api_key = _require_api_key()
-    document = _load_openapi()
-    operations = _validate_openapi(document)
-    glide, gliner = _run_inference(api_key, document, operations)
-    training_model = _discover_training_model(api_key)
-    _run_training_reads(api_key)
-    if replay_training:
-        _run_training_replay(api_key)
-    print(
-        "Authenticated agent journey passed: "
-        f"GLiDE={glide}, GLiNER={gliner}, trainable={training_model}, "
-        f"training_replay={replay_training}"
-    )
-
-
 def _is_number(value: object) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
@@ -1874,7 +1858,6 @@ def main() -> int:
             "published",
             "inference",
             "training-reads",
-            "api",
             "cookbooks",
             "training-replay",
             "training-lifecycle",
@@ -1890,8 +1873,6 @@ def main() -> int:
             run_inference()
         elif args.command == "training-reads":
             run_training_reads()
-        elif args.command == "api":
-            run_api(replay_training=False)
         elif args.command == "cookbooks":
             run_cookbooks()
         elif args.command == "training-replay":

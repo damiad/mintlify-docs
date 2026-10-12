@@ -102,22 +102,9 @@ class AgentHarnessTests(unittest.TestCase):
             ),
         )
 
-    def test_api_canary_retains_training_reads(self) -> None:
-        document: dict[str, object] = {}
-        operations: dict[tuple[str, str], dict[str, object]] = {}
+    def test_training_reads_report_the_trainable_model(self) -> None:
         with (
             mock.patch.object(HARNESS, "_require_api_key", return_value="fast_sk_test"),
-            mock.patch.object(HARNESS, "_load_openapi", return_value=document),
-            mock.patch.object(
-                HARNESS,
-                "_validate_openapi",
-                return_value=operations,
-            ),
-            mock.patch.object(
-                HARNESS,
-                "_run_inference",
-                return_value=("fastino/GLiDE", "fastino/gliner2.5-base-v1"),
-            ),
             mock.patch.object(
                 HARNESS,
                 "_discover_training_model",
@@ -126,12 +113,12 @@ class AgentHarnessTests(unittest.TestCase):
             mock.patch.object(HARNESS, "_run_training_reads") as training_reads,
             mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
         ):
-            HARNESS.run_api(replay_training=False)
+            HARNESS.run_training_reads()
 
         training_reads.assert_called_once_with("fast_sk_test")
-        self.assertIn(
-            "trainable=fastino/gliner2-base-v1",
+        self.assertEqual(
             stdout.getvalue(),
+            "Training reads passed: trainable=fastino/gliner2-base-v1\n",
         )
 
     def test_openapi_resolves_required_agent_operations(self) -> None:
