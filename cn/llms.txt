@@ -55,7 +55,7 @@
 ### 推理 API
 
 - [推理 API：运行 Fastino 模型](https://docs.fastino.ai/cn/inference.md): 了解如何通过 GLiDE 和兼容 OpenAI 的 API 使用 Fastino 模型运行推理。
-- [Fastino API 身份验证:生成和使用 API 密钥](https://docs.fastino.ai/cn/authentication.md): 使用 X-API-Key 头或 Bearer 令牌对 Fastino API 请求进行身份验证，然后在 Fastino 控制台设置中创建、轮换和撤销 API 密钥。
+- [Fastino API 身份验证:生成和使用 API 密钥](https://docs.fastino.ai/cn/authentication.md): 使用 X-API-Key 头或 Bearer 令牌对 Fastino API 请求进行身份验证，并在 Fastino 控制台中创建、轮换和撤销 API 密钥。
 
 ### 训练 API
 
@@ -98,7 +98,7 @@
 - [Fastino 上的推理历史与反馈端点](https://docs.fastino.ai/cn/api-reference/inference/history.md): 列出 Fastino 推理历史,按模型或项目过滤,获取单条结果,并提交更正以通过 Adaptive Inference 改进您的模型。
 - [列出推理历史](https://docs.fastino.ai/cn/api-reference/inference/history/list.md): 调用 GET /v1/inferences，列出已存储的推理记录，支持过滤和分页。
 - [获取推理记录](https://docs.fastino.ai/cn/api-reference/inference/history/get.md): 调用 GET /v1/inferences/{inference_id}，通过标识符获取一条已存储的推理记录。
-- [获取推理反馈](https://docs.fastino.ai/cn/api-reference/inference/history/get-feedback.md): 调用 GET /v1/inferences/{inference_id}/feedback，获取为一条推理存储的反馈，该推理通过其 inference_id 标识。
+- [获取推理反馈](https://docs.fastino.ai/cn/api-reference/inference/history/get-feedback.md): 调用 GET /v1/inferences/{inference_id}/feedback，按 inference_id 获取为一条推理存储的反馈。
 - [提交推理反馈](https://docs.fastino.ai/cn/api-reference/inference/history/submit-feedback.md): 调用 POST /v1/inferences/{inference_id}/feedback，为一条已存储的推理提交判定结果以及可选的更正输出。
 
 ### 训练
@@ -121,7 +121,7 @@
 - [停止训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/stop.md): 停止运行中的 Fastino 训练任务并保留停止前创建的检查点。JSON 请求体为可选，可附带停止原因、数值指标和检查点路径。
 - [终止训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/terminate.md): 终止训练任务：如果提供方任务仍处于活动状态则将其停止。除非 delete_checkpoints 为 true，否则会保留检查点和工件。
 - [同步训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/sync.md): 调用 POST /v1/training-jobs/{job_id}/sync 并传入训练任务 ID，从训练提供方刷新该训练任务的状态。
-- [将训练模型推送到 Hugging Face Hub](https://docs.fastino.ai/cn/api-reference/training-jobs/push-to-hub.md): 调用 POST /v1/training-jobs/{job_id}/push-to-hub，并提供目标 repo_id 和 hf_token，将已完成的训练工件发布到 Hugging Face Hub。
+- [将训练模型推送到 Hugging Face Hub](https://docs.fastino.ai/cn/api-reference/training-jobs/push-to-hub.md): 查看 POST /v1/training-jobs/{job_id}/push-to-hub 的请求参数、响应架构和认证要求，均以 OpenAPI 规范为准。
 - [列出训练检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/checkpoints.md): 通过 GET /v1/training-jobs/{job_id}/checkpoints 列出训练任务的检查点及其 epoch、step、损失值和可部署标志。
 - [部署训练检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/deploy-checkpoint.md): 使用列表端点返回的检查点 ID，将 Fastino 训练任务中一个可部署的检查点部署到托管的多模型推理端点。
 - [下载训练后的权重](https://docs.fastino.ai/cn/api-reference/training-jobs/download.md): 调用 GET /v1/training-jobs/{job_id}/download，获取训练工件的临时预签名下载 URL、有效期和建议的文件名。
