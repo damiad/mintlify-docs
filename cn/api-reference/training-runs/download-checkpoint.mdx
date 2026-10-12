@@ -1,7 +1,7 @@
 ---
 title: "下载训练运行检查点"
 sidebarTitle: "下载检查点"
-description: "调用 GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download，获取团队某个检查点 tar 归档的短期签名 URL。"
+description: "获取团队某个检查点 tar 归档的短期签名 URL。采样检查点的归档包含 PEFT 适配器文件，该 URL 无需 API 密钥，15 分钟后过期。"
 api: "GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download"
 ---
 
