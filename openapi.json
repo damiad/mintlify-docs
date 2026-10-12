@@ -5992,7 +5992,7 @@
       },
       "TrainingJobUpdate": {
         "additionalProperties": false,
-        "description": "Thin PATCH body for ``PATCH /v1/training-jobs/{job_id}``.\n\nExposes only ``project_id``. Send ``null`` to unassign the training job\nfrom its current project. Unknown fields are rejected with HTTP 422.\n\nMoving a job changes only its project association. Related resources\nremain in their current projects and must be moved separately.",
+        "description": "Thin PATCH body for ``PATCH /v1/training/jobs/{job_id}``.\n\nExposes only ``project_id``. Send ``null`` to unassign the training job\nfrom its current project. Unknown fields are rejected with HTTP 422.\n\nMoving a job changes only its project association. Related resources\nremain in their current projects and must be moved separately.",
         "properties": {
           "project_id": {
             "anyOf": [
@@ -6650,7 +6650,7 @@
             }
           },
           {
-            "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training-jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
+            "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training/jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -6666,7 +6666,7 @@
                 }
               ],
               "default": 200,
-              "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training-jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
+              "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training/jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
               "title": "Limit"
             }
           },
