@@ -91,3 +91,14 @@ Bevorzugen Sie in Polling-Clients `normalized_status` und `is_terminal_status`.
 | `POST` | [`/v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`](/de/api-reference/training-jobs/deploy-checkpoint) | Checkpoint bereitstellen |
 | `GET` | [`/v1/training-jobs/{job_id}/download`](/de/api-reference/training-jobs/download) | Temporäre Download-URL für Gewichte abrufen |
 | `DELETE` | [`/v1/training-jobs/{job_id}`](/de/api-reference/training-jobs/delete) | Job und seine Checkpoints löschen |
+
+## Trainingsläufe
+
+Interaktive Trainingsjobs sind Trainingsläufe, die Sie selbst Schritt für Schritt mit dem Tinker-kompatiblen SDK steuern; die Job-ID ist die Lauf-ID des SDK. Setzen Sie die `base_url` des SDK auf `https://api.fastino.ai/v1/training/compat/tinker` und übergeben Sie Ihren Fastino-API-Schlüssel über den Credential-Befehl des SDK: `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Verwenden Sie diese Routen, um Ihre Läufe und Checkpoints aufzulisten und Checkpoint-Gewichte herunterzuladen.
+
+| Methode | Endpunkt | Zweck |
+| --- | --- | --- |
+| `GET` | [`/v1/training/jobs`](/de/api-reference/training-runs/list) | Trainingsläufe auflisten |
+| `GET` | [`/v1/training/jobs/{job_id}`](/de/api-reference/training-runs/get) | Einen Lauf und seine neuesten Checkpoints abrufen |
+| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/de/api-reference/training-runs/list-checkpoints) | Checkpoints eines Laufs auflisten |
+| `GET` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`](/de/api-reference/training-runs/download-checkpoint) | Temporäre Download-URL für einen Checkpoint abrufen |
