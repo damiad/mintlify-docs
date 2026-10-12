@@ -75,6 +75,7 @@ autonomous client:
 python3 -m pip install -r scripts/requirements-agent-harness.txt
 python3 scripts/agent_harness.py static
 python3 scripts/agent_harness.py published
+python3 scripts/agent_harness.py diagnostics
 ```
 
 The static check validates OpenAPI references, cURL JSON requests on the critical journey
@@ -82,6 +83,9 @@ pages, local links, and the GLiDE, GLiNER, dataset, authentication, and training
 exposed through `llms.txt`.
 The published check validates content negotiation at `docs.fastino.ai`, public links, and the
 deployed OpenAPI contract. Both run without credentials.
+The diagnostics check compares default and Googlebot responses, cache policy, cross-host proxy
+bodies, and published Agent Skill digests across the docs, agent, API, and marketing hosts.
+It requires no credentials and remains manual-only while known cache-policy findings exist.
 
 Authenticated canaries use a dedicated account and the
 `FASTINO_DOCS_CANARY_API_KEY` repository secret. Configure these repository variables before
