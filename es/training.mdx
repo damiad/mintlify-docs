@@ -91,3 +91,14 @@ En los clientes que consultan, prefiere `normalized_status` e `is_terminal_statu
 | `POST` | [`/v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`](/es/api-reference/training-jobs/deploy-checkpoint) | Desplegar un checkpoint |
 | `GET` | [`/v1/training-jobs/{job_id}/download`](/es/api-reference/training-jobs/download) | Obtener una URL temporal de descarga de pesos |
 | `DELETE` | [`/v1/training-jobs/{job_id}`](/es/api-reference/training-jobs/delete) | Eliminar un trabajo y sus checkpoints |
+
+## Ejecuciones de entrenamiento
+
+Los trabajos de entrenamiento interactivos son ejecuciones de entrenamiento que controlas tú mismo, paso a paso, con el SDK compatible con Tinker; el ID del trabajo es el ID de ejecución del SDK. Configura el `base_url` del SDK como `https://api.fastino.ai/v1/training/compat/tinker` y pasa tu clave de API de Fastino mediante el comando de credenciales del SDK: `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Usa estas rutas para listar tus ejecuciones y checkpoints, y para descargar los pesos de los checkpoints.
+
+| Método | Endpoint | Propósito |
+| --- | --- | --- |
+| `GET` | [`/v1/training/jobs`](/es/api-reference/training-runs/list) | Listar ejecuciones de entrenamiento |
+| `GET` | [`/v1/training/jobs/{job_id}`](/es/api-reference/training-runs/get) | Obtener una ejecución y sus checkpoints más recientes |
+| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/es/api-reference/training-runs/list-checkpoints) | Listar los checkpoints de una ejecución |
+| `GET` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`](/es/api-reference/training-runs/download-checkpoint) | Obtener una URL temporal de descarga del checkpoint |
