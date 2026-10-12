@@ -59,16 +59,15 @@ SDK 会将 `/api/v1/{operation}` 添加到基础 URL。适配器路由不会出�
 
 ## 仅适配器使用的基础机制
 
-SDK 可以使用适配器机制处理功能、会话、心跳、遥测、身份验证和审计集成。这些是实现细节，
-没有公开的 Fastino 路由。不要将其视为面向客户的 HTTP API。
+SDK 可以使用适配器机制处理功能、会话、心跳、遥测、API 密钥身份检查（`auth/apikey/me`）和审计集成。这些是没有公开 Fastino 路由的实现细节。适配器会验证 `TINKER_CREDENTIAL_CMD` 提供的密钥，但不会签发 SDK 身份验证令牌。
 
 ## 明确不受支持
 
 - 通过 `retrieve_futures` 批量检索 future
 - `save_weights_external`
 - `external_weights_urls`
-- SDK 身份验证或令牌操作
-- SDK 计费、用量或事件操作
+- 通过 `auth/token` 签发 SDK 令牌
+- 除已支持的当前检查点存储用量调用之外的 SDK 计费、用量或事件操作
 
 身份验证只能通过 `TINKER_CREDENTIAL_CMD` 提供普通的 Fastino `fast_sk_` 密钥。
 以 `tml-` 开头的凭据会被拒绝，并且有效示例不得设置 `TINKER_API_KEY`。

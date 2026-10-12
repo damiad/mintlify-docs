@@ -21,7 +21,7 @@ Help the user build entity extraction and text classification features using Fas
 | Training status, logs and checkpoints operations | `GET /v1/training/jobs/{job_id}`, `GET /v1/training/jobs/{job_id}/logs`, `GET /v1/training/jobs/{job_id}/checkpoints` |
 | Evaluation operation | Not exposed in the current public OpenAPI |
 | Inference operation | `POST /v1/chat/completions` |
-| Fine-tuned model serving / deployment contract | `POST /v1/training/jobs/{job_id}/deploy` |
+| Fine-tuned model serving / deployment contract | `POST /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy` |
 
 Read the official request/response schemas and supported model capabilities. If configuration is missing, ask for the documentation/configuration; continue preparing data and integration code where possible. Read credentials from the configured environment variable, never embed them in source, logs or reports.
 

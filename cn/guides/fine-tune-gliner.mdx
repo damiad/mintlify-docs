@@ -121,7 +121,13 @@ curl -sS \
 ```bash
 curl -sS \
   "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/checkpoints" \
-  -H "X-API-Key: $FASTINO_API_KEY" | jq
+  -H "X-API-Key: $FASTINO_API_KEY" | tee training-checkpoints.json | jq
+
+export CHECKPOINT_ID="$(
+  jq -r '[.checkpoints[] | select(.is_deployable == true)] | first | .id // empty' \
+    training-checkpoints.json
+)"
+test -n "$CHECKPOINT_ID"
 ```
 
 有关响应字段，请参阅
@@ -134,7 +140,7 @@ curl -sS \
 
 ```bash
 curl --fail-with-body -sS -X POST \
-  "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/deploy" \
+  "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/checkpoints/$CHECKPOINT_ID/deploy" \
   -H "X-API-Key: $FASTINO_API_KEY" | jq
 ```
 

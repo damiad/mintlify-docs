@@ -64,17 +64,17 @@ ventanas de contexto ni límites por llamada.
 ## Infraestructura exclusiva del adaptador
 
 El SDK puede usar la infraestructura del adaptador para capacidades, sesiones,
-heartbeat, telemetría, autenticación e integración de auditoría. Son detalles
-de implementación y no tienen una ruta pública de Fastino. No los trates como
-API HTTP orientadas al cliente.
+heartbeat, telemetría, comprobaciones de identidad de clave (`auth/apikey/me`) e
+integración de auditoría. Son detalles sin ruta pública. El adaptador valida la
+clave de `TINKER_CREDENTIAL_CMD`, pero no emite tokens de autenticación del SDK.
 
 ## Explícitamente no compatible
 
 - Recuperación de futures por lotes mediante `retrieve_futures`
 - `save_weights_external`
 - `external_weights_urls`
-- Operaciones de autenticación o tokens del SDK
-- Operaciones de facturación, uso o eventos del SDK
+- Emisión de tokens del SDK mediante `auth/token`
+- Operaciones de facturación, uso o eventos del SDK, salvo la llamada compatible de uso actual del almacenamiento de checkpoints
 
 La autenticación solo se proporciona mediante una clave normal de Fastino
 `fast_sk_` a través de `TINKER_CREDENTIAL_CMD`. Las credenciales que comienzan

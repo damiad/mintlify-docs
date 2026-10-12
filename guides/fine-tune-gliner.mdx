@@ -127,7 +127,13 @@ List the checkpoints Fastino created:
 ```bash
 curl -sS \
   "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/checkpoints" \
-  -H "X-API-Key: $FASTINO_API_KEY" | jq
+  -H "X-API-Key: $FASTINO_API_KEY" | tee training-checkpoints.json | jq
+
+export CHECKPOINT_ID="$(
+  jq -r '[.checkpoints[] | select(.is_deployable == true)] | first | .id // empty' \
+    training-checkpoints.json
+)"
+test -n "$CHECKPOINT_ID"
 ```
 
 See
@@ -137,12 +143,12 @@ fields.
 
 ## 6. Deploy the trained model
 
-Check the completed job's `is_deployable` and `deployability_reason` fields
-before deployment:
+Check the completed job's `is_deployable` and `deployability_reason` fields,
+then deploy the selected deployable checkpoint:
 
 ```bash
 curl --fail-with-body -sS -X POST \
-  "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/deploy" \
+  "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/checkpoints/$CHECKPOINT_ID/deploy" \
   -H "X-API-Key: $FASTINO_API_KEY" | jq
 ```
 

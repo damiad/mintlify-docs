@@ -66,17 +66,18 @@ fixes.
 ## Mécanismes réservés à l'adaptateur
 
 Le SDK peut utiliser les mécanismes de l'adaptateur pour les capacités, les
-sessions, le heartbeat, la télémétrie, l'authentification et l'intégration
-d'audit. Il s'agit de détails d'implémentation sans route Fastino publique. Ne
-les considérez pas comme des API HTTP destinées aux clients.
+sessions, le heartbeat, la télémétrie, les contrôles d'identité de clé
+(`auth/apikey/me`) et l'audit. Ces détails n'ont pas de route publique.
+L'adaptateur valide la clé de `TINKER_CREDENTIAL_CMD`, mais n'émet pas de token
+d'authentification SDK.
 
 ## Explicitement non pris en charge
 
 - Récupération par lots des futures via `retrieve_futures`
 - `save_weights_external`
 - `external_weights_urls`
-- Opérations d'authentification ou de token du SDK
-- Opérations de facturation, d'utilisation ou d'événement du SDK
+- Émission de tokens SDK via `auth/token`
+- Opérations de facturation, d'utilisation ou d'événement du SDK, sauf l'appel pris en charge pour l'utilisation actuelle du stockage des checkpoints
 
 L'authentification est fournie uniquement par une clé Fastino `fast_sk_`
 normale via `TINKER_CREDENTIAL_CMD`. Les identifiants commençant par `tml-`

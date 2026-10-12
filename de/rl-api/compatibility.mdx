@@ -64,17 +64,18 @@ Loss-Katalog, Rang, kein Kontextfenster und kein Limit pro Aufruf fest.
 ## Reine Adapter-Infrastruktur
 
 Das SDK kann Adapter-Infrastruktur für Fähigkeiten, Sitzungen, Heartbeat,
-Telemetrie, Authentifizierung und Audit-Integration verwenden. Dies sind
-Implementierungsdetails ohne öffentliche Fastino-Route. Behandeln Sie sie nicht
-als kundenorientierte HTTP-APIs.
+Telemetrie, API-Schlüssel-Identitätsprüfungen (`auth/apikey/me`) und
+Audit-Integration verwenden. Diese Details haben keine öffentliche Route. Der
+Adapter validiert den Schlüssel aus `TINKER_CREDENTIAL_CMD`, stellt aber keine
+SDK-Authentifizierungstokens aus.
 
 ## Ausdrücklich nicht unterstützt
 
 - Batch-Abruf von Futures über `retrieve_futures`
 - `save_weights_external`
 - `external_weights_urls`
-- SDK-Authentifizierungs- oder Token-Operationen
-- SDK-Operationen für Abrechnung, Nutzung oder Events
+- SDK-Tokenausgabe über `auth/token`
+- SDK-Operationen für Abrechnung, Nutzung oder Events mit Ausnahme des unterstützten Aufrufs zur aktuellen Checkpoint-Speichernutzung
 
 Die Authentifizierung erfolgt ausschließlich über einen normalen Fastino-
 `fast_sk_`-Schlüssel durch `TINKER_CREDENTIAL_CMD`. Anmeldedaten, die mit

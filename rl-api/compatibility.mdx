@@ -63,17 +63,19 @@ window, or per-call limit.
 ## Adapter-only plumbing
 
 The SDK can use adapter plumbing for capabilities, sessions, heartbeat,
-telemetry, authentication, and audit integration. These are implementation
-details and have no public Fastino route. Do not treat them as customer-facing
-HTTP APIs.
+telemetry, API-key identity checks (`auth/apikey/me`), and audit integration.
+These are implementation details and have no public Fastino route. The adapter
+validates the key supplied by `TINKER_CREDENTIAL_CMD`; it does not issue SDK
+auth tokens.
 
 ## Explicitly unsupported
 
 - Batch future retrieval through `retrieve_futures`
 - `save_weights_external`
 - `external_weights_urls`
-- SDK auth or token operations
-- SDK billing, usage, or event operations
+- SDK token issuance through `auth/token`
+- SDK billing, usage, or event operations other than the supported current
+  checkpoint-storage-usage call
 
 Authentication is provided only by a normal Fastino `fast_sk_` key through
 `TINKER_CREDENTIAL_CMD`. Credentials beginning with `tml-` are rejected, and
