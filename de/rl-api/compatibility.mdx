@@ -1,11 +1,13 @@
 ---
-title: "SDK-Kompatibilität"
-description: "Genaue Unterstützung und Zuordnungen des Tinker SDK für interaktive Fastino-Trainingsjobs."
+title: "SDK-Adapter"
+sidebarTitle: "SDK-Adapter"
+description: "Unterstütztes SDK-Verhalten für interaktive Fastino-Trainingsjobs."
 ---
 
-Fastino testet den Kompatibilitätsvertrag mit `tinker==0.33.1`. Das Paket
-definiert die SDK-Signaturen; diese Seite legt fest, welche Methoden Fastino
-unterstützt und wie sie der Fastino-Trainingsdomäne zugeordnet werden.
+Fastinos SDK-Adapter übersetzt unterstützte Client-Aufrufe in Operationen für
+einen interaktiven Fastino-Job. Installieren Sie `tinker==0.33.1` für den
+dokumentierten Workflow; Fastinos Vertragstests decken sowohl `0.32.0` als auch
+`0.33.1` ab.
 
 | Element | Unterstützter Wert |
 | --- | --- |
@@ -22,15 +24,15 @@ selbst konstruieren.
 
 | SDK-Methode oder -Operation | Fastino-Zuordnung | Unterstützung |
 | --- | --- | --- |
-| `create_lora_training_client` | `POST /v1/training/jobs` mit interaktivem Jobtyp | Unterstützt |
-| `copy_weights` | Interaktiven Job aus dem Checkpoint erstellen | Unterstützt |
-| `TrainingClient.get_info` | Kanonischen Fastino-Job mit `GET` abrufen | Unterstützt |
-| `forward` | `/forward` auf dem interaktiven Job | Unterstützt |
-| `forward_backward` | `/forward-backward` auf dem interaktiven Job | Unterstützt |
-| Benutzerdefinierte Forward-/Backward-Operation | `/forward-backward` auf dem interaktiven Job | Unterstützt |
-| `optim_step` | `/optim-step` auf dem interaktiven Job | Unterstützt |
-| `save_state` | Checkpoint der Art `state` mit `POST` erstellen | Unterstützt |
-| `save_weights_for_sampler` | Checkpoint der Art `sampler` mit `POST` erstellen | Unterstützt |
+| `create_lora_training_client` | Interaktiven Job über das SDK erstellen | Unterstützt |
+| `copy_weights` | Interaktiven Job aus einem vorhandenen Checkpoint starten | Unterstützt |
+| `TrainingClient.get_info` | Interaktiven Job lesen | Unterstützt |
+| `forward` | Reine Forward-Operation ausführen | Unterstützt |
+| `forward_backward` | Forward- und Backward-Operation ausführen | Unterstützt |
+| Benutzerdefinierte Forward-/Backward-Operation | Unterstützte Custom-Loss-Operation ausführen | Unterstützt |
+| `optim_step` | Optimizer-Update anwenden | Unterstützt |
+| `save_state` | Trainingsstatus speichern | Unterstützt |
+| `save_weights_for_sampler` | Sampler-Gewichte speichern | Unterstützt |
 | Trainingsstatus laden | Checkpoint auf dem interaktiven Job laden | Unterstützt |
 | Sampling-Client erstellen oder abrufen | Ausgewählten Checkpoint auflösen | Unterstützt |
 | `SamplingClient.sample` | Aus Checkpoint sampeln | Unterstützt |
@@ -45,8 +47,8 @@ Loss-Katalog, Rang, kein Kontextfenster und kein Limit pro Aufruf fest.
 
 | SDK-Methode oder -Operation | Fastino-Zuordnung | Unterstützung |
 | --- | --- | --- |
-| Future result/get | Operationen abrufen | Unterstützt |
-| Future cancel | Operationen abbrechen | Unterstützt |
+| Future result/get | Ein asynchrones Ergebnis abrufen | Unterstützt |
+| Future cancel | Abbruch eines Future anfordern | Unterstützt |
 | Batch-Abruf mit `retrieve_futures` | Keine | Nicht unterstützt |
 
 ## Verwaltung
@@ -55,27 +57,27 @@ Loss-Katalog, Rang, kein Kontextfenster und kein Limit pro Aufruf fest.
 | --- | --- | --- |
 | Trainingsläufe mit `RestClient` auflisten | Kanonische Fastino-Jobs auflisten | Unterstützt |
 | Trainingslauf mit `RestClient` abrufen | Kanonischen Fastino-Job abrufen | Unterstützt |
-| Checkpoints auflisten oder abrufen | Kanonische Job-/Checkpoint-Routen | Unterstützt |
-| Checkpoint herunterladen oder löschen | Kanonische Job-/Checkpoint-Routen | Unterstützt |
-| Checkpoint veröffentlichen oder Veröffentlichung aufheben | Kanonische Job-/Checkpoint-Routen | Unterstützt |
-| Checkpoint-TTL festlegen oder löschen | Kanonische Job-/Checkpoint-Routen | Unterstützt |
-| Checkpoint-Speichernutzung abrufen | Kanonische Job-/Checkpoint-Routen | Unterstützt |
+| Checkpoints auflisten oder abrufen | Checkpoints interaktiver Jobs prüfen | Unterstützt |
+| Checkpoint herunterladen oder löschen | Interaktiven Checkpoint verwalten | Unterstützt |
+| Checkpoint veröffentlichen oder Veröffentlichung aufheben | Checkpoint-Veröffentlichung ändern | Unterstützt |
+| Checkpoint-TTL festlegen oder löschen | Checkpoint-Aufbewahrung ändern | Unterstützt |
+| `RestClient.get_current_checkpoint_storage_usage` | Aktuelle Checkpoint-Speichernutzung lesen | Unterstützt |
+| `RestClient.get_billing_usage` | Stündliche SDK-Nutzungsereignisse lesen | Unterstützt |
 
 ## Reine Adapter-Infrastruktur
 
-Das SDK kann Adapter-Infrastruktur für Fähigkeiten, Sitzungen, Heartbeat,
-Telemetrie, API-Schlüssel-Identitätsprüfungen (`auth/apikey/me`) und
-Audit-Integration verwenden. Diese Details haben keine öffentliche Route. Der
-Adapter validiert den Schlüssel aus `TINKER_CREDENTIAL_CMD`, stellt aber keine
-SDK-Authentifizierungstokens aus.
+Das SDK verwaltet Fähigkeiten, Sitzungen, Heartbeat, Telemetrie,
+Identitätsprüfungen, Tokenaustausch und Nutzungsinfrastruktur. Es tauscht den
+von `TINKER_CREDENTIAL_CMD` ausgegebenen Fastino-Schlüssel gegen kurzlebige
+Anmeldedaten aus, die für spätere SDK-Aufrufe verwendet werden. Dabei handelt
+es sich um Implementierungsdetails und nicht um kundenseitig erstellte
+HTTP-Requests.
 
 ## Ausdrücklich nicht unterstützt
 
 - Batch-Abruf von Futures über `retrieve_futures`
 - `save_weights_external`
 - `external_weights_urls`
-- SDK-Tokenausgabe über `auth/token`
-- SDK-Operationen für Abrechnung, Nutzung oder Events mit Ausnahme des unterstützten Aufrufs zur aktuellen Checkpoint-Speichernutzung
 
 Die Authentifizierung erfolgt ausschließlich über einen normalen Fastino-
 `fast_sk_`-Schlüssel durch `TINKER_CREDENTIAL_CMD`. Anmeldedaten, die mit

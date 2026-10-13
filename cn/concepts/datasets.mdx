@@ -87,8 +87,9 @@ curl --fail-with-body -sS https://api.fastino.ai/v1/datasets/docs-example-ner \
 
 ```json
 {
+  "type": "config",
   "model_name": "my-ner-model",
-  "base_model": "fastino/gliner2-base-v1",
+  "model": "fastino/gliner2-base-v1",
   "datasets": [
     {"name": "docs-example-ner", "version": "VERSION_NUMBER_FROM_UPLOAD"}
   ],

@@ -57,6 +57,23 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/stop \
 }
 ```
 
+```json 202 — cancelación pendiente
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "status": "stopping"
+}
+```
+
 </ResponseExample>
 
-Un trabajo desconocido o un trabajo que no puede detenerse devuelve un error `4xx` específico de la solicitud.
+Después de un `202`, consulta `GET /v1/training/jobs/{job_id}`; no repitas la
+solicitud de detención mientras la cancelación esté pendiente.
+
+| Estado | Significado |
+| --- | --- |
+| `200` | El trabajo está detenido y los checkpoints existentes siguen disponibles. |
+| `202` | La cancelación del proveedor todavía se está confirmando. |
+| `409 training_job_already_finished` | El trabajo alcanzó un estado terminal antes de la detención. |
+| `422` | La ruta o el cuerpo de la solicitud no son válidos. |

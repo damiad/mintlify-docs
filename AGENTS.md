@@ -39,6 +39,11 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
   [GLiNER Inference](https://docs.fastino.ai/inference/chat-completions). Use
   `POST /v1/chat/completions` with `model`, `messages`, and `schema`.
 - Follow the [Training API](https://docs.fastino.ai/training) for training-job operations.
+- The Training API has three product surfaces: public jobs under
+  `/v1/training/jobs`, SDK-only interactive training through
+  `/v1/training/compat/tinker`, and private-access Training Auto. Do not invent
+  public `/v1/training/auto` calls; direct interested users to
+  `sales@fastino.ai`.
 - For RL workloads, start with the [RL API overview](https://docs.fastino.ai/rl-api)
   and [quickstart](https://docs.fastino.ai/rl-api/quickstart). Use the focused
   guides for SDK migration, verifiable rewards, and checkpointing.
@@ -53,7 +58,7 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
   with the canonical job and checkpoint administration routes.
 - Do not invent routes, model IDs, request fields, or response fields.
 - For RL workloads, use Fastino's
-  [SDK compatibility](https://docs.fastino.ai/rl-api/compatibility) page
+  [SDK adapter](https://docs.fastino.ai/rl-api/compatibility) page
   for Fastino-specific support boundaries. The pinned `tinker==0.33.1` package
   defines method signatures; an explicitly unsupported item on Fastino's page
   overrides its availability in the client package. Use

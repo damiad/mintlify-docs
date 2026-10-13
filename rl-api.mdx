@@ -25,7 +25,7 @@ A training client created through the supported SDK represents one interactive
 Fastino job. The value returned by
 `training_client.get_info().model_data.model_id` is the canonical training job
 ID. Use that same ID with `GET /v1/training/jobs/{job_id}` and other documented
-training-job or checkpoint administration routes.
+shared job reads.
 
 There is no separate Tinker run behind the job and no outbound routing to
 another training service. The `tinker` Python package is a client-compatibility
@@ -33,7 +33,8 @@ layer for applications that already use its object and method shapes.
 
 ## Supported client
 
-Fastino tests `tinker==0.33.1`. Configure it with:
+Install `tinker==0.33.1` for the documented workflow. Fastino's contract suite
+covers `0.32.0` and `0.33.1`. Configure the SDK with:
 
 - Base URL: `https://api.fastino.ai/v1/training/compat/tinker`
 - Credential source: `TINKER_CREDENTIAL_CMD`
@@ -74,8 +75,5 @@ truth for the environment your team can use.
   </Card>
   <Card title="The training loop" icon="diagram-project" href="/rl-api/training-loop">
     Understand sampling, rewards, updates, and checkpoints inside one job.
-  </Card>
-  <Card title="SDK compatibility" icon="list-check" href="/rl-api/compatibility">
-    Check the exact supported method mappings and unsupported operations.
   </Card>
 </CardGroup>

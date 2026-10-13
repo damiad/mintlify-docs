@@ -5,6 +5,10 @@ description: "调用 POST /v1/training/jobs，基于基础模型和数据集启�
 api: "POST /v1/training/jobs"
 ---
 
+<Warning>
+  此草稿使用即将推出的原生 `model` 和 `type` 请求字段。在统一训练 API 发布前，生产环境仍以其生成的 OpenAPI 契约为准。
+</Warning>
+
 `POST /v1/training/jobs`
 
 创建一个异步 `config` 训练任务并返回其任务记录。在配置任务中，你提供数据集和配置，
@@ -19,7 +23,7 @@ Fastino 负责运行训练循环。若要逐步控制该循环，请通过
   您的 Fastino API 密钥。
 </ParamField>
 
-<ParamField body="type" type="string">
+<ParamField body="type" type="string" required>
   对于本页记录的请求体，请将其设为 `config`。
 </ParamField>
 
@@ -27,7 +31,7 @@ Fastino 负责运行训练循环。若要逐步控制该循环，请通过
   训练模型的显示名称。长度：1–100 个字符。
 </ParamField>
 
-<ParamField body="base_model" type="string" required>
+<ParamField body="model" type="string" required>
   来自 `GET /v1/base-models?supports_training=true` 的可训练模型 ID，或受支持的检查点 UUID。
 </ParamField>
 
@@ -178,7 +182,7 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -d '{
     "type": "config",
     "model_name": "my-model-name",
-    "base_model": "fastino/gliner2-multi-v1",
+    "model": "fastino/gliner2-multi-v1",
     "datasets": [{"name": "my-ready-dataset"}],
     "training_type": "lora",
     "nr_epochs": 5,

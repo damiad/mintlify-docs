@@ -1,124 +1,56 @@
 ---
 title: "API de entrenamiento"
 sidebarTitle: "Descripción general"
-description: "Elige un trabajo de entrenamiento gestionado o interactivo y, después, créalo, supervísalo y adminístralo mediante la API de entrenamiento canónica."
+description: "Elige entre entrenamiento gestionado, entrenamiento dirigido por la aplicación o un agente de entrenamiento autónomo privado."
 ---
 
-Fastino expone una única familia de rutas para el entrenamiento:
+La API de entrenamiento agrupa todos los flujos de entrenamiento bajo
+`/v1/training`:
 
-```text
-/v1/training/jobs
-```
-
-Cada trabajo tiene un `type`:
-
-<CardGroup cols={2}>
-  <Card title="Trabajos de configuración" icon="sliders">
-    Envía un dataset preparado y una configuración de entrenamiento. Fastino
-    ejecuta el bucle de entrenamiento. Comienza con la [guía de ajuste fino de GLiNER](/es/guides/fine-tune-gliner).
+<CardGroup cols={3}>
+  <Card title="Trabajos" icon="sliders" href="/es/training/quickstart">
+    Crea e inspecciona trabajos `config` gestionados mediante
+    `/v1/training/jobs`.
   </Card>
-  <Card title="Trabajos interactivos" icon="code">
-    Ejecuta el bucle de entrenamiento paso a paso desde tu aplicación. Comienza
-    con la [descripción general de la API de RL](/es/rl-api) y la [guía rápida de la API de RL](/es/rl-api/quickstart).
+  <Card title="Adaptador del SDK" icon="code" href="/es/rl-api">
+    Dirige un trabajo `interactive` mediante el adaptador del SDK compatible en
+    `/v1/training/compat/tinker`.
+  </Card>
+  <Card title="Auto" icon="sparkles" href="/es/training/auto">
+    Delega el ciclo de vida del entrenamiento en el agente de entrenamiento
+    autónomo de Fastino.
   </Card>
 </CardGroup>
 
-Usa un trabajo `config` para el ajuste fino gestionado. Usa un trabajo
-`interactive` cuando tu aplicación deba controlar las pasadas hacia delante y
-hacia atrás, los pasos del optimizador y el momento de crear checkpoints.
+<Warning>
+  Este borrador describe la próxima API de entrenamiento unificada. No uses sus
+  ejemplos de solicitudes en producción hasta que Fastino anuncie su
+  disponibilidad.
+</Warning>
 
-## Configura tu clave de API
+## Elige un tipo de trabajo
 
-1. **Crea una cuenta de [Fastino](https://agent.fastino.ai/)**
-2. **Obtén tu clave de API** en [Configuración](https://agent.fastino.ai/api-keys)
+Cada trabajo tiene un `type`:
 
-Configura tu clave como variable de entorno para que los ejemplos siguientes
-funcionen sin cambios:
+| Tipo | ¿Quién controla el bucle? | Cómo se inicia |
+| --- | --- | --- |
+| `config` | Fastino | Envía un dataset y una configuración a `POST /v1/training/jobs`. |
+| `interactive` | Tu aplicación | Crea un cliente de entrenamiento mediante el adaptador del SDK compatible. |
 
-<CodeGroup>
+Ambos tipos comparten la misma identidad de trabajo. Las lecturas canónicas usan
+`GET /v1/training/jobs`, `GET /v1/training/jobs/{job_id}` y
+`GET /v1/training/jobs/{job_id}/checkpoints`.
 
-```bash macOS/Linux
-export FASTINO_API_KEY="your_api_key_here"
-```
+El adaptador de compatibilidad no es un segundo servicio de entrenamiento.
+Traduce las llamadas compatibles del SDK en operaciones sobre un trabajo
+interactivo de Fastino. Las operaciones del adaptador se omiten
+intencionadamente de OpenAPI; no construyas sus rutas HTTP por tu cuenta.
 
-```powershell Windows
-$env:FASTINO_API_KEY = "your_api_key_here"
-```
+## Ciclo de vida de los trabajos de configuración
 
-</CodeGroup>
-
-La URL base de la API es `https://api.fastino.ai`. Envía
-`X-API-Key: $FASTINO_API_KEY` en cada solicitud. Consulta la
-[autenticación de la API](/es/authentication) para ver todas las formas de
-autenticación compatibles.
-
-## Guía rápida de los trabajos de configuración
-
-### 1. Prepara un dataset
-
-[Prepara, sube y procesa un dataset de entrenamiento](/es/concepts/datasets).
-Espera hasta que la versión del dataset esté `ready`.
-
-### 2. Elige un modelo base activo
-
-Consulta el catálogo inmediatamente antes de enviar el trabajo. Es la fuente de
-verdad para los IDs de modelos entrenables.
-
-```bash
-curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-### 3. Crea el trabajo
-
-Conserva el nombre de campo `base_model` y establece `type` en `config`:
-
-```bash
-curl -X POST "https://api.fastino.ai/v1/training/jobs" \
-  -H "X-API-Key: $FASTINO_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "config",
-    "model_name": "my-gliner-model",
-    "base_model": "BASE_MODEL_ID_FROM_CATALOG",
-    "datasets": [
-      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
-    ],
-    "training_type": "lora"
-  }'
-```
-
-Guarda el `id` devuelto; es el `job_id` que utilizan todas las rutas específicas
-del trabajo.
-
-### 4. Consulta e inspecciona
-
-```bash
-curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-Para los trabajos de configuración, las respuestas incluyen:
-
-- `status`: estado persistido del trabajo.
-- `normalized_status`: estado estable destinado a las consultas del cliente.
-- `is_terminal_status`: indica si la consulta puede detenerse.
-- `error_message`: información del fallo cuando esté disponible.
-- `is_deployable`: indica si el artefacto completado supera la validación de despliegue.
-- `deployability_reason`: motivo por el que el artefacto no es desplegable.
-
-Al consultar un trabajo de configuración, prefiere `normalized_status` e
-`is_terminal_status`. También puedes inspeccionar
-[`GET /v1/training/jobs/{job_id}/logs`](/es/api-reference/training-jobs/logs),
-[`GET /v1/training/jobs/{job_id}/billing`](/es/api-reference/training-jobs/billing)
-y
-[`GET /v1/training/jobs/{job_id}/checkpoints`](/es/api-reference/training-jobs/checkpoints).
-
-## Ciclo de vida del estado de los trabajos de configuración
-
-Los siguientes estados persistidos describen los trabajos de configuración
-gestionados. Los trabajos interactivos tienen un comportamiento controlado por
-el llamante; no deduzcas su ciclo de vida a partir de esta tabla.
+Los siguientes estados persistidos describen los trabajos `config` gestionados.
+Los trabajos interactivos tienen un comportamiento controlado por el llamante;
+no deduzcas su ciclo de vida a partir de esta tabla.
 
 | Estado persistido | Descripción |
 | --- | --- |
@@ -131,50 +63,38 @@ el llamante; no deduzcas su ciclo de vida a partir de esta tabla.
 | `paused` | El trabajo gestionado está en pausa. |
 | `errored` | El entrenamiento, el envío o la preparación del artefacto falló. |
 | `stopped` | El trabajo se detuvo conservando los checkpoints existentes. |
-| `terminated` | El trabajo se terminó y sus checkpoints se eliminaron. |
+| `terminated` | El trabajo se terminó. Los checkpoints se conservan salvo que `delete_checkpoints` sea `true`. |
 
-## Rutas disponibles para ambos tipos de trabajo
+`normalized_status` proporciona el valor estable para las consultas, incluido
+`failed` para un fallo terminal. `status` conserva el valor persistido, como
+`errored`.
 
-| Método | Ruta | Propósito |
+## Compatibilidad de las operaciones
+
+| Operación | `config` | `interactive` |
 | --- | --- | --- |
-| `POST` | [`/v1/training/jobs`](/es/api-reference/training-jobs/create) | Crear directamente un trabajo de configuración; el SDK compatible crea trabajos interactivos mediante el adaptador de compatibilidad |
-| `GET` | [`/v1/training/jobs`](/es/api-reference/training-jobs/list) | Listar trabajos |
-| `GET` | [`/v1/training/jobs/{job_id}`](/es/api-reference/training-jobs/get) | Obtener un trabajo |
-| `POST` | [`/v1/training/jobs/{job_id}/stop`](/es/api-reference/training-jobs/stop) | Detener un trabajo y liberar sus recursos de entrenamiento |
-| `GET` | [`/v1/training/jobs/{job_id}/logs`](/es/api-reference/training-jobs/logs) | Leer logs |
-| `GET` | [`/v1/training/jobs/{job_id}/billing`](/es/api-reference/training-jobs/billing) | Leer los detalles de facturación |
-| `POST` | `/v1/training/jobs/{job_id}/deploy` | Desplegar el artefacto de un trabajo |
-| `GET` | [`/v1/training/jobs/{job_id}/deployments`](/es/api-reference/training-jobs/deployments) | Listar despliegues |
-| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/es/api-reference/training-jobs/checkpoints) | Listar checkpoints |
-| `GET` | `/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}` | Obtener un checkpoint |
-| `GET` | `/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download` | Descargar un checkpoint |
-| `POST` / `DELETE` | `/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/publish` | Publicar o retirar la publicación de un checkpoint |
-| `PUT` | `/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/ttl` | Establecer la retención del checkpoint |
-| `DELETE` | `/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}` | Eliminar un checkpoint |
+| [Listar trabajos](/es/api-reference/training-jobs/list) | Compatible | Compatible con acceso |
+| [Obtener un trabajo](/es/api-reference/training-jobs/get) | Compatible | Compatible con acceso |
+| [Listar checkpoints](/es/api-reference/training-jobs/checkpoints) | Compatible | Compatible con acceso |
+| [Descargar un checkpoint interactivo](/es/api-reference/training-jobs/download-checkpoint) | — | Compatible con acceso |
+| [Crear mediante REST nativo](/es/api-reference/training-jobs/create) | Compatible | Usa el SDK |
+| Actualizar o eliminar el trabajo | Compatible | — |
+| [Detener](/es/api-reference/training-jobs/stop), [terminar](/es/api-reference/training-jobs/terminate) o [sincronizar](/es/api-reference/training-jobs/sync) | Compatible | — |
+| [Logs](/es/api-reference/training-jobs/logs) y [facturación](/es/api-reference/training-jobs/billing) | Compatible | — |
+| Despliegues y despliegue de checkpoints | Compatible | — |
+| [Descargar el modelo final](/es/api-reference/training-jobs/download) | Compatible | — |
+| Cambiar el nombre o enviar a Hugging Face Hub | Compatible | — |
 
-## Rutas exclusivas de los trabajos de configuración
+## Próximos pasos
 
-| Método | Ruta | Propósito |
-| --- | --- | --- |
-| `POST` | [`/v1/training/jobs/{job_id}/terminate`](/es/api-reference/training-jobs/terminate) | Terminar un trabajo y eliminar sus checkpoints |
-| `POST` | [`/v1/training/jobs/{job_id}/sync`](/es/api-reference/training-jobs/sync) | Actualizar el estado del proveedor |
-| `GET` | [`/v1/training/jobs/{job_id}/download`](/es/api-reference/training-jobs/download) | Descargar el modelo final |
-| `PATCH` | [`/v1/training/jobs/{job_id}/model-name`](/es/api-reference/training-jobs/update-model-name) | Cambiar el nombre del modelo |
-| `POST` | [`/v1/training/jobs/{job_id}/push-to-hub`](/es/api-reference/training-jobs/push-to-hub) | Enviar el modelo final a Hugging Face Hub |
-
-## Rutas exclusivas de los trabajos interactivos
-
-Los trabajos interactivos exponen las operaciones de entrenamiento individuales:
-
-| Método | Ruta | Propósito |
-| --- | --- | --- |
-| `POST` | `/v1/training/jobs/{job_id}/forward` | Ejecutar una pasada hacia delante |
-| `POST` | `/v1/training/jobs/{job_id}/forward-backward` | Ejecutar una pasada hacia delante y hacia atrás |
-| `POST` | `/v1/training/jobs/{job_id}/optim-step` | Aplicar un paso del optimizador |
-| `GET` | `/v1/training/jobs/{job_id}/operations/{operation_id}` | Obtener una operación asíncrona |
-| `POST` | `/v1/training/jobs/{job_id}/operations/{operation_id}/cancel` | Cancelar una operación |
-| `POST` | `/v1/training/jobs/{job_id}/checkpoints` | Guardar un checkpoint de estado o muestreador |
-| `POST` | `/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/load` | Cargar un checkpoint |
-| `POST` | `/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/sample` | Muestrear desde un checkpoint |
-
-Llamar a una ruta de paso interactivo en un trabajo `config` devuelve `400`.
+<CardGroup cols={3}>
+  <Card title="Guía rápida" icon="play" href="/es/training/quickstart">
+    Crea y supervisa un trabajo de configuración gestionado.
+  </Card>
+  <Card title="API de RL" icon="repeat-2" href="/es/rl-api">
+    Dirige un trabajo de entrenamiento interactivo mediante el SDK.
+  </Card>
+  <Card title="Ajustar GLiNER" icon="tags" href="/es/guides/fine-tune-gliner">
+    Prepara datos de entidades y entrena un modelo GLiNER.
+  </Card>
+</CardGroup>

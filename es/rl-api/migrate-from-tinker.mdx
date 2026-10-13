@@ -53,7 +53,8 @@ credenciales `tml-` se rechazan. No establezcas `TINKER_API_KEY`.
 
 1. Consulta `ServiceClient.get_server_capabilities()` y elige un modelo base disponible. Conserva el nombre de parámetro `base_model` del SDK.
 2. Compara cada método de tu código con la [tabla de compatibilidad del SDK](/es/rl-api/compatibility).
-3. Elimina dependencias de la recuperación de futures por lotes no compatible, la exportación de pesos externos, las URL de pesos externos, los métodos de autenticación/tokens del SDK o los métodos de facturación, uso y eventos del SDK.
+3. Elimina dependencias de la recuperación de futures por lotes no compatible,
+   la exportación de pesos externos o las URL de pesos externos.
 4. Mantén en tu aplicación el renderizado de prompts, la lógica de recompensas, el procesamiento por lotes, la evaluación y los criterios de parada.
 
 Las capacidades son la fuente de verdad de la compatibilidad dependiente del

@@ -57,7 +57,7 @@ The live base-model catalog currently advertises:
 }
 ```
 
-Check `GET /v1/base-models?supports_training=true` before creating a job because catalog availability can change. Use `fastino/GLiNER-2.5-Decide` as `base_model` and `lora` as `training_type`.
+Check `GET /v1/base-models?supports_training=true` before creating a job because catalog availability can change. Use `fastino/GLiNER-2.5-Decide` as `model` and `lora` as `training_type`.
 
 ### Prepare Decide classification data
 
@@ -83,8 +83,9 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
+    "type": "config",
     "model_name": "support-decide",
-    "base_model": "fastino/GLiNER-2.5-Decide",
+    "model": "fastino/GLiNER-2.5-Decide",
     "datasets": [{"name": "support-decide-training"}],
     "training_type": "lora",
     "validation_data_percentage": 0.2

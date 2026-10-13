@@ -21,7 +21,6 @@ from typing import NoReturn
 
 from check_api_docs import (
     EXPECTED_OPERATIONS,
-    PREVIEW_TRAINING_OPERATIONS,
     SDK_BASE_PATHS,
     _path_matches_route,
     local_docs_findings,
@@ -60,6 +59,8 @@ REQUIRED_DISCOVERY_LINKS = {
     "GLiNER inference": "/inference/chat-completions.md",
     "datasets": "/concepts/datasets.md",
     "training": "/training.md",
+    "training quickstart": "/training/quickstart.md",
+    "Training Auto": "/training/auto.md",
     "GLiNER fine-tuning": "/guides/fine-tune-gliner.md",
     "inference reference": "/api-reference/inference/overview.md",
     "GLiDE contract": "/api-reference/inference/systemone.md",
@@ -75,7 +76,6 @@ REQUIRED_DISCOVERY_LINKS = {
     "verifiable rewards": "/rl-api/verifiable-rewards.md",
     "RL checkpoint resume": "/rl-api/checkpoint-and-resume.md",
     "RL training loop": "/rl-api/training-loop.md",
-    "SDK compatibility": "/rl-api/compatibility.md",
     "RL API runtime": "/rl-api/runtime.md",
     "errors": "/troubleshooting/errors.md",
     "retries": "/troubleshooting/retries.md",
@@ -92,6 +92,8 @@ JOURNEY_PAGES = (
     "inference/systemone.mdx",
     "inference/chat-completions.mdx",
     "training.mdx",
+    "training/quickstart.mdx",
+    "training/auto.mdx",
     "guides/fine-tune-gliner.mdx",
     "rl-api.mdx",
     "rl-api/quickstart.mdx",
@@ -119,7 +121,6 @@ RL_PAGE_ORDER = (
     "rl-api/training-loop",
     "rl-api/verifiable-rewards",
     "rl-api/checkpoint-and-resume",
-    "rl-api/compatibility",
     "rl-api/runtime",
 )
 
@@ -713,10 +714,7 @@ def _journey_findings(
         for match in METHOD_PATH.finditer(text):
             method = match.group("method").lower()
             path_text = match.group("path")
-            if (
-                _operation_for_path(operations, method, path_text) is None
-                and (method.upper(), path_text) not in PREVIEW_TRAINING_OPERATIONS
-            ):
+            if _operation_for_path(operations, method, path_text) is None:
                 findings.append(
                     f"CONTRACT: {relative} documents absent operation "
                     f"{method.upper()} {path_text}"

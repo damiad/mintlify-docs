@@ -7,6 +7,12 @@ description: "Prepare a GLiNER dataset, create a managed config job, and monitor
 This guide creates a `config` training job. You provide a ready dataset and
 training settings; Fastino runs the training loop.
 
+<Warning>
+  This draft uses the upcoming native `model` request field. Production
+  continues to use its generated OpenAPI contract until the unified Training
+  API launches.
+</Warning>
+
 ## Before you begin
 
 Set `FASTINO_API_KEY` as shown in the [Training API overview](/training). The
@@ -41,7 +47,7 @@ curl -sS "https://api.fastino.ai/v1/base-models?supports_training=true" \
 ```
 
 Choose a GLiNER model that supports your task and desired training type. Copy
-its exact ID for the `base_model` field.
+its exact ID for the native Training API's `model` field.
 
 ## 3. Create a config job
 
@@ -55,7 +61,7 @@ curl -sS -X POST "https://api.fastino.ai/v1/training/jobs" \
   -d '{
     "type": "config",
     "model_name": "support-request-extractor",
-    "base_model": "BASE_MODEL_ID_FROM_CATALOG",
+    "model": "BASE_MODEL_ID_FROM_CATALOG",
     "datasets": [
       {
         "name": "READY_DATASET_NAME",
@@ -110,7 +116,7 @@ done
 ```
 
 For the config-job statuses and terminal-state guidance, see the
-[Training API overview](/training#config-job-status-lifecycle).
+[Training API overview](/training#config-job-lifecycle).
 
 ## 5. Inspect logs and checkpoints
 

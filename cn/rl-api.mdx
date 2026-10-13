@@ -19,14 +19,15 @@ Fastino 的 RL API 以**交互式训练任务**的形式运行强化学习和自
 
 通过受支持的 SDK 创建的训练客户端代表一个 Fastino 交互式任务。
 `training_client.get_info().model_data.model_id` 返回的值是规范的训练任务 ID。
-在 `GET /v1/training/jobs/{job_id}` 及其他有文档说明的训练任务或检查点管理路由中使用同一个 ID。
+在 `GET /v1/training/jobs/{job_id}` 及其他有文档说明的共享任务读取操作中使用同一个 ID。
 
 该任务背后不存在单独的 Tinker 运行，也不会将请求传出到其他训练服务。
 `tinker` Python 软件包是一个客户端兼容层，供已经使用其对象和方法形式的应用使用。
 
 ## 受支持的客户端
 
-Fastino 测试 `tinker==0.33.1`。配置如下：
+请安装 `tinker==0.33.1` 以使用文档所述工作流。Fastino 的契约测试覆盖
+`0.32.0` 和 `0.33.1`。配置如下：
 
 - 基础 URL：`https://api.fastino.ai/v1/training/compat/tinker`
 - 凭据来源：`TINKER_CREDENTIAL_CMD`
@@ -63,8 +64,5 @@ Fastino 的 OpenAPI 和 API 参考中。请勿自行构造适配器 HTTP 请求�
   </Card>
   <Card title="训练循环" icon="diagram-project" href="/cn/rl-api/training-loop">
     了解一个任务中的采样、奖励、更新和检查点。
-  </Card>
-  <Card title="SDK 兼容性" icon="list-check" href="/cn/rl-api/compatibility">
-    查看确切的受支持方法映射和不受支持的操作。
   </Card>
 </CardGroup>

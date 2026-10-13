@@ -5,6 +5,10 @@ description: "Appelez POST /v1/training/jobs pour démarrer un job d'entraîneme
 api: "POST /v1/training/jobs"
 ---
 
+<Warning>
+  Ce brouillon utilise les futurs champs natifs `model` et `type`. La production continue d’utiliser son contrat OpenAPI généré jusqu’au lancement de l’API Training unifiée.
+</Warning>
+
 `POST /v1/training/jobs`
 
 Crée un job d'entraînement asynchrone `config` et renvoie son enregistrement.
@@ -21,7 +25,7 @@ Cet endpoint est limité à 20 requêtes par minute et par utilisateur.
   Votre clé API Fastino.
 </ParamField>
 
-<ParamField body="type" type="string">
+<ParamField body="type" type="string" required>
   Définissez ce champ sur `config` pour le corps de requête documenté sur cette page.
 </ParamField>
 
@@ -29,7 +33,7 @@ Cet endpoint est limité à 20 requêtes par minute et par utilisateur.
   Nom d'affichage du modèle entraîné. Longueur : 1 à 100 caractères.
 </ParamField>
 
-<ParamField body="base_model" type="string" required>
+<ParamField body="model" type="string" required>
   Un ID de modèle entraînable issu de `GET /v1/base-models?supports_training=true`, ou un UUID de checkpoint pris en charge.
 </ParamField>
 
@@ -180,7 +184,7 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -d '{
     "type": "config",
     "model_name": "my-model-name",
-    "base_model": "fastino/gliner2-multi-v1",
+    "model": "fastino/gliner2-multi-v1",
     "datasets": [{"name": "my-ready-dataset"}],
     "training_type": "lora",
     "nr_epochs": 5,

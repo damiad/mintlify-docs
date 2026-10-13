@@ -4,6 +4,10 @@ sidebarTitle: "微调 GLiNER"
 description: "准备 GLiNER 数据集、创建托管式配置任务，并通过检查点直至任务完成进行监控。"
 ---
 
+<Warning>
+  此草稿使用即将推出的原生 `model` 和 `type` 请求字段。在统一训练 API 发布前，生产环境仍以其生成的 OpenAPI 契约为准。
+</Warning>
+
 本指南将创建一个 `config` 训练任务。你提供就绪的数据集和训练设置；Fastino 负责运行训练循环。
 
 ## 开始之前
@@ -37,7 +41,7 @@ curl -sS "https://api.fastino.ai/v1/base-models?supports_training=true" \
   -H "X-API-Key: $FASTINO_API_KEY" | jq
 ```
 
-选择支持你的任务和所需训练类型的 GLiNER 模型。复制其确切 ID，用作 `base_model` 字段。
+选择支持你的任务和所需训练类型的 GLiNER 模型。复制其确切 ID，用作原生训练 API 的 `model` 字段。
 
 ## 3. 创建配置任务
 
@@ -50,7 +54,7 @@ curl -sS -X POST "https://api.fastino.ai/v1/training/jobs" \
   -d '{
     "type": "config",
     "model_name": "support-request-extractor",
-    "base_model": "BASE_MODEL_ID_FROM_CATALOG",
+    "model": "BASE_MODEL_ID_FROM_CATALOG",
     "datasets": [
       {
         "name": "READY_DATASET_NAME",

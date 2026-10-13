@@ -57,6 +57,24 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/stop \
 }
 ```
 
+```json 202 — annulation en attente
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "status": "stopping"
+}
+```
+
 </ResponseExample>
 
-Un job inconnu ou un job qui ne peut pas être arrêté renvoie une erreur `4xx` spécifique à la requête.
+Après une réponse `202`, interrogez
+`GET /v1/training/jobs/{job_id}` ; ne répétez pas la requête d'arrêt pendant
+que l'annulation est en attente.
+
+| Statut | Signification |
+| --- | --- |
+| `200` | Le job est arrêté et les checkpoints existants restent disponibles. |
+| `202` | La confirmation de l'annulation par le fournisseur est toujours en attente. |
+| `409 training_job_already_finished` | Le job a atteint un état terminal avant l'arrêt. |
+| `422` | Le chemin ou le corps de la requête n'est pas valide. |

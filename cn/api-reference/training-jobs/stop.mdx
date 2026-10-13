@@ -57,6 +57,22 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/stop \
 }
 ```
 
+```json 202 — 正在等待取消
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "status": "stopping"
+}
+```
+
 </ResponseExample>
 
-未知任务或无法停止的任务返回请求相关的 `4xx` 错误。
+收到 `202` 后，请轮询 `GET /v1/training/jobs/{job_id}`；在等待确认取消期间，请勿重复发送停止请求。
+
+| 状态 | 含义 |
+| --- | --- |
+| `200` | 任务已停止，现有检查点仍然可用。 |
+| `202` | 仍在确认提供方取消操作。 |
+| `409 training_job_already_finished` | 任务在停止前已进入最终状态。 |
+| `422` | 路径或请求体无效。 |

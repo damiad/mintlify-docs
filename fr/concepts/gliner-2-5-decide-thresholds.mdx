@@ -57,7 +57,7 @@ Le catalogue actuel des modèles de base disponibles annonce :
 }
 ```
 
-Vérifiez `GET /v1/base-models?supports_training=true` avant de créer une tâche, car la disponibilité dans le catalogue peut changer. Utilisez `fastino/GLiNER-2.5-Decide` comme `base_model` et `lora` comme `training_type`.
+Vérifiez `GET /v1/base-models?supports_training=true` avant de créer une tâche, car la disponibilité dans le catalogue peut changer. Utilisez `fastino/GLiNER-2.5-Decide` comme `model` et `lora` comme `training_type`.
 
 ### Préparer les données de classification Decide
 
@@ -83,8 +83,9 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
+    "type": "config",
     "model_name": "support-decide",
-    "base_model": "fastino/GLiNER-2.5-Decide",
+    "model": "fastino/GLiNER-2.5-Decide",
     "datasets": [{"name": "support-decide-training"}],
     "training_type": "lora",
     "validation_data_percentage": 0.2

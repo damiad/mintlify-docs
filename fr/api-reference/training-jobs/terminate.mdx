@@ -1,16 +1,19 @@
 ---
 title: "Terminer un job d'entraînement"
 sidebarTitle: "Terminer un job"
-description: "Appelez POST /v1/training/jobs/{job_id}/terminate pour arrêter un job, supprimer tous ses checkpoints et le marquer terminé. Utilisez stop pour les conserver."
+description: "Terminez un job d'entraînement de configuration en conservant ses checkpoints, sauf si leur suppression est explicitement demandée."
 api: "POST /v1/training/jobs/{job_id}/terminate"
 ---
 
 `POST /v1/training/jobs/{job_id}/terminate`
 
-Arrête le job du fournisseur s'il est actif, supprime chaque checkpoint et marque le job comme terminé.
+Arrête un job `config` actif et demande son annulation au fournisseur. Les
+checkpoints et les artefacts existants sont conservés par défaut.
 
 <Warning>
-  La terminaison est irréversible. Utilisez l'endpoint stop lorsque vous avez besoin de conserver les checkpoints.
+  Définir `delete_checkpoints` sur `true` supprime définitivement les
+  checkpoints et les artefacts du job une fois l'annulation confirmée. Cette
+  action est irréversible.
 </Warning>
 
 ## Requête
@@ -23,11 +26,20 @@ Arrête le job du fournisseur s'il est actif, supprime chaque checkpoint et marq
   UUID du job d'entraînement.
 </ParamField>
 
+Le corps JSON est optionnel.
+
+<ParamField body="delete_checkpoints" type="boolean" default="false">
+  Supprimer définitivement les checkpoints et les artefacts une fois
+  l'annulation confirmée.
+</ParamField>
+
 <RequestExample>
 
 ```bash cURL
 curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/terminate \
-  -H "X-API-Key: $FASTINO_API_KEY"
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"delete_checkpoints": false}'
 ```
 
 </RequestExample>
@@ -36,15 +48,36 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/termin
 
 <ResponseExample>
 
-```json Response
+```json 200 — terminé
 {
   "success": true,
-  "message": "Training job terminated",
+  "message": "Training job terminated. Checkpoints preserved.",
   "job_id": "YOUR_TRAINING_JOB_ID",
-  "deleted_checkpoints": 3
+  "deleted_checkpoints": 0,
+  "status": "terminated"
+}
+```
+
+```json 202 — annulation en attente
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "deleted_checkpoints": 0,
+  "status": "stopping"
 }
 ```
 
 </ResponseExample>
 
-Un job inconnu ou un job qui ne peut pas être terminé renvoie une erreur `4xx` spécifique à la requête.
+Après une réponse `202`, interrogez
+`GET /v1/training/jobs/{job_id}` ; ne répétez pas la requête de terminaison
+pendant que l'annulation est en attente.
+
+| Statut | Signification |
+| --- | --- |
+| `200` | Le job est terminé. |
+| `202` | La confirmation de l'annulation par le fournisseur est toujours en attente. |
+| `409 training_job_already_finished` | Le job a atteint un état terminal avant la terminaison. |
+| `409 cancellation_unconfirmed` | L'annulation n'a pas été confirmée et peut être retentée. |
+| `422` | Le chemin ou le corps de la requête n'est pas valide. |

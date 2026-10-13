@@ -53,10 +53,9 @@ Do not set `TINKER_API_KEY`.
 1. Query `ServiceClient.get_server_capabilities()` and choose an available base
    model. Keep the SDK parameter name `base_model`.
 2. Compare every method in your code with the
-   [SDK compatibility table](/rl-api/compatibility).
+   [SDK adapter support table](/rl-api/compatibility).
 3. Remove dependencies on unsupported batch future retrieval, external weight
-   export, external weight URLs, SDK auth/token methods, or SDK billing, usage,
-   and event methods.
+   export, or external weight URLs.
 4. Keep prompt rendering, reward logic, batching, evaluation, and stopping
    criteria in your application.
 
@@ -92,6 +91,6 @@ from Fastino's OpenAPI and API reference, so do not construct adapter HTTP calls
 - [ ] Verify the SDK model ID through the canonical job endpoint.
 - [ ] Increase workload size only after the smoke test passes.
 
-<Card title="Check SDK compatibility" icon="list-check" href="/rl-api/compatibility">
+<Card title="Check SDK adapter support" icon="list-check" href="/rl-api/compatibility">
   Review exact SDK-to-Fastino mappings and unsupported methods.
 </Card>

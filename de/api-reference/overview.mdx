@@ -220,8 +220,9 @@ lediglich ein Fastino-Konto und ein Terminal.
       -H "X-API-Key: $FASTINO_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
+        "type": "config",
         "model_name": "my-gliner-model",
-        "base_model": "fastino/gliner2-base-v1",
+        "model": "fastino/gliner2-base-v1",
         "datasets": [{"name": "my-dataset"}],
         "training_type": "lora",
         "nr_epochs": 5,
@@ -240,8 +241,9 @@ lediglich ein Fastino-Konto und ein Terminal.
             "Content-Type": "application/json",
         },
         json={
+            "type": "config",
             "model_name": "my-gliner-model",
-            "base_model": "fastino/gliner2-base-v1",
+            "model": "fastino/gliner2-base-v1",
             "datasets": [{"name": "my-dataset"}],
             "training_type": "lora",
             "nr_epochs": 5,
@@ -258,8 +260,9 @@ lediglich ein Fastino-Konto und ein Terminal.
     Sobald der Job `complete` erreicht, stellen Sie das ausgewählte Artefakt bereit, bevor Sie die Job-ID als
     `model` in `/v1/chat/completions` verwenden.
 
-    Der Job-Status durchläuft `requested` → `running` → `complete` oder endet als `failed` oder
-    `stopped`.
+    Der gespeicherte Job-Status durchläuft `requested` → `running` → `complete`
+    oder endet als `errored` oder `stopped`. Der normalisierte Polling-Status
+    verwendet `failed` für einen endgültigen Fehler.
   </Step>
 </Steps>
 

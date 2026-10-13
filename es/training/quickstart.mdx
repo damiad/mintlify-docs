@@ -1,0 +1,108 @@
+---
+title: "Guía rápida de entrenamiento"
+sidebarTitle: "Guía rápida"
+description: "Crea un trabajo de entrenamiento gestionado, guarda su ID y consúltalo hasta obtener un resultado terminal."
+---
+
+Esta guía rápida crea un trabajo `config`. Fastino gestiona el bucle de
+entrenamiento a partir del dataset y la configuración que proporcionas.
+
+<Warning>
+  Este borrador usa el próximo campo de solicitud `model`. En producción se
+  sigue usando el contrato actual de la API generada hasta el lanzamiento de la
+  API de entrenamiento unificada.
+</Warning>
+
+## 1. Crea una clave de API
+
+1. Crea una [cuenta de Fastino](https://agent.fastino.ai/).
+2. Abre [Claves de API](https://agent.fastino.ai/api-keys).
+3. Crea una clave y cópiala cuando se muestre.
+
+Guárdala en una variable de entorno:
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_API_KEY="fast_sk_..."
+```
+
+```powershell Windows
+$env:FASTINO_API_KEY = "fast_sk_..."
+```
+
+</CodeGroup>
+
+Envía esta clave como `X-API-Key: $FASTINO_API_KEY`. Consulta
+[Autenticación](/es/authentication) para ver el contrato de autenticación
+completo.
+
+## 2. Prepara un dataset
+
+[Sube y procesa un dataset de entrenamiento](/es/concepts/datasets) y espera
+hasta que su versión esté `ready`.
+
+## 3. Elige un modelo
+
+Consulta el catálogo activo inmediatamente antes del envío:
+
+```bash
+curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+Guarda el ID del modelo seleccionado.
+
+## 4. Crea el trabajo
+
+```bash
+curl -X POST "https://api.fastino.ai/v1/training/jobs" \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "type": "config",
+    "model_name": "my-trained-model",
+    "model": "MODEL_ID_FROM_CATALOG",
+    "datasets": [
+      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
+    ],
+    "training_type": "lora"
+  }'
+```
+
+Guarda el `id` devuelto. Es el `job_id` que usan todas las rutas específicas
+del trabajo. Reutiliza la misma `Idempotency-Key` únicamente al reintentar esta
+misma solicitud de creación.
+
+## 5. Consulta el trabajo
+
+```bash
+curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+Para los trabajos de configuración:
+
+- `status` es el valor persistido del ciclo de vida, como `errored`.
+- `normalized_status` es el valor estable para las consultas, como `failed`.
+- `is_terminal_status` indica al cliente cuándo dejar de consultar.
+- `error_message` describe un fallo cuando está disponible.
+
+Continúa hasta que `is_terminal_status` sea `true` y, después, inspecciona el
+estado final, los checkpoints, los logs y la posibilidad de despliegue.
+
+## 6. Continúa
+
+<CardGroup cols={3}>
+  <Card title="Datasets" icon="database" href="/es/concepts/datasets">
+    Prepara y valida los datos de entrenamiento.
+  </Card>
+  <Card title="Referencia de trabajos" icon="book" href="/es/api-reference/training-jobs/create">
+    Consulta el contrato completo de solicitud y respuesta.
+  </Card>
+  <Card title="Entrenamiento interactivo" icon="repeat-2" href="/es/rl-api">
+    Dirige un bucle de RL o postentrenamiento personalizado mediante el SDK
+    compatible.
+  </Card>
+</CardGroup>

@@ -1,0 +1,111 @@
+---
+title: "Training-Schnellstart"
+sidebarTitle: "Schnellstart"
+description: "Erstellen Sie einen verwalteten Trainingsjob, speichern Sie seine ID und fragen Sie ihn bis zu einem Endergebnis ab."
+---
+
+Dieser Schnellstart erstellt einen `config`-Job. Fastino verwaltet den
+Trainingsloop anhand des von Ihnen bereitgestellten Datensatzes und der
+Konfiguration.
+
+<Warning>
+  Dieser Entwurf verwendet das kommende Request-Feld `model`. In der Produktion
+  gilt bis zum Start der einheitlichen Training API weiterhin der aktuelle
+  generierte API-Vertrag.
+</Warning>
+
+## 1. API-Schlüssel erstellen
+
+1. Erstellen Sie ein [Fastino-Konto](https://agent.fastino.ai/).
+2. Öffnen Sie [API-Schlüssel](https://agent.fastino.ai/api-keys).
+3. Erstellen Sie einen Schlüssel und kopieren Sie ihn, sobald er angezeigt wird.
+
+Speichern Sie ihn in einer Umgebungsvariable:
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_API_KEY="fast_sk_..."
+```
+
+```powershell Windows
+$env:FASTINO_API_KEY = "fast_sk_..."
+```
+
+</CodeGroup>
+
+Senden Sie diesen Schlüssel als `X-API-Key: $FASTINO_API_KEY`. Den vollständigen
+Authentifizierungsvertrag finden Sie unter
+[Authentifizierung](/de/authentication).
+
+## 2. Datensatz vorbereiten
+
+[Laden Sie einen Trainingsdatensatz hoch und verarbeiten Sie ihn](/de/concepts/datasets).
+Warten Sie anschließend, bis seine Version den Status `ready` hat.
+
+## 3. Modell auswählen
+
+Fragen Sie den Live-Katalog unmittelbar vor der Übermittlung ab:
+
+```bash
+curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+Speichern Sie die ID des ausgewählten Modells.
+
+## 4. Job erstellen
+
+```bash
+curl -X POST "https://api.fastino.ai/v1/training/jobs" \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "type": "config",
+    "model_name": "my-trained-model",
+    "model": "MODEL_ID_FROM_CATALOG",
+    "datasets": [
+      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
+    ],
+    "training_type": "lora"
+  }'
+```
+
+Speichern Sie die zurückgegebene `id`. Sie ist die `job_id`, die von jeder
+jobspezifischen Route verwendet wird. Verwenden Sie denselben
+`Idempotency-Key` nur dann erneut, wenn Sie exakt diesen Erstellungsrequest
+wiederholen.
+
+## 5. Job abfragen
+
+```bash
+curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+Für Config-Jobs gilt:
+
+- `status` ist der gespeicherte Lebenszykluswert, beispielsweise `errored`.
+- `normalized_status` ist der stabile Polling-Wert, beispielsweise `failed`.
+- `is_terminal_status` zeigt Ihrem Client an, wann er das Polling beenden soll.
+- `error_message` beschreibt einen Fehler, sofern verfügbar.
+
+Fragen Sie den Job weiter ab, bis `is_terminal_status` den Wert `true` hat.
+Prüfen Sie anschließend den endgültigen Status, die Checkpoints, Logs und die
+Eignung für die Bereitstellung.
+
+## 6. Fortfahren
+
+<CardGroup cols={3}>
+  <Card title="Datensätze" icon="database" href="/de/concepts/datasets">
+    Bereiten Sie Trainingsdaten vor und validieren Sie sie.
+  </Card>
+  <Card title="Job-Referenz" icon="book" href="/de/api-reference/training-jobs/create">
+    Lesen Sie den vollständigen Request- und Response-Vertrag.
+  </Card>
+  <Card title="Interaktives Training" icon="repeat-2" href="/de/rl-api">
+    Steuern Sie einen RL- oder benutzerdefinierten Post-Training-Loop über das
+    unterstützte SDK.
+  </Card>
+</CardGroup>

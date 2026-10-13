@@ -1,0 +1,53 @@
+---
+title: "下载交互式检查点"
+sidebarTitle: "下载检查点"
+description: "获取交互式训练任务检查点的短时有效下载 URL。"
+api: "GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download"
+---
+
+`GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`
+
+返回 `interactive` 任务中某个检查点的短时有效签名 URL。配置任务使用
+[`GET /v1/training/jobs/{job_id}/download`](/cn/api-reference/training-jobs/download)
+下载最终模型工件。
+
+## 请求
+
+<ParamField header="X-API-Key" type="string" required>
+  你的 Fastino API 密钥。
+</ParamField>
+
+<ParamField path="job_id" type="string" required>
+  受支持的 SDK 返回的交互式任务 ID。
+</ParamField>
+
+<ParamField path="checkpoint_id" type="string" required>
+  检查点列表返回的检查点标识符，例如 `weights/checkpoint-1` 或
+  `sampler_weights/checkpoint-1`。
+</ParamField>
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.fastino.ai/v1/training/jobs/JOB_ID/checkpoints/CHECKPOINT_ID/download" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+</RequestExample>
+
+## 响应
+
+响应包含一个 15 分钟后过期的签名归档 URL。请将该 URL 视为凭据：不要记录、分享或持久化存储。
+
+<ResponseExample>
+
+```json Response
+{
+  "url": "https://api.fastino.ai/v1/training/archives/SIGNED_TOKEN",
+  "expires_in_seconds": 900
+}
+```
+
+</ResponseExample>
+
+此操作需要交互式训练访问权限以及团队的权重下载权限。

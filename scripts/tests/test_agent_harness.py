@@ -196,8 +196,8 @@ class AgentHarnessTests(unittest.TestCase):
         self.assertFalse(CHECKS._path_matches_route("/tinker", {}))
         self.assertFalse(CHECKS._path_matches_route("/not-a-public-route", {}))
 
-    def test_training_preview_rename_still_requires_the_deployed_route(self) -> None:
-        deployed = {"GET": [CHECKS.re.compile(r"^/v1/training\-jobs/?$")]}
+    def test_training_routes_require_the_canonical_deployed_route(self) -> None:
+        deployed = {"GET": [CHECKS.re.compile(r"^/v1/training/jobs/?$")]}
 
         self.assertTrue(
             CHECKS._path_matches_route("/v1/training/jobs", deployed, "GET")
@@ -205,7 +205,7 @@ class AgentHarnessTests(unittest.TestCase):
         self.assertFalse(
             CHECKS._path_matches_route("/v1/training/jobs", {}, "GET")
         )
-        self.assertTrue(
+        self.assertFalse(
             CHECKS._path_matches_route(
                 "/v1/training/jobs/job-1/forward",
                 {},

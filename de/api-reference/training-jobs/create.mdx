@@ -5,6 +5,10 @@ description: "Rufen Sie POST /v1/training/jobs auf, um einen asynchronen, von Fa
 api: "POST /v1/training/jobs"
 ---
 
+<Warning>
+  Dieser Entwurf verwendet die kommenden nativen Anfragefelder `model` und `type`. Bis zum Start der einheitlichen Training API gilt in der Produktion weiterhin der generierte OpenAPI-Vertrag.
+</Warning>
+
 `POST /v1/training/jobs`
 
 Erstellt einen asynchronen `config`-Trainingsjob und gibt dessen Job-Datensatz
@@ -21,7 +25,7 @@ Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
   Ihr Fastino-API-Schlüssel.
 </ParamField>
 
-<ParamField body="type" type="string">
+<ParamField body="type" type="string" required>
   Setzen Sie dieses Feld für den auf dieser Seite dokumentierten Request-Body auf `config`.
 </ParamField>
 
@@ -29,7 +33,7 @@ Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
   Anzeigename für das trainierte Modell. Länge: 1–100 Zeichen.
 </ParamField>
 
-<ParamField body="base_model" type="string" required>
+<ParamField body="model" type="string" required>
   Eine trainierbare Modell-ID aus `GET /v1/base-models?supports_training=true` oder eine unterstützte Checkpoint-UUID.
 </ParamField>
 
@@ -180,7 +184,7 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -d '{
     "type": "config",
     "model_name": "my-model-name",
-    "base_model": "fastino/gliner2-multi-v1",
+    "model": "fastino/gliner2-multi-v1",
     "datasets": [{"name": "my-ready-dataset"}],
     "training_type": "lora",
     "nr_epochs": 5,

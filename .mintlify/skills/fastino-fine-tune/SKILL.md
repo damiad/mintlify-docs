@@ -22,12 +22,14 @@ Authorization: Bearer YOUR_API_KEY
 
 1. Create or confirm your dataset exists (`GET /v1/datasets/:name`)
 2. Start training with that exact dataset name
-3. Poll until status is `deployed`
-4. Use the `id` field from the training job response as `model_id` for inference
+3. Poll `is_terminal_status` and inspect `normalized_status`
+4. Deploy an eligible checkpoint before using the job ID for inference
 
 ## Start a Training Job
 
-`base_model` is required. Use a model ID from `GET /v1/base-models` or a checkpoint UUID.
+`model` is required by the upcoming unified Training API. Use a model ID from
+`GET /v1/base-models` or a checkpoint UUID. Native HTTP uses `model`; compatible
+SDK methods retain their `base_model` parameter.
 `datasets` is an array — supports multi-dataset training.
 
 ```http
@@ -36,8 +38,9 @@ X-API-Key: YOUR_API_KEY
 Content-Type: application/json
 
 {
+  "type": "config",
   "model_name": "my-ner-model",
-  "base_model": "fastino/gliner2-base-v1",
+  "model": "fastino/gliner2-base-v1",
   "datasets": [{"name": "YOUR_DATASET_NAME"}],
   "training_type": "lora",
   "nr_epochs": 5,
@@ -48,8 +51,10 @@ Content-Type: application/json
 ## Key Response Fields
 
 `POST /v1/training/jobs` returns:
-- `id` — the training job ID; this is your `model_id` for inference
+- `id` — the canonical training job ID
 - `status` — current job status (see values below)
+- `normalized_status` — stable polling status
+- `is_terminal_status` — whether polling can stop
 
 ## Poll Training Status
 
@@ -65,11 +70,12 @@ X-API-Key: YOUR_API_KEY
 | `complete` | GPU training finished, post-processing starting |
 | `normalizing` | Artifacts being normalized and deployed to inference provider |
 | `deployed` | Ready for inference — use the job `id` as `model_id` |
-| `errored` | Training failed — check logs |
+| `errored` | Persisted training failure — check logs |
 | `stopped` | Manually stopped |
 | `terminated` | Force-terminated |
 
-Poll until `deployed` before running inference.
+Poll until `is_terminal_status` is true. A persisted `errored` status is exposed
+as normalized `failed`.
 
 ## Stream Training Logs
 
@@ -98,21 +104,29 @@ These are two distinct operations with different consequences:
 | Action | Endpoint | Effect | Reversible? |
 |--------|----------|--------|-------------|
 | Stop | `POST /v1/training/jobs/{id}/stop` | Graceful stop; all checkpoints preserved; status → `stopped` | Yes — checkpoints remain usable |
-| Terminate | `POST /v1/training/jobs/{id}/terminate` | Force-stops the job **and deletes all checkpoints and artifacts**; status → `terminated` | **No — irreversible** |
+| Terminate | `POST /v1/training/jobs/{id}/terminate` | Force-stops the job; checkpoints are preserved unless `delete_checkpoints: true` | Destructive only when deletion is requested |
 
 ```http
 # Stop gracefully (checkpoints preserved)
 POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/stop
 X-API-Key: YOUR_API_KEY
 
-# Terminate and delete all artifacts (irreversible)
+# Terminate and preserve checkpoints
 POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/terminate
 X-API-Key: YOUR_API_KEY
+Content-Type: application/json
+
+{"delete_checkpoints": false}
 ```
 
-Prefer `stop` unless you explicitly want to destroy all artifacts.
+Set `delete_checkpoints` to `true` only when permanent artifact deletion is
+intended.
 
-Either call may return **202** while the provider confirms the cancel: `stop` returns `status: "stopping"` and the job stays `running` until it flips to `stopped`; `terminate` flips to `terminated` and deletes checkpoints on confirmation. Poll `GET /v1/training/jobs/{id}` instead of calling again. A **409** with `error.code` `training_job_already_finished` means the job completed or failed first.
+Either call may return **202** while the provider confirms the cancel. Poll
+`GET /v1/training/jobs/{id}` instead of calling again. Termination deletes
+checkpoints only when `delete_checkpoints: true`, and only after cancellation
+is confirmed. A **409** with `error.code` `training_job_already_finished` means
+the job completed or failed first.
 
 ## After Training
 

@@ -1,16 +1,16 @@
 ---
 title: "终止训练任务"
 sidebarTitle: "终止任务"
-description: "通过 POST /v1/training/jobs/{job_id}/terminate 停止训练任务并删除全部检查点。如需保留检查点，请使用停止端点。"
+description: "终止配置训练任务；除非明确请求删除，否则保留检查点。"
 api: "POST /v1/training/jobs/{job_id}/terminate"
 ---
 
 `POST /v1/training/jobs/{job_id}/terminate`
 
-如果提供方任务仍处于活动状态,则将其停止,删除每一个检查点,并将任务标记为已终止。
+停止活动的 `config` 任务，并请求提供方取消。默认保留现有检查点和工件。
 
 <Warning>
-  终止操作不可撤销。如果您需要保留检查点,请使用停止端点。
+  将 `delete_checkpoints` 设为 `true` 会在确认取消后永久删除任务的检查点和工件。此操作无法撤销。
 </Warning>
 
 ## 请求
@@ -23,11 +23,19 @@ api: "POST /v1/training/jobs/{job_id}/terminate"
   训练任务 UUID。
 </ParamField>
 
+JSON 请求体为可选。
+
+<ParamField body="delete_checkpoints" type="boolean" default="false">
+  在确认取消后永久删除检查点和工件。
+</ParamField>
+
 <RequestExample>
 
 ```bash cURL
 curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/terminate \
-  -H "X-API-Key: $FASTINO_API_KEY"
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"delete_checkpoints": false}'
 ```
 
 </RequestExample>
@@ -36,15 +44,34 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/termin
 
 <ResponseExample>
 
-```json Response
+```json 200 — 已终止
 {
   "success": true,
-  "message": "Training job terminated",
+  "message": "Training job terminated. Checkpoints preserved.",
   "job_id": "YOUR_TRAINING_JOB_ID",
-  "deleted_checkpoints": 3
+  "deleted_checkpoints": 0,
+  "status": "terminated"
+}
+```
+
+```json 202 — 正在等待取消
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "deleted_checkpoints": 0,
+  "status": "stopping"
 }
 ```
 
 </ResponseExample>
 
-未知任务或无法终止的任务返回请求相关的 `4xx` 错误。
+收到 `202` 后，请轮询 `GET /v1/training/jobs/{job_id}`；在等待确认取消期间，请勿重复发送终止请求。
+
+| 状态 | 含义 |
+| --- | --- |
+| `200` | 任务已终止。 |
+| `202` | 仍在确认提供方取消操作。 |
+| `409 training_job_already_finished` | 任务在终止前已进入最终状态。 |
+| `409 cancellation_unconfirmed` | 未确认取消，可以重试。 |
+| `422` | 路径或请求体无效。 |

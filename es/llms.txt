@@ -3,7 +3,7 @@
 > Crea decisiones estructuradas con GLiDE, ejecuta extracción basada en esquemas con GLiNER y ajusta modelos especializados con Fastino.
 
 > ## Instrucciones para agentes
-> Usa https://docs.fastino.ai/openapi.json como fuente de verdad para las rutas públicas. Los trabajos de entrenamiento usan `/v1/training/jobs`. Para operaciones RL interactivas, sigue las páginas de RL API y usa el SDK compatible; su adaptador no aparece en OpenAPI y no debe llamarse directamente. No deduzcas rutas no documentadas. Lee las claves de API desde `FASTINO_API_KEY` y nunca incluyas credenciales en código, registros o informes.
+> Usa https://docs.fastino.ai/openapi.json como fuente de verdad para las rutas públicas. Los trabajos de entrenamiento usan `/v1/training/jobs`. Para operaciones RL interactivas, sigue las páginas de RL API y usa el SDK compatible; su adaptador no aparece en OpenAPI y no debe llamarse directamente. Training Auto es de acceso privado; no deduzcas llamadas a `/v1/training/auto` y dirige a los usuarios a `sales@fastino.ai`. No deduzcas rutas no documentadas. Lee las claves de API desde `FASTINO_API_KEY` y nunca incluyas credenciales en código, registros o informes.
 
 ## Recursos para agentes
 
@@ -59,7 +59,9 @@
 
 ### API de entrenamiento
 
-- [API de entrenamiento](https://docs.fastino.ai/es/training.md): Elige un trabajo de entrenamiento gestionado o interactivo y, después, créalo, supervísalo y adminístralo mediante la API de entrenamiento canónica.
+- [API de entrenamiento](https://docs.fastino.ai/es/training.md): Elige entre entrenamiento gestionado, entrenamiento dirigido por la aplicación o un agente de entrenamiento autónomo privado.
+- [Guía rápida de entrenamiento](https://docs.fastino.ai/es/training/quickstart.md): Crea un trabajo de entrenamiento gestionado, guarda su ID y consúltalo hasta obtener un resultado terminal.
+- [Training Auto](https://docs.fastino.ai/es/training/auto.md): Delega la preparación de datos, el entrenamiento, la evaluación y la selección de modelos en el agente de entrenamiento autónomo de Fastino.
 - [Ajustar GLiNER](https://docs.fastino.ai/es/guides/fine-tune-gliner.md): Prepara un dataset de GLiNER, crea un trabajo de configuración gestionado y supervísalo hasta los checkpoints y la finalización.
 - [Skill de agente para entrenamiento](https://docs.fastino.ai/es/concepts/gliner-agent-skill.md): Instala el skill GLiNER alojado de Fastino para Cursor, Claude Code y Codex.
 - [Preparar y subir datasets de entrenamiento](https://docs.fastino.ai/es/concepts/datasets.md): Formatea, sube, valida e inspecciona datasets de NER, clasificación o decoder antes de iniciar un trabajo de entrenamiento de Fastino.
@@ -72,7 +74,6 @@
 - [El bucle de entrenamiento de RL](https://docs.fastino.ai/es/rl-api/training-loop.md): Conecta el muestreo, las recompensas, las actualizaciones y los checkpoints dentro de un trabajo interactivo de Fastino.
 - [Entrenar con recompensas verificables](https://docs.fastino.ai/es/rl-api/verifiable-rewards.md): Convierte un evaluador determinista en una señal de aprendizaje para un trabajo interactivo de Fastino.
 - [Guardar un checkpoint y reanudar un trabajo de RL](https://docs.fastino.ai/es/rl-api/checkpoint-and-resume.md): Guarda el estado del trabajo interactivo y el progreso de la aplicación y reanuda sin repetir el trabajo completado.
-- [Compatibilidad del SDK](https://docs.fastino.ai/es/rl-api/compatibility.md): Compatibilidad y asignaciones exactas del SDK de Tinker para los trabajos de entrenamiento interactivos de Fastino.
 - [Comportamiento en tiempo de ejecución y errores](https://docs.fastino.ai/es/rl-api/runtime.md): Comprende las operaciones, los checkpoints, la recuperación y los errores de un trabajo interactivo de Fastino.
 
 ### Solución de problemas
@@ -125,13 +126,17 @@
 - [Crear un trabajo de entrenamiento de configuración](https://docs.fastino.ai/es/api-reference/training-jobs/create.md): Llama a POST /v1/training/jobs para iniciar un trabajo de entrenamiento asíncrono gestionado por Fastino a partir de un modelo base y datasets.
 - [Listar trabajos de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/list.md): Llama a GET /v1/training/jobs para listar los trabajos de configuración e interactivos visibles para tu cuenta.
 - [Obtener un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/get.md): Obtén un trabajo de entrenamiento de configuración o interactivo mediante su ID canónico de trabajo de Fastino.
+- [Actualizar el proyecto de un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/update-project.md): Usa PATCH /v1/training/jobs/{job_id} para asignar un trabajo a un proyecto, o envía null para desasignarlo. Los despliegues e inferencias no se mueven.
+- [Eliminar un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/delete.md): Usa DELETE /v1/training/jobs/{job_id} para eliminar para siempre un trabajo con sus checkpoints y artefactos. Si está activo, primero se detiene.
 - [Renombrar un modelo entrenado](https://docs.fastino.ai/es/api-reference/training-jobs/update-model-name.md): Usa PATCH /v1/training/jobs/{job_id}/model-name para renombrar un modelo entrenado. Los nombres usan de 1 a 64 letras, números, guiones o guiones bajos.
 - [Obtener logs de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/logs.md): Recupera una instantánea puntual de los logs de salida de un trabajo de entrenamiento de Fastino.
 - [Obtener la facturación de un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/billing.md): Usa GET /v1/training/jobs/{job_id}/billing para saber si se facturó un trabajo de entrenamiento de Fastino, con importe en USD, minutos de GPU y fechas.
-- [Listar despliegues de un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/deployments.md): Lista los despliegues creados desde un trabajo de entrenamiento o asociados a él con GET /v1/training/jobs/{job_id}/deployments y el ID del trabajo.
-- [Detener un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/stop.md): Detén un trabajo de entrenamiento en ejecución de Fastino preservando los checkpoints existentes.
-- [Terminar un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/terminate.md): Usa POST /v1/training/jobs/{job_id}/terminate para detener un trabajo, eliminar todos sus checkpoints y marcarlo como terminado. Usa stop para conservarlos.
-- [Sincronizar un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/sync.md): Actualiza el estado de un trabajo de entrenamiento desde su proveedor con POST /v1/training/jobs/{job_id}/sync, pasando el ID del trabajo en la ruta.
-- [Subir un modelo entrenado a Hugging Face Hub](https://docs.fastino.ai/es/api-reference/training-jobs/push-to-hub.md): Publica un artefacto de entrenamiento completado en Hugging Face Hub con POST /v1/training/jobs/{job_id}/push-to-hub, indicando repo_id y hf_token.
 - [Listar checkpoints de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/checkpoints.md): Usa GET /v1/training/jobs/{job_id}/checkpoints para listar los checkpoints de un trabajo con epoch, step, pérdida, precisión y estado de despliegue.
+- [Descargar un checkpoint interactivo](https://docs.fastino.ai/es/api-reference/training-jobs/download-checkpoint.md): Obtén una URL de descarga de corta duración para el checkpoint de un trabajo de entrenamiento interactivo.
+- [Desplegar un checkpoint de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/deploy-checkpoint.md): Despliega un checkpoint desplegable de un trabajo de Fastino en el endpoint de inferencia multimodelo alojado, con el ID del endpoint de lista.
+- [Listar despliegues de un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/deployments.md): Lista los despliegues creados desde un trabajo de entrenamiento o asociados a él con GET /v1/training/jobs/{job_id}/deployments y el ID del trabajo.
 - [Descargar pesos entrenados](https://docs.fastino.ai/es/api-reference/training-jobs/download.md): Usa GET /v1/training/jobs/{job_id}/download para obtener una URL prefirmada temporal de un artefacto, con su caducidad y un nombre de archivo sugerido.
+- [Subir un modelo entrenado a Hugging Face Hub](https://docs.fastino.ai/es/api-reference/training-jobs/push-to-hub.md): Publica un artefacto de entrenamiento completado en Hugging Face Hub con POST /v1/training/jobs/{job_id}/push-to-hub, indicando repo_id y hf_token.
+- [Detener un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/stop.md): Detén un trabajo de entrenamiento en ejecución de Fastino preservando los checkpoints existentes.
+- [Terminar un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/terminate.md): Termina un trabajo de entrenamiento de configuración y conserva los checkpoints salvo que se solicite explícitamente eliminarlos.
+- [Sincronizar un trabajo de entrenamiento](https://docs.fastino.ai/es/api-reference/training-jobs/sync.md): Actualiza el estado de un trabajo de entrenamiento desde su proveedor con POST /v1/training/jobs/{job_id}/sync, pasando el ID del trabajo en la ruta.

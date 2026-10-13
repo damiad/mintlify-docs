@@ -57,7 +57,7 @@ description: "使用代表性数据评估 GLiNER 2.5 Decide、选择多标签阈
 }
 ```
 
-创建作业前，请检查 `GET /v1/base-models?supports_training=true`，因为目录中的可用模型可能会发生变化。使用 `fastino/GLiNER-2.5-Decide` 作为 `base_model`，使用 `lora` 作为 `training_type`。
+创建任务前，请检查 `GET /v1/base-models?supports_training=true`，因为目录中的可用模型可能会发生变化。使用 `fastino/GLiNER-2.5-Decide` 作为 `model`，使用 `lora` 作为 `training_type`。
 
 ### 准备 Decide 分类数据
 
@@ -83,8 +83,9 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
+    "type": "config",
     "model_name": "support-decide",
-    "base_model": "fastino/GLiNER-2.5-Decide",
+    "model": "fastino/GLiNER-2.5-Decide",
     "datasets": [{"name": "support-decide-training"}],
     "training_type": "lora",
     "validation_data_percentage": 0.2

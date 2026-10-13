@@ -1,0 +1,104 @@
+---
+title: "Training quickstart"
+sidebarTitle: "Quickstart"
+description: "Create a managed training job, save its ID, and poll it to a terminal result."
+---
+
+This quickstart creates a `config` job. Fastino manages the training loop from
+the dataset and configuration you provide.
+
+<Warning>
+  This draft uses the upcoming `model` request field. Production continues to
+  use the current generated API contract until the unified Training API launches.
+</Warning>
+
+## 1. Create an API key
+
+1. Create a [Fastino account](https://agent.fastino.ai/).
+2. Open [API keys](https://agent.fastino.ai/api-keys).
+3. Create a key and copy it when shown.
+
+Store it in an environment variable:
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_API_KEY="fast_sk_..."
+```
+
+```powershell Windows
+$env:FASTINO_API_KEY = "fast_sk_..."
+```
+
+</CodeGroup>
+
+Send this key as `X-API-Key: $FASTINO_API_KEY`. See
+[Authentication](/authentication) for the complete authentication contract.
+
+## 2. Prepare a dataset
+
+[Upload and process a training dataset](/concepts/datasets), then wait until its
+version is `ready`.
+
+## 3. Choose a model
+
+Query the live catalog immediately before submission:
+
+```bash
+curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+Save the selected model ID.
+
+## 4. Create the job
+
+```bash
+curl -X POST "https://api.fastino.ai/v1/training/jobs" \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "type": "config",
+    "model_name": "my-trained-model",
+    "model": "MODEL_ID_FROM_CATALOG",
+    "datasets": [
+      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
+    ],
+    "training_type": "lora"
+  }'
+```
+
+Save the returned `id`. It is the `job_id` used by every job-specific route.
+Reuse the same `Idempotency-Key` only when retrying this exact create request.
+
+## 5. Poll the job
+
+```bash
+curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+For config jobs:
+
+- `status` is the persisted lifecycle value, such as `errored`.
+- `normalized_status` is the stable polling value, such as `failed`.
+- `is_terminal_status` tells your client when to stop polling.
+- `error_message` describes a failure when available.
+
+Continue until `is_terminal_status` is `true`, then inspect the final status,
+checkpoints, logs, and deployment eligibility.
+
+## 6. Continue
+
+<CardGroup cols={3}>
+  <Card title="Datasets" icon="database" href="/concepts/datasets">
+    Prepare and validate training data.
+  </Card>
+  <Card title="Jobs reference" icon="book" href="/api-reference/training-jobs/create">
+    Review the complete request and response contract.
+  </Card>
+  <Card title="Interactive training" icon="repeat-2" href="/rl-api">
+    Direct an RL or custom post-training loop through the supported SDK.
+  </Card>
+</CardGroup>

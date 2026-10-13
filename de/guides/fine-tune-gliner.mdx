@@ -4,6 +4,10 @@ sidebarTitle: "GLiNER feinabstimmen"
 description: "Bereiten Sie einen GLiNER-Datensatz vor, erstellen Sie einen verwalteten Config-Job und überwachen Sie ihn bis zu Checkpoints und Abschluss."
 ---
 
+<Warning>
+  Dieser Entwurf verwendet die kommenden nativen Anfragefelder `model` und `type`. Bis zum Start der einheitlichen Training API gilt in der Produktion weiterhin der generierte OpenAPI-Vertrag.
+</Warning>
+
 Dieser Leitfaden erstellt einen `config`-Trainingsjob. Sie stellen einen
 bereiten Datensatz und Trainingseinstellungen bereit; Fastino führt den
 Trainingsloop aus.
@@ -46,7 +50,8 @@ curl -sS "https://api.fastino.ai/v1/base-models?supports_training=true" \
 ```
 
 Wählen Sie ein GLiNER-Modell, das Ihre Aufgabe und den gewünschten Trainingstyp
-unterstützt. Kopieren Sie seine exakte ID in das Feld `base_model`.
+unterstützt. Kopieren Sie seine exakte ID in das Feld `model` der nativen
+Training API.
 
 ## 3. Config-Job erstellen
 
@@ -60,7 +65,7 @@ curl -sS -X POST "https://api.fastino.ai/v1/training/jobs" \
   -d '{
     "type": "config",
     "model_name": "support-request-extractor",
-    "base_model": "BASE_MODEL_ID_FROM_CATALOG",
+    "model": "BASE_MODEL_ID_FROM_CATALOG",
     "datasets": [
       {
         "name": "READY_DATASET_NAME",

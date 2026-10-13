@@ -27,7 +27,7 @@ Un cliente de entrenamiento creado mediante el SDK compatible representa un
 trabajo interactivo de Fastino. El valor devuelto por
 `training_client.get_info().model_data.model_id` es el ID canónico del trabajo
 de entrenamiento. Usa ese mismo ID con `GET /v1/training/jobs/{job_id}` y otras
-rutas documentadas de administración de trabajos o checkpoints.
+lecturas compartidas documentadas del trabajo.
 
 No hay una ejecución de Tinker independiente detrás del trabajo ni enrutamiento
 saliente hacia otro servicio de entrenamiento. El paquete de Python `tinker` es
@@ -36,7 +36,8 @@ de objetos y métodos.
 
 ## Cliente compatible
 
-Fastino prueba `tinker==0.33.1`. Configúralo con:
+Instala `tinker==0.33.1` para el flujo de trabajo documentado. El conjunto de
+pruebas de contrato de Fastino cubre `0.32.0` y `0.33.1`. Configura el SDK con:
 
 - URL base: `https://api.fastino.ai/v1/training/compat/tinker`
 - Origen de credenciales: `TINKER_CREDENTIAL_CMD`
@@ -75,9 +76,5 @@ fuente de verdad del entorno que puede usar tu equipo.
   <Card title="El bucle de entrenamiento" icon="diagram-project" href="/es/rl-api/training-loop">
     Comprende el muestreo, las recompensas, las actualizaciones y los
     checkpoints dentro de un trabajo.
-  </Card>
-  <Card title="Compatibilidad del SDK" icon="list-check" href="/es/rl-api/compatibility">
-    Consulta las asignaciones exactas de métodos compatibles y las operaciones
-    no compatibles.
   </Card>
 </CardGroup>

@@ -48,9 +48,8 @@ SDK 会将 `/api/v1/{operation}` 追加到 `TINKER_BASE_URL`。每次请求令�
 ## 3. 检查工作负载
 
 1. 查询 `ServiceClient.get_server_capabilities()` 并选择可用的基础模型。保持 SDK 参数名 `base_model` 不变。
-2. 将代码中的每个方法与 [SDK 兼容性表](/cn/rl-api/compatibility)进行比较。
-3. 移除对不受支持的批量 future 检索、外部权重导出、外部权重 URL、SDK 身份验证/令牌方法，
-   或 SDK 计费、用量和事件方法的依赖。
+2. 将代码中的每个方法与 [SDK 适配器支持表](/cn/rl-api/compatibility)进行比较。
+3. 移除对不受支持的批量 future 检索、外部权重导出或外部权重 URL 的依赖。
 4. 将提示词渲染、奖励逻辑、批处理、评估和停止条件保留在你的应用中。
 
 功能是环境相关支持的权威来源。不要沿用其他部署中的模型、秩、上下文、损失或请求限制假设。
@@ -82,6 +81,6 @@ SDK 会将 `/api/v1/{operation}` 追加到 `TINKER_BASE_URL`。每次请求令�
 - [ ] 通过规范任务端点验证 SDK 模型 ID。
 - [ ] 仅在冒烟测试通过后增加工作负载规模。
 
-<Card title="检查 SDK 兼容性" icon="list-check" href="/cn/rl-api/compatibility">
+<Card title="检查 SDK 适配器支持情况" icon="list-check" href="/cn/rl-api/compatibility">
   查看确切的 SDK 到 Fastino 映射和不受支持的方法。
 </Card>

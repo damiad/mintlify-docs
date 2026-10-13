@@ -4,6 +4,10 @@ sidebarTitle: "Ajustar GLiNER"
 description: "Prepara un dataset de GLiNER, crea un trabajo de configuración gestionado y supervísalo hasta los checkpoints y la finalización."
 ---
 
+<Warning>
+  Este borrador usa los próximos campos nativos `model` y `type`. Producción sigue usando su contrato OpenAPI generado hasta el lanzamiento de la API de entrenamiento unificada.
+</Warning>
+
 Esta guía crea un trabajo de entrenamiento `config`. Tú proporcionas un dataset
 listo y los ajustes de entrenamiento; Fastino ejecuta el bucle.
 
@@ -43,7 +47,8 @@ curl -sS "https://api.fastino.ai/v1/base-models?supports_training=true" \
 ```
 
 Elige un modelo GLiNER compatible con la tarea y el tipo de entrenamiento
-deseados. Copia su ID exacto en el campo `base_model`.
+deseados. Copia su ID exacto en el campo `model` de la API de entrenamiento
+nativa.
 
 ## 3. Crea un trabajo de configuración
 
@@ -57,7 +62,7 @@ curl -sS -X POST "https://api.fastino.ai/v1/training/jobs" \
   -d '{
     "type": "config",
     "model_name": "support-request-extractor",
-    "base_model": "BASE_MODEL_ID_FROM_CATALOG",
+    "model": "BASE_MODEL_ID_FROM_CATALOG",
     "datasets": [
       {
         "name": "READY_DATASET_NAME",

@@ -212,8 +212,9 @@ noindex: true
       -H "X-API-Key: $FASTINO_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
+        "type": "config",
         "model_name": "my-gliner-model",
-        "base_model": "fastino/gliner2-base-v1",
+        "model": "fastino/gliner2-base-v1",
         "datasets": [{"name": "my-dataset"}],
         "training_type": "lora",
         "nr_epochs": 5,
@@ -232,8 +233,9 @@ noindex: true
             "Content-Type": "application/json",
         },
         json={
+            "type": "config",
             "model_name": "my-gliner-model",
-            "base_model": "fastino/gliner2-base-v1",
+            "model": "fastino/gliner2-base-v1",
             "datasets": [{"name": "my-dataset"}],
             "training_type": "lora",
             "nr_epochs": 5,
@@ -248,7 +250,8 @@ noindex: true
 
     响应中包含任务 `id`。轮询 `GET /v1/training/jobs/{id}` 以检查其状态。任务达到 `complete` 后，请先部署所选工件，再将任务 ID 作为 `/v1/chat/completions` 中的 `model` 使用。
 
-    任务状态依次为 `requested` → `running` → `complete`，或以 `failed` 或 `stopped` 结束。
+    持久化任务状态依次为 `requested` → `running` → `complete`，或以
+    `errored` 或 `stopped` 结束。规范化轮询状态以 `failed` 表示最终失败状态。
   </Step>
 </Steps>
 
