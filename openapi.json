@@ -644,7 +644,7 @@
             "title": "Agentic Benchmark Mean"
           },
           "agentic_benchmarks": {
-            "description": "The figures averaged into agentic_benchmark_mean, strongest first.",
+            "description": "Every curated agentic benchmark the model reports, strongest first. Populated even when agentic_benchmark_mean is null.",
             "items": {
               "$ref": "#/components/schemas/BenchmarkComponentScore"
             },
@@ -688,7 +688,7 @@
             "title": "Coding Benchmark Mean"
           },
           "coding_benchmarks": {
-            "description": "The figures averaged into coding_benchmark_mean, strongest first, so a listing can show its working without a request per model. Empty when there is no mean to explain.",
+            "description": "Every curated coding benchmark the model reports, strongest first, so a listing can show its working without a request per model. Populated even when coding_benchmark_mean is null, since a single figure is still worth showing.",
             "items": {
               "$ref": "#/components/schemas/BenchmarkComponentScore"
             },
@@ -1029,7 +1029,7 @@
         "type": "object"
       },
       "BenchmarkComponentScore": {
-        "description": "One benchmark figure behind a published axis mean.",
+        "description": "One curated benchmark figure the model reports on an axis.",
         "properties": {
           "benchmark_id": {
             "description": "Upstream benchmark slug",
@@ -1559,6 +1559,46 @@
         "title": "ChatMessage",
         "type": "object"
       },
+      "CheckpointDownloadResponse": {
+        "description": "``GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download``: a short-lived signed link.",
+        "properties": {
+          "checkpoint_id": {
+            "title": "Checkpoint Id",
+            "type": "string"
+          },
+          "download_url": {
+            "description": "Signed URL of the checkpoint's tar archive; needs no credentials.",
+            "title": "Download Url",
+            "type": "string"
+          },
+          "expires_in_seconds": {
+            "title": "Expires In Seconds",
+            "type": "integer"
+          },
+          "file_name": {
+            "title": "File Name",
+            "type": "string"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "success": {
+            "default": true,
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "run_id",
+          "checkpoint_id",
+          "download_url",
+          "expires_in_seconds",
+          "file_name"
+        ],
+        "title": "CheckpointDownloadResponse",
+        "type": "object"
+      },
       "CheckpointListResponse": {
         "description": "List of checkpoints response",
         "properties": {
@@ -1721,6 +1761,83 @@
           "updated_at"
         ],
         "title": "CheckpointResponse",
+        "type": "object"
+      },
+      "CheckpointView": {
+        "description": "A checkpoint (the SDK's ``Checkpoint``).",
+        "properties": {
+          "checkpoint_id": {
+            "title": "Checkpoint Id",
+            "type": "string"
+          },
+          "checkpoint_type": {
+            "enum": [
+              "training",
+              "sampler"
+            ],
+            "title": "Checkpoint Type",
+            "type": "string"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "public": {
+            "default": false,
+            "title": "Public",
+            "type": "boolean"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          },
+          "time": {
+            "format": "date-time",
+            "title": "Time",
+            "type": "string"
+          },
+          "tinker_path": {
+            "description": "The checkpoint's tinker:// path, which the SDK addresses it by.",
+            "title": "Tinker Path",
+            "type": "string"
+          },
+          "user_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Metadata"
+          }
+        },
+        "required": [
+          "checkpoint_id",
+          "checkpoint_type",
+          "time",
+          "tinker_path"
+        ],
+        "title": "CheckpointView",
         "type": "object"
       },
       "ChoiceAnswer": {
@@ -3793,6 +3910,97 @@
         "title": "InferenceRecord",
         "type": "object"
       },
+      "InteractiveJobView": {
+        "description": "An ``interactive`` training job: a Tinker training run, its run id being the job id.",
+        "properties": {
+          "base_model": {
+            "title": "Base Model",
+            "type": "string"
+          },
+          "corrupted": {
+            "default": false,
+            "title": "Corrupted",
+            "type": "boolean"
+          },
+          "is_lora": {
+            "default": true,
+            "title": "Is Lora",
+            "type": "boolean"
+          },
+          "last_checkpoint": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CheckpointView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "last_request_time": {
+            "format": "date-time",
+            "title": "Last Request Time",
+            "type": "string"
+          },
+          "last_sampler_checkpoint": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CheckpointView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "lora_rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lora Rank"
+          },
+          "model_owner": {
+            "title": "Model Owner",
+            "type": "string"
+          },
+          "training_run_id": {
+            "title": "Training Run Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "interactive",
+            "default": "interactive",
+            "title": "Type",
+            "type": "string"
+          },
+          "user_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Metadata"
+          }
+        },
+        "required": [
+          "training_run_id",
+          "base_model",
+          "model_owner",
+          "last_request_time"
+        ],
+        "title": "InteractiveJobView",
+        "type": "object"
+      },
       "JsonObject-Output": {
         "additionalProperties": {
           "$ref": "#/components/schemas/JsonValue-Output"
@@ -5464,45 +5672,6 @@
         "title": "TrainingJobCreate",
         "type": "object"
       },
-      "TrainingJobListResponse": {
-        "description": "List of training jobs response.",
-        "properties": {
-          "count": {
-            "title": "Count",
-            "type": "integer"
-          },
-          "has_more": {
-            "default": false,
-            "description": "True when more results exist beyond this page.",
-            "title": "Has More",
-            "type": "boolean"
-          },
-          "success": {
-            "title": "Success",
-            "type": "boolean"
-          },
-          "total": {
-            "default": 0,
-            "description": "Total number of matching jobs (before pagination).",
-            "title": "Total",
-            "type": "integer"
-          },
-          "training_jobs": {
-            "items": {
-              "$ref": "#/components/schemas/TrainingJobResponse"
-            },
-            "title": "Training Jobs",
-            "type": "array"
-          }
-        },
-        "required": [
-          "success",
-          "training_jobs",
-          "count"
-        ],
-        "title": "TrainingJobListResponse",
-        "type": "object"
-      },
       "TrainingJobResponse": {
         "description": "Training job response model",
         "properties": {
@@ -5948,6 +6117,13 @@
             "description": "Raw training method as persisted: 'lora', 'qlora', or 'full'.",
             "title": "Training Type"
           },
+          "type": {
+            "const": "config",
+            "default": "config",
+            "description": "A config training job (you give data and a config, Fastino runs the loop). ``/v1/trained-models`` also lists interactive jobs (``type: interactive``).",
+            "title": "Type",
+            "type": "string"
+          },
           "updated_at": {
             "title": "Updated At",
             "type": "string"
@@ -6009,6 +6185,60 @@
           }
         },
         "title": "TrainingJobUpdate",
+        "type": "object"
+      },
+      "TrainingJobsPage": {
+        "description": "``GET /v1/training/jobs``: config jobs, then interactive jobs (Tinker training runs), told apart by ``type``.\n\nInteractive jobs are listed only for a team on the training runs API.",
+        "properties": {
+          "count": {
+            "description": "Jobs on this page.",
+            "title": "Count",
+            "type": "integer"
+          },
+          "has_more": {
+            "description": "True when more jobs follow this page.",
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "success": {
+            "default": true,
+            "title": "Success",
+            "type": "boolean"
+          },
+          "total": {
+            "description": "Matching jobs in all.",
+            "title": "Total",
+            "type": "integer"
+          },
+          "training_jobs": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "config": "#/components/schemas/TrainingJobResponse",
+                  "interactive": "#/components/schemas/InteractiveJobView"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TrainingJobResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InteractiveJobView"
+                }
+              ]
+            },
+            "title": "Training Jobs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "training_jobs",
+          "count",
+          "total",
+          "has_more"
+        ],
+        "title": "TrainingJobsPage",
         "type": "object"
       },
       "TrainingLogsResponse": {
@@ -6097,6 +6327,38 @@
           "source"
         ],
         "title": "TrainingOutputLogEntry",
+        "type": "object"
+      },
+      "TrainingRunCheckpointListResponse": {
+        "description": "``GET /v1/training/jobs/{job_id}/checkpoints``: a run's live checkpoints, newest first.",
+        "properties": {
+          "checkpoints": {
+            "items": {
+              "$ref": "#/components/schemas/CheckpointView"
+            },
+            "title": "Checkpoints",
+            "type": "array"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "success": {
+            "default": true,
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "run_id",
+          "checkpoints",
+          "count"
+        ],
+        "title": "TrainingRunCheckpointListResponse",
         "type": "object"
       },
       "UpdateModelNameRequest": {
@@ -6749,7 +7011,7 @@
             "description": "Validation Error"
           },
           "503": {
-            "description": "The processing job could not be queued. The upload is marked failed and can be processed again. Retryable."
+            "description": "The uploaded file could not be verified in storage, or the processing job could not be queued. The upload can be processed again. Retryable."
           }
         },
         "summary": "Process Uploaded Dataset",
@@ -6926,7 +7188,7 @@
     },
     "/v1/gliner-2/async": {
       "post": {
-        "description": "Submit large GLiNER-2 request for async processing.\n\nUse this endpoint when processing >1M tokens that would exceed\nthe 30-second timeout. Returns immediately with a job_id.\nPoll GET /gliner-2/jobs/{job_id} to retrieve results.",
+        "description": "Submit large GLiNER-2 request for async processing.\n\nUse this endpoint when processing >1M tokens that would exceed the 30-second\ntimeout. Returns immediately with a job_id; poll GET /gliner-2/jobs/{job_id}.\nNot available with Zero Data Retention: the result is stored until polled.\nUse POST /gliner-2 instead.",
         "operationId": "gliner2_async_v1_gliner_2_async_post",
         "requestBody": {
           "content": {
@@ -8408,9 +8670,29 @@
     },
     "/v1/training/jobs": {
       "get": {
-        "description": "List training jobs for the authenticated user.\n\nSupports pagination via ``limit`` and ``offset`` query parameters.\nOptionally filter by status (requested, running, complete, deployed, errored).",
-        "operationId": "list_training_jobs_v1_training_jobs_get",
+        "description": "List training jobs: config jobs newest first, then interactive jobs (Tinker training runs) newest first. `status` filters config jobs only, so it lists no interactive jobs.",
+        "operationId": "list_jobs_v1_training_jobs_get",
         "parameters": [
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "config",
+                    "interactive"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
           {
             "in": "query",
             "name": "status",
@@ -8473,7 +8755,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingJobListResponse"
+                  "$ref": "#/components/schemas/TrainingJobsPage"
                 }
               }
             },
@@ -8490,9 +8772,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List Training Jobs",
+        "summary": "List Jobs",
         "tags": [
-          "training-jobs"
+          "training"
         ]
       },
       "post": {
@@ -8587,6 +8869,65 @@
             },
             "description": "Successful Response"
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "OpenAI error envelope returned for Brain HTTP failures. Replaces FastAPI's default `{detail: string}` body.",
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "title": "Code"
+                        },
+                        "message": {
+                          "title": "Message",
+                          "type": "string"
+                        },
+                        "param": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "title": "Param"
+                        },
+                        "type": {
+                          "title": "Type",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type",
+                        "param",
+                        "code"
+                      ],
+                      "title": "Error",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "title": "OpenAIError",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "The cancel did not land. `error.code` is `training_job_already_finished` when the job completed or failed first, or `cancellation_unconfirmed` when it may be retried."
+          },
           "422": {
             "content": {
               "application/json": {
@@ -8604,8 +8945,8 @@
         ]
       },
       "get": {
-        "description": "Get a training job by ID if it is visible to the caller's team.",
-        "operationId": "get_training_job_v1_training_jobs__job_id__get",
+        "description": "Get one training job: a config job, or an interactive job (a Tinker training run) with its latest checkpoints.",
+        "operationId": "get_job_v1_training_jobs__job_id__get",
         "parameters": [
           {
             "in": "path",
@@ -8622,7 +8963,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingJobResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/TrainingJobResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InteractiveJobView"
+                    }
+                  ],
+                  "title": "Response Get Job V1 Training Jobs  Job Id  Get"
                 }
               }
             },
@@ -8639,9 +8988,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Get Training Job",
+        "summary": "Get Job",
         "tags": [
-          "training-jobs"
+          "training"
         ]
       },
       "patch": {
@@ -8741,8 +9090,8 @@
     },
     "/v1/training/jobs/{job_id}/checkpoints": {
       "get": {
-        "description": "List all checkpoints for a training job visible to the caller's team.",
-        "operationId": "list_training_job_checkpoints_v1_training_jobs__job_id__checkpoints_get",
+        "description": "List a training job's checkpoints (an interactive job's newest first).",
+        "operationId": "list_job_checkpoints_v1_training_jobs__job_id__checkpoints_get",
         "parameters": [
           {
             "in": "path",
@@ -8759,7 +9108,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CheckpointListResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CheckpointListResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TrainingRunCheckpointListResponse"
+                    }
+                  ],
+                  "title": "Response List Job Checkpoints V1 Training Jobs  Job Id  Checkpoints Get"
                 }
               }
             },
@@ -8776,9 +9133,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List Training Job Checkpoints",
+        "summary": "List Job Checkpoints",
         "tags": [
-          "training-jobs"
+          "training"
         ]
       }
     },
@@ -8831,6 +9188,61 @@
         "summary": "Deploy Checkpoint To Mme",
         "tags": [
           "training-jobs"
+        ]
+      }
+    },
+    "/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download": {
+      "get": {
+        "description": "Get a short-lived signed URL of a tar archive of one of the team's own checkpoints (for sampler weights, the PEFT adapter files). The URL needs no credentials and expires after 15 minutes. Needs the team's weight-download entitlement, as /v1/training/jobs/{job_id}/download does.",
+        "operationId": "download_checkpoint_v1_training_jobs__job_id__checkpoints__checkpoint_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "checkpoint_id",
+            "required": true,
+            "schema": {
+              "title": "Checkpoint Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckpointDownloadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "For downloading models, please contact sales@fastino.ai"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get a download URL for an interactive training job checkpoint",
+        "tags": [
+          "training"
         ]
       }
     },

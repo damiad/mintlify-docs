@@ -19,6 +19,8 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import NoReturn
 
+from agent_diagnostics import DiagnosticsFailure
+from agent_diagnostics import run_diagnostics as run_agent_diagnostics
 from check_api_docs import EXPECTED_OPERATIONS, local_docs_findings
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
@@ -92,6 +94,8 @@ COOKBOOK_ENDPOINTS = {
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\((?P<target>/[^)\s]+)\)")
 HREF_LINK = re.compile(r'href=["\'](?P<target>/[^"\']+)["\']')
 LLMS_URL = re.compile(r"https://docs\.fastino\.ai(?P<path>/[^)\s]+)")
+# SDK base URLs are documented prefixes, not operations (the Tinker SDK appends /api/v1/<op>).
+SDK_BASE_PATH_PREFIXES = ("/v1/training/compat/",)
 API_URL = re.compile(r"https://api\.fastino\.ai(?P<path>/v1/[^\"'`\s<\\]+)")
 METHOD_PATH = re.compile(r"\b(?P<method>GET|POST|PATCH|PUT|DELETE)\s+(?P<path>/v1/[^`\s\"'|,)]+)")
 CURL_BODY_START = re.compile(r"-d\s+'")
@@ -647,6 +651,8 @@ def _journey_findings(
                     f"{method.upper()} {path_text}"
                 )
         for match in API_URL.finditer(text):
+            if match.group("path").startswith(SDK_BASE_PATH_PREFIXES):
+                continue  # an SDK base URL: the SDK appends its own paths
             if _operation_for_path(operations, "get", match.group("path")) is None and not any(
                 _operation_for_path(operations, method, match.group("path"))
                 for method in HTTP_METHODS
@@ -1844,6 +1850,7 @@ def main() -> int:
         choices=(
             "static",
             "published",
+            "diagnostics",
             "api",
             "cookbooks",
             "training-replay",
@@ -1856,6 +1863,12 @@ def main() -> int:
             run_static()
         elif args.command == "published":
             run_published()
+        elif args.command == "diagnostics":
+            target_count = run_agent_diagnostics(
+                request=_request,
+                validate_openapi=_validate_openapi,
+            )
+            print(f"Agent discovery diagnostics passed: {target_count} public targets")
         elif args.command == "api":
             run_api(replay_training=False)
         elif args.command == "cookbooks":
@@ -1866,6 +1879,7 @@ def main() -> int:
         else:
             run_training_lifecycle()
     except (
+        DiagnosticsFailure,
         HarnessFailure,
         json.JSONDecodeError,
         OSError,

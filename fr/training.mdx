@@ -69,7 +69,7 @@ Dans les clients d'interrogation, préférez `normalized_status` et `is_terminal
 | `paused` | Le job ou son pipeline est en pause. |
 | `errored` | L'entraînement, le dispatch ou la préparation de l'artefact a échoué. |
 | `stopped` | Le job a été arrêté en conservant les checkpoints existants. |
-| `terminated` | Le job a été terminé et ses checkpoints ont été supprimés. |
+| `terminated` | Le job est terminé. Les checkpoints sont conservés sauf si leur suppression a été demandée. |
 
 ## Endpoints
 
@@ -84,10 +84,21 @@ Dans les clients d'interrogation, préférez `normalized_status` et `is_terminal
 | `GET` | [`/v1/training/jobs/{job_id}/billing`](/fr/api-reference/training-jobs/billing) | Obtenir le résultat de facturation |
 | `GET` | [`/v1/training/jobs/{job_id}/deployments`](/fr/api-reference/training-jobs/deployments) | Lister les déploiements créés à partir du job |
 | `POST` | [`/v1/training/jobs/{job_id}/stop`](/fr/api-reference/training-jobs/stop) | Arrêter un job en conservant les checkpoints |
-| `POST` | [`/v1/training/jobs/{job_id}/terminate`](/fr/api-reference/training-jobs/terminate) | Arrêter un job et supprimer les checkpoints |
+| `POST` | [`/v1/training/jobs/{job_id}/terminate`](/fr/api-reference/training-jobs/terminate) | Terminer un job ; conserver les checkpoints par défaut |
 | `POST` | [`/v1/training/jobs/{job_id}/sync`](/fr/api-reference/training-jobs/sync) | Actualiser le statut depuis le fournisseur d'entraînement |
 | `POST` | [`/v1/training/jobs/{job_id}/push-to-hub`](/fr/api-reference/training-jobs/push-to-hub) | Pousser l'artefact terminé vers Hugging Face Hub |
 | `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/fr/api-reference/training-jobs/checkpoints) | Lister les checkpoints |
 | `POST` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`](/fr/api-reference/training-jobs/deploy-checkpoint) | Déployer un checkpoint |
 | `GET` | [`/v1/training/jobs/{job_id}/download`](/fr/api-reference/training-jobs/download) | Obtenir une URL temporaire de téléchargement des poids |
 | `DELETE` | [`/v1/training/jobs/{job_id}`](/fr/api-reference/training-jobs/delete) | Supprimer un job et ses checkpoints |
+
+## Exécutions d'entraînement
+
+Les jobs d'entraînement interactifs sont des exécutions d'entraînement que vous pilotez vous-même, étape par étape, avec le SDK compatible Tinker ; l'ID du job correspond à l'ID d'exécution du SDK. Définissez le `base_url` du SDK sur `https://api.fastino.ai/v1/training/compat/tinker` et transmettez votre clé API Fastino via la commande d'identifiants du SDK : `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Utilisez ces routes pour lister vos exécutions et vos checkpoints, et pour télécharger les poids des checkpoints.
+
+| Méthode | Endpoint | Objectif |
+| --- | --- | --- |
+| `GET` | [`/v1/training/jobs`](/fr/api-reference/training-runs/list) | Lister les exécutions d'entraînement |
+| `GET` | [`/v1/training/jobs/{job_id}`](/fr/api-reference/training-runs/get) | Obtenir une exécution et ses checkpoints les plus récents |
+| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/fr/api-reference/training-runs/list-checkpoints) | Lister les checkpoints d'une exécution |
+| `GET` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`](/fr/api-reference/training-runs/download-checkpoint) | Obtenir une URL de téléchargement temporaire du checkpoint |

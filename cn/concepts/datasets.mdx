@@ -57,8 +57,14 @@ curl -s https://api.fastino.ai/v1/datasets/upload/url \
 请使用 HTTP `PUT` 将文件的原始字节上传到 `presigned_url`。请同时保留数据集 ID 和版本号。
 
 ```bash
-curl -X PUT --upload-file training.jsonl "$PRESIGNED_URL"
+curl -X PUT "$PRESIGNED_URL" \
+  -H "Content-Type: application/octet-stream" \
+  --upload-file training.jsonl
 ```
+
+<Warning>
+上传 URL 针对 `application/octet-stream` 签名。如果 `Content-Type` 不同或缺失，将返回 `403 SignatureDoesNotMatch`。
+</Warning>
 
 ### 2. 处理已上传的文件
 
@@ -101,6 +107,7 @@ curl -s https://api.fastino.ai/v1/datasets/docs-example-ner \
 | 状态 | 原因 | 处理方式 |
 | --- | --- | --- |
 | `401` | API 密钥缺失或无效 | 发送 `X-API-Key: $FASTINO_API_KEY` |
+| 上传时出现 `403 SignatureDoesNotMatch` | 上传内容类型缺失或不正确 | 发送 `Content-Type: application/octet-stream` |
 | `404` | 数据集名称不存在 | 确认确切名称并等待处理完成 |
 | `422` | 数据行或数据集类型无效 | 根据验证报告修正 JSONL 结构 |
 
