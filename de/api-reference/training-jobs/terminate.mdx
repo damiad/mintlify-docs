@@ -1,11 +1,11 @@
 ---
 title: "Trainingsjob terminieren"
 sidebarTitle: "Job terminieren"
-description: "Terminieren Sie mit POST /v1/training-jobs/{job_id}/terminate einen Trainingsjob. Checkpoints bleiben erhalten, sofern delete_checkpoints nicht true ist."
-api: "POST /v1/training-jobs/{job_id}/terminate"
+description: "Terminieren Sie mit POST /v1/training/jobs/{job_id}/terminate einen Trainingsjob. Checkpoints bleiben erhalten, sofern delete_checkpoints nicht true ist."
+api: "POST /v1/training/jobs/{job_id}/terminate"
 ---
 
-`POST /v1/training-jobs/{job_id}/terminate`
+`POST /v1/training/jobs/{job_id}/terminate`
 
 Stoppt den Anbieter-Job, falls er aktiv ist, und markiert den Job als terminiert. Vorhandene Checkpoints und Artefakte bleiben standardmäßig erhalten.
 
@@ -30,7 +30,7 @@ Stoppt den Anbieter-Job, falls er aktiv ist, und markiert den Job als terminiert
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID/terminate \
+curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/terminate \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"delete_checkpoints": false}'

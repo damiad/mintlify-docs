@@ -2,10 +2,10 @@
 title: "Desplegar un checkpoint de entrenamiento"
 sidebarTitle: "Desplegar checkpoint"
 description: "Despliega un checkpoint desplegable de un trabajo de Fastino en el endpoint de inferencia multimodelo alojado, con el ID del endpoint de lista."
-api: "POST /v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy"
+api: "POST /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy"
 ---
 
-`POST /v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`
+`POST /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`
 
 Despliega un checkpoint desplegable en el endpoint de inferencia multi-modelo alojado.
 
@@ -27,7 +27,7 @@ Despliega un checkpoint desplegable en el endpoint de inferencia multi-modelo al
 
 ```bash cURL
 curl -X POST \
-  https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID/checkpoints/CHECKPOINT_ID/deploy \
+  https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/checkpoints/CHECKPOINT_ID/deploy \
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 

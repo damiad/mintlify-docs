@@ -1,11 +1,11 @@
 ---
 title: "Crear un trabajo de entrenamiento"
 sidebarTitle: "Crear un trabajo"
-description: "Usa POST /v1/training-jobs para iniciar un trabajo asíncrono de ajuste fino de Fastino a partir de un modelo base y datasets, en modo lora o full."
-api: "POST /v1/training-jobs"
+description: "Usa POST /v1/training/jobs para iniciar un trabajo asíncrono de ajuste fino de Fastino a partir de un modelo base y datasets, en modo lora o full."
+api: "POST /v1/training/jobs"
 ---
 
-`POST /v1/training-jobs`
+`POST /v1/training/jobs`
 
 Crea un trabajo de entrenamiento asíncrono y devuelve su registro. Este endpoint está limitado a 20 solicitudes por minuto por usuario.
 
@@ -164,7 +164,7 @@ Crea un trabajo de entrenamiento asíncrono y devuelve su registro. Este endpoin
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.fastino.ai/v1/training-jobs \
+curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

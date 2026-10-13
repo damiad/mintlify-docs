@@ -644,7 +644,7 @@
             "title": "Agentic Benchmark Mean"
           },
           "agentic_benchmarks": {
-            "description": "The figures averaged into agentic_benchmark_mean, strongest first.",
+            "description": "Every curated agentic benchmark the model reports, strongest first. Populated even when agentic_benchmark_mean is null.",
             "items": {
               "$ref": "#/components/schemas/BenchmarkComponentScore"
             },
@@ -688,7 +688,7 @@
             "title": "Coding Benchmark Mean"
           },
           "coding_benchmarks": {
-            "description": "The figures averaged into coding_benchmark_mean, strongest first, so a listing can show its working without a request per model. Empty when there is no mean to explain.",
+            "description": "Every curated coding benchmark the model reports, strongest first, so a listing can show its working without a request per model. Populated even when coding_benchmark_mean is null, since a single figure is still worth showing.",
             "items": {
               "$ref": "#/components/schemas/BenchmarkComponentScore"
             },
@@ -1029,7 +1029,7 @@
         "type": "object"
       },
       "BenchmarkComponentScore": {
-        "description": "One benchmark figure behind a published axis mean.",
+        "description": "One curated benchmark figure the model reports on an axis.",
         "properties": {
           "benchmark_id": {
             "description": "Upstream benchmark slug",
@@ -5672,45 +5672,6 @@
         "title": "TrainingJobCreate",
         "type": "object"
       },
-      "TrainingJobListResponse": {
-        "description": "List of training jobs response.",
-        "properties": {
-          "count": {
-            "title": "Count",
-            "type": "integer"
-          },
-          "has_more": {
-            "default": false,
-            "description": "True when more results exist beyond this page.",
-            "title": "Has More",
-            "type": "boolean"
-          },
-          "success": {
-            "title": "Success",
-            "type": "boolean"
-          },
-          "total": {
-            "default": 0,
-            "description": "Total number of matching jobs (before pagination).",
-            "title": "Total",
-            "type": "integer"
-          },
-          "training_jobs": {
-            "items": {
-              "$ref": "#/components/schemas/TrainingJobResponse"
-            },
-            "title": "Training Jobs",
-            "type": "array"
-          }
-        },
-        "required": [
-          "success",
-          "training_jobs",
-          "count"
-        ],
-        "title": "TrainingJobListResponse",
-        "type": "object"
-      },
       "TrainingJobResponse": {
         "description": "Training job response model",
         "properties": {
@@ -6207,7 +6168,7 @@
       },
       "TrainingJobUpdate": {
         "additionalProperties": false,
-        "description": "Thin PATCH body for ``PATCH /v1/training-jobs/{job_id}``.\n\nExposes only ``project_id``. Send ``null`` to unassign the training job\nfrom its current project. Unknown fields are rejected with HTTP 422.\n\nMoving a job changes only its project association. Related resources\nremain in their current projects and must be moved separately.",
+        "description": "Thin PATCH body for ``PATCH /v1/training/jobs/{job_id}``.\n\nExposes only ``project_id``. Send ``null`` to unassign the training job\nfrom its current project. Unknown fields are rejected with HTTP 422.\n\nMoving a job changes only its project association. Related resources\nremain in their current projects and must be moved separately.",
         "properties": {
           "project_id": {
             "anyOf": [
@@ -6224,6 +6185,60 @@
           }
         },
         "title": "TrainingJobUpdate",
+        "type": "object"
+      },
+      "TrainingJobsPage": {
+        "description": "``GET /v1/training/jobs``: config jobs, then interactive jobs (Tinker training runs), told apart by ``type``.\n\nInteractive jobs are listed only for a team on the training runs API.",
+        "properties": {
+          "count": {
+            "description": "Jobs on this page.",
+            "title": "Count",
+            "type": "integer"
+          },
+          "has_more": {
+            "description": "True when more jobs follow this page.",
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "success": {
+            "default": true,
+            "title": "Success",
+            "type": "boolean"
+          },
+          "total": {
+            "description": "Matching jobs in all.",
+            "title": "Total",
+            "type": "integer"
+          },
+          "training_jobs": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "config": "#/components/schemas/TrainingJobResponse",
+                  "interactive": "#/components/schemas/InteractiveJobView"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TrainingJobResponse"
+                },
+                {
+                  "$ref": "#/components/schemas/InteractiveJobView"
+                }
+              ]
+            },
+            "title": "Training Jobs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "training_jobs",
+          "count",
+          "total",
+          "has_more"
+        ],
+        "title": "TrainingJobsPage",
         "type": "object"
       },
       "TrainingLogsResponse": {
@@ -6344,46 +6359,6 @@
           "count"
         ],
         "title": "TrainingRunCheckpointListResponse",
-        "type": "object"
-      },
-      "TrainingRunListResponse": {
-        "description": "``GET /v1/training/jobs?type=interactive``: the interactive jobs the caller may see, newest first.",
-        "properties": {
-          "count": {
-            "description": "Jobs on this page.",
-            "title": "Count",
-            "type": "integer"
-          },
-          "has_more": {
-            "description": "True when more jobs follow this page.",
-            "title": "Has More",
-            "type": "boolean"
-          },
-          "success": {
-            "default": true,
-            "title": "Success",
-            "type": "boolean"
-          },
-          "total": {
-            "description": "Matching jobs in all.",
-            "title": "Total",
-            "type": "integer"
-          },
-          "training_jobs": {
-            "items": {
-              "$ref": "#/components/schemas/InteractiveJobView"
-            },
-            "title": "Training Jobs",
-            "type": "array"
-          }
-        },
-        "required": [
-          "training_jobs",
-          "count",
-          "total",
-          "has_more"
-        ],
-        "title": "TrainingRunListResponse",
         "type": "object"
       },
       "UpdateModelNameRequest": {
@@ -6937,7 +6912,7 @@
             }
           },
           {
-            "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training-jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
+            "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training/jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
             "in": "query",
             "name": "limit",
             "required": false,
@@ -6953,7 +6928,7 @@
                 }
               ],
               "default": 200,
-              "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training-jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
+              "description": "Maximum datasets to return, newest first, after collapsing to the latest version per name. Defaults to and is bounded at 200 (oversize requests are rejected, matching /v1/training/jobs and /projects/{id}/evaluation-runs). Callers that need the full set should page with limit and offset until a short page is returned.",
               "title": "Limit"
             }
           },
@@ -7036,7 +7011,7 @@
             "description": "Validation Error"
           },
           "503": {
-            "description": "The processing job could not be queued. The upload is marked failed and can be processed again. Retryable."
+            "description": "The uploaded file could not be verified in storage, or the processing job could not be queued. The upload can be processed again. Retryable."
           }
         },
         "summary": "Process Uploaded Dataset",
@@ -7213,7 +7188,7 @@
     },
     "/v1/gliner-2/async": {
       "post": {
-        "description": "Submit large GLiNER-2 request for async processing.\n\nUse this endpoint when processing >1M tokens that would exceed\nthe 30-second timeout. Returns immediately with a job_id.\nPoll GET /gliner-2/jobs/{job_id} to retrieve results.",
+        "description": "Submit large GLiNER-2 request for async processing.\n\nUse this endpoint when processing >1M tokens that would exceed the 30-second\ntimeout. Returns immediately with a job_id; poll GET /gliner-2/jobs/{job_id}.\nNot available with Zero Data Retention: the result is stored until polled.\nUse POST /gliner-2 instead.",
         "operationId": "gliner2_async_v1_gliner_2_async_post",
         "requestBody": {
           "content": {
@@ -8693,11 +8668,31 @@
         ]
       }
     },
-    "/v1/training-jobs": {
+    "/v1/training/jobs": {
       "get": {
-        "description": "List training jobs for the authenticated user.\n\nSupports pagination via ``limit`` and ``offset`` query parameters.\nOptionally filter by status (requested, running, complete, deployed, errored).",
-        "operationId": "list_training_jobs_v1_training_jobs_get",
+        "description": "List training jobs: config jobs newest first, then interactive jobs (Tinker training runs) newest first. `status` filters config jobs only, so it lists no interactive jobs.",
+        "operationId": "list_jobs_v1_training_jobs_get",
         "parameters": [
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "config",
+                    "interactive"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
           {
             "in": "query",
             "name": "status",
@@ -8760,7 +8755,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingJobListResponse"
+                  "$ref": "#/components/schemas/TrainingJobsPage"
                 }
               }
             },
@@ -8777,9 +8772,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List Training Jobs",
+        "summary": "List Jobs",
         "tags": [
-          "training-jobs"
+          "training"
         ]
       },
       "post": {
@@ -8848,7 +8843,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}": {
+    "/v1/training/jobs/{job_id}": {
       "delete": {
         "description": "Delete a training job and associated checkpoints.",
         "operationId": "delete_training_job_v1_training_jobs__job_id__delete",
@@ -8874,6 +8869,65 @@
             },
             "description": "Successful Response"
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "OpenAI error envelope returned for Brain HTTP failures. Replaces FastAPI's default `{detail: string}` body.",
+                  "properties": {
+                    "error": {
+                      "properties": {
+                        "code": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "title": "Code"
+                        },
+                        "message": {
+                          "title": "Message",
+                          "type": "string"
+                        },
+                        "param": {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "title": "Param"
+                        },
+                        "type": {
+                          "title": "Type",
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message",
+                        "type",
+                        "param",
+                        "code"
+                      ],
+                      "title": "Error",
+                      "type": "object"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "title": "OpenAIError",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "The cancel did not land. `error.code` is `training_job_already_finished` when the job completed or failed first, or `cancellation_unconfirmed` when it may be retried."
+          },
           "422": {
             "content": {
               "application/json": {
@@ -8891,8 +8945,8 @@
         ]
       },
       "get": {
-        "description": "Get a training job by ID if it is visible to the caller's team.",
-        "operationId": "get_training_job_v1_training_jobs__job_id__get",
+        "description": "Get one training job: a config job, or an interactive job (a Tinker training run) with its latest checkpoints.",
+        "operationId": "get_job_v1_training_jobs__job_id__get",
         "parameters": [
           {
             "in": "path",
@@ -8909,7 +8963,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingJobResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/TrainingJobResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InteractiveJobView"
+                    }
+                  ],
+                  "title": "Response Get Job V1 Training Jobs  Job Id  Get"
                 }
               }
             },
@@ -8926,9 +8988,9 @@
             "description": "Validation Error"
           }
         },
-        "summary": "Get Training Job",
+        "summary": "Get Job",
         "tags": [
-          "training-jobs"
+          "training"
         ]
       },
       "patch": {
@@ -8983,7 +9045,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/billing": {
+    "/v1/training/jobs/{job_id}/billing": {
       "get": {
         "description": "Get the billing outcome for a specific training job, by job ID.\n\nReports whether the job was billed and, if so, the charge and compute\nduration. The route uses the same access controls as other training-job\nread endpoints.",
         "operationId": "get_training_job_billing_v1_training_jobs__job_id__billing_get",
@@ -9026,10 +9088,10 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/checkpoints": {
+    "/v1/training/jobs/{job_id}/checkpoints": {
       "get": {
-        "description": "List all checkpoints for a training job visible to the caller's team.",
-        "operationId": "list_training_job_checkpoints_v1_training_jobs__job_id__checkpoints_get",
+        "description": "List a training job's checkpoints (an interactive job's newest first).",
+        "operationId": "list_job_checkpoints_v1_training_jobs__job_id__checkpoints_get",
         "parameters": [
           {
             "in": "path",
@@ -9046,7 +9108,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CheckpointListResponse"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CheckpointListResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TrainingRunCheckpointListResponse"
+                    }
+                  ],
+                  "title": "Response List Job Checkpoints V1 Training Jobs  Job Id  Checkpoints Get"
                 }
               }
             },
@@ -9063,13 +9133,13 @@
             "description": "Validation Error"
           }
         },
-        "summary": "List Training Job Checkpoints",
+        "summary": "List Job Checkpoints",
         "tags": [
-          "training-jobs"
+          "training"
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/checkpoints/{checkpoint_id}/deploy": {
+    "/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy": {
       "post": {
         "description": "Deploy a specific checkpoint to its provider inference location.",
         "operationId": "deploy_checkpoint",
@@ -9121,7 +9191,62 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/deployments": {
+    "/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download": {
+      "get": {
+        "description": "Get a short-lived signed URL of a tar archive of one of the team's own checkpoints (for sampler weights, the PEFT adapter files). The URL needs no credentials and expires after 15 minutes. Needs the team's weight-download entitlement, as /v1/training/jobs/{job_id}/download does.",
+        "operationId": "download_checkpoint_v1_training_jobs__job_id__checkpoints__checkpoint_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "checkpoint_id",
+            "required": true,
+            "schema": {
+              "title": "Checkpoint Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckpointDownloadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "For downloading models, please contact sales@fastino.ai"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get a download URL for an interactive training job checkpoint",
+        "tags": [
+          "training"
+        ]
+      }
+    },
+    "/v1/training/jobs/{job_id}/deployments": {
       "get": {
         "description": "Return deployments that reference the given training job.",
         "operationId": "get_training_job_deployments_v1_training_jobs__job_id__deployments_get",
@@ -9165,7 +9290,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/download": {
+    "/v1/training/jobs/{job_id}/download": {
       "get": {
         "description": "Generate a presigned S3 URL to download a trained model.\n\nNeeds the team's weight-download entitlement; without it the call returns 403.",
         "operationId": "download_trained_model_v1_training_jobs__job_id__download_get",
@@ -9211,7 +9336,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/logs": {
+    "/v1/training/jobs/{job_id}/logs": {
       "get": {
         "description": "Get training output logs (stdout/stderr) for a specific job.",
         "operationId": "get_training_job_logs_v1_training_jobs__job_id__logs_get",
@@ -9254,7 +9379,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/model-name": {
+    "/v1/training/jobs/{job_id}/model-name": {
       "patch": {
         "description": "Update the model_name for a training job.",
         "operationId": "update_training_job_model_name_v1_training_jobs__job_id__model_name_patch",
@@ -9307,7 +9432,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/push-to-hub": {
+    "/v1/training/jobs/{job_id}/push-to-hub": {
       "post": {
         "description": "Push a completed training job's model to HuggingFace Hub.",
         "operationId": "push_training_job_to_huggingface_v1_training_jobs__job_id__push_to_hub_post",
@@ -9363,7 +9488,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/stop": {
+    "/v1/training/jobs/{job_id}/stop": {
       "post": {
         "description": "Stop a running training job.",
         "operationId": "stop_training_job_v1_training_jobs__job_id__stop_post",
@@ -9492,7 +9617,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/sync": {
+    "/v1/training/jobs/{job_id}/sync": {
       "post": {
         "description": "Sync training job status from the provider to the database.",
         "operationId": "sync_training_job_status_v1_training_jobs__job_id__sync_post",
@@ -9535,7 +9660,7 @@
         ]
       }
     },
-    "/v1/training-jobs/{job_id}/terminate": {
+    "/v1/training/jobs/{job_id}/terminate": {
       "post": {
         "description": "Terminate a training job; checkpoints are kept unless ``delete_checkpoints`` is true.",
         "operationId": "terminate_training_job_v1_training_jobs__job_id__terminate_post",
@@ -9661,224 +9786,6 @@
         "summary": "Terminate Training Job",
         "tags": [
           "training-jobs"
-        ]
-      }
-    },
-    "/v1/training/jobs": {
-      "get": {
-        "description": "List interactive training jobs (Tinker training runs), newest first.",
-        "operationId": "list_runs_v1_training_jobs_get",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "type",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "enum": [
-                    "interactive",
-                    "config"
-                  ],
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Type"
-            }
-          },
-          {
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "default": 20,
-              "title": "Limit",
-              "type": "integer"
-            }
-          },
-          {
-            "in": "query",
-            "name": "offset",
-            "required": false,
-            "schema": {
-              "default": 0,
-              "title": "Offset",
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TrainingRunListResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "400": {
-            "description": "config training jobs are served at /v1/training-jobs; this list has type=interactive jobs"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "List Runs",
-        "tags": [
-          "training"
-        ]
-      }
-    },
-    "/v1/training/jobs/{job_id}": {
-      "get": {
-        "description": "Get one interactive training job (a Tinker training run) with its latest checkpoints.",
-        "operationId": "get_run_v1_training_jobs__job_id__get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "job_id",
-            "required": true,
-            "schema": {
-              "title": "Job Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InteractiveJobView"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get Run",
-        "tags": [
-          "training"
-        ]
-      }
-    },
-    "/v1/training/jobs/{job_id}/checkpoints": {
-      "get": {
-        "description": "List an interactive training job's checkpoints, newest first.",
-        "operationId": "list_run_checkpoints_v1_training_jobs__job_id__checkpoints_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "job_id",
-            "required": true,
-            "schema": {
-              "title": "Job Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TrainingRunCheckpointListResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "List Run Checkpoints",
-        "tags": [
-          "training"
-        ]
-      }
-    },
-    "/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download": {
-      "get": {
-        "description": "Get a short-lived signed URL of a tar archive of one of the team's own checkpoints (for sampler weights, the PEFT adapter files). The URL needs no credentials and expires after 15 minutes. Needs the team's weight-download entitlement, as /v1/training-jobs/{job_id}/download does.",
-        "operationId": "download_checkpoint_v1_training_jobs__job_id__checkpoints__checkpoint_id__download_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "job_id",
-            "required": true,
-            "schema": {
-              "title": "Job Id",
-              "type": "string"
-            }
-          },
-          {
-            "in": "path",
-            "name": "checkpoint_id",
-            "required": true,
-            "schema": {
-              "title": "Checkpoint Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CheckpointDownloadResponse"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "403": {
-            "description": "For downloading models, please contact sales@fastino.ai"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "summary": "Get a download URL for an interactive training job checkpoint",
-        "tags": [
-          "training"
         ]
       }
     }

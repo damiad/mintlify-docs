@@ -1,11 +1,11 @@
 ---
 title: "Mettre à jour le projet d'un job d'entraînement"
 sidebarTitle: "Mettre à jour le projet"
-description: "Appelez PATCH /v1/training-jobs/{job_id} pour affecter un job d'entraînement Fastino à un projet, ou envoyez null pour le désaffecter du projet."
-api: "PATCH /v1/training-jobs/{job_id}"
+description: "Appelez PATCH /v1/training/jobs/{job_id} pour affecter un job d'entraînement Fastino à un projet, ou envoyez null pour le désaffecter du projet."
+api: "PATCH /v1/training/jobs/{job_id}"
 ---
 
-`PATCH /v1/training-jobs/{job_id}`
+`PATCH /v1/training/jobs/{job_id}`
 
 Met à jour uniquement le `project_id` du job.
 
@@ -26,7 +26,7 @@ Met à jour uniquement le `project_id` du job.
 <RequestExample>
 
 ```bash cURL
-curl -X PATCH https://api.fastino.ai/v1/training-jobs/YOUR_TRAINING_JOB_ID \
+curl -X PATCH https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"project_id": "YOUR_PROJECT_ID"}'

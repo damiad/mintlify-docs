@@ -1163,7 +1163,7 @@ def _ready_dataset_reference(api_key: str) -> dict[str, str]:
 def _run_training_reads(api_key: str) -> None:
     jobs = _request_with_retry(
         "GET",
-        f"{API_ORIGIN}/v1/training-jobs?limit=1",
+        f"{API_ORIGIN}/v1/training/jobs?limit=1",
         headers=_auth_headers(api_key),
     )
     _json_response(jobs, label="TRAINING list jobs")
@@ -1181,7 +1181,7 @@ def _run_training_replay(api_key: str) -> None:
     dataset_reference = _ready_dataset_reference(api_key)
     existing = _request_with_retry(
         "GET",
-        f"{API_ORIGIN}/v1/training-jobs/{job_id}",
+        f"{API_ORIGIN}/v1/training/jobs/{job_id}",
         headers=_auth_headers(api_key),
     )
     existing_payload = _json_response(existing, label="TRAINING existing canary job")
@@ -1217,7 +1217,7 @@ def _run_training_replay(api_key: str) -> None:
     try:
         replay = _request_with_retry(
             "POST",
-            f"{API_ORIGIN}/v1/training-jobs",
+            f"{API_ORIGIN}/v1/training/jobs",
             headers=headers,
             payload=body,
         )
@@ -1251,7 +1251,7 @@ def run_api(*, replay_training: bool) -> None:
     operations = _validate_openapi(document)
     invalid = _request(
         "GET",
-        f"{API_ORIGIN}/v1/training-jobs?limit=1",
+        f"{API_ORIGIN}/v1/training/jobs?limit=1",
         headers={"X-API-Key": "fast_sk_invalid_docs_canary"},
         follow_redirects=False,
     )
@@ -1446,7 +1446,7 @@ def _training_status(payload: object) -> tuple[str, bool]:
 def _cleanup_training_job(api_key: str, job_id: str) -> None:
     response = _request_with_retry(
         "DELETE",
-        f"{API_ORIGIN}/v1/training-jobs/{job_id}",
+        f"{API_ORIGIN}/v1/training/jobs/{job_id}",
         headers=_auth_headers(api_key),
     )
     _require_status(response, {200}, "TRAINING cleanup")
@@ -1465,7 +1465,7 @@ def _error_code(response: Response) -> str | None:
 def _training_job_is_terminal(api_key: str, job_id: str) -> bool:
     poll = _request_with_retry(
         "GET",
-        f"{API_ORIGIN}/v1/training-jobs/{job_id}",
+        f"{API_ORIGIN}/v1/training/jobs/{job_id}",
         headers=_auth_headers(api_key),
         timeout=20,
     )
@@ -1480,7 +1480,7 @@ def _stop_and_confirm(api_key: str, job_id: str, *, timeout_seconds: int = 300) 
     while True:
         stop = _request_with_retry(
             "POST",
-            f"{API_ORIGIN}/v1/training-jobs/{job_id}/stop",
+            f"{API_ORIGIN}/v1/training/jobs/{job_id}/stop",
             headers=_auth_headers(api_key),
             timeout=20,
         )
@@ -1516,7 +1516,7 @@ def _list_training_jobs(api_key: str) -> list[dict[str, object]]:
     while True:
         response = _request_with_retry(
             "GET",
-            f"{API_ORIGIN}/v1/training-jobs?limit=200&offset={offset}",
+            f"{API_ORIGIN}/v1/training/jobs?limit=200&offset={offset}",
             headers=_auth_headers(api_key),
             timeout=30,
         )
@@ -1560,7 +1560,7 @@ def _create_or_recover_training_job(
     try:
         response = _request_with_retry(
             "POST",
-            f"{API_ORIGIN}/v1/training-jobs",
+            f"{API_ORIGIN}/v1/training/jobs",
             headers={
                 **_auth_headers(api_key),
                 "Idempotency-Key": str(marker),
@@ -1671,7 +1671,7 @@ def _wait_for_billing(
     while True:
         response = _request_with_retry(
             "GET",
-            f"{API_ORIGIN}/v1/training-jobs/{job_id}/billing",
+            f"{API_ORIGIN}/v1/training/jobs/{job_id}/billing",
             headers=_auth_headers(api_key),
         )
         payload = _json_response(response, label="TRAINING lifecycle billing")
@@ -1701,7 +1701,7 @@ def _verify_completed_training_job(
     for suffix, label in (("logs", "logs"), ("checkpoints", "checkpoints")):
         result = _request_with_retry(
             "GET",
-            f"{API_ORIGIN}/v1/training-jobs/{job_id}/{suffix}",
+            f"{API_ORIGIN}/v1/training/jobs/{job_id}/{suffix}",
             headers=_auth_headers(api_key),
         )
         _json_response(result, label=f"TRAINING lifecycle {label}")
@@ -1808,7 +1808,7 @@ def run_training_lifecycle() -> None:
             time.sleep(30)
             poll = _request_with_retry(
                 "GET",
-                f"{API_ORIGIN}/v1/training-jobs/{job_id}",
+                f"{API_ORIGIN}/v1/training/jobs/{job_id}",
                 headers=_auth_headers(api_key),
             )
             final_payload = _json_response(poll, label="TRAINING lifecycle poll")

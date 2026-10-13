@@ -1,11 +1,11 @@
 ---
 title: "Créer un job d'entraînement"
 sidebarTitle: "Créer un job"
-description: "Appelez POST /v1/training-jobs pour lancer un job de fine-tuning Fastino asynchrone à partir d'un modèle de base et de datasets, en mode lora ou full."
-api: "POST /v1/training-jobs"
+description: "Appelez POST /v1/training/jobs pour lancer un job de fine-tuning Fastino asynchrone à partir d'un modèle de base et de datasets, en mode lora ou full."
+api: "POST /v1/training/jobs"
 ---
 
-`POST /v1/training-jobs`
+`POST /v1/training/jobs`
 
 Crée un job d'entraînement asynchrone et renvoie son enregistrement. Cet endpoint est limité à 20 requêtes par minute et par utilisateur.
 
@@ -164,7 +164,7 @@ Crée un job d'entraînement asynchrone et renvoie son enregistrement. Cet endpo
 <RequestExample>
 
 ```bash cURL
-curl -X POST https://api.fastino.ai/v1/training-jobs \
+curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
