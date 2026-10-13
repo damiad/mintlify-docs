@@ -93,7 +93,7 @@ X-API-Key: $FASTINO_API_KEY
 
 ## 训练运行
 
-训练运行是您通过兼容 Tinker 的 SDK 自行逐步驱动的训练。将 SDK 的 `base_url` 设置为 `https://api.fastino.ai/v1/training/compat/tinker`，并通过 SDK 的凭据命令传入您的 Fastino API 密钥：`TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`。使用以下路由列出您的运行和检查点，并下载检查点权重。
+交互式训练任务是您通过兼容 Tinker 的 SDK 自行逐步驱动的训练运行；任务 ID 即 SDK 的运行 ID。将 SDK 的 `base_url` 设置为 `https://api.fastino.ai/v1/training/compat/tinker`，并通过 SDK 的凭据命令传入您的 Fastino API 密钥：`TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`。使用以下路由列出您的运行和检查点，并下载检查点权重。
 
 | 方法 | 端点 | 用途 |
 | --- | --- | --- |

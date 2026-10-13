@@ -6,7 +6,7 @@ description: "Usa GET /v1/training/jobs para listar las ejecuciones de entrenami
 
 `GET /v1/training/jobs`
 
-Devuelve las ejecuciones de entrenamiento visibles para quien llama, de la más reciente a la más antigua. Las ejecuciones de entrenamiento son ejecuciones por pasos que creas y controlas con el SDK compatible con Tinker. Configura el `base_url` del SDK como `https://api.fastino.ai/v1/training/compat/tinker` y pasa tu clave de API de Fastino mediante el comando de credenciales del SDK: `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Las claves `tml-` de Tinker se rechazan con `401`. Ves tus propias ejecuciones y las de tu equipo en los proyectos a los que tienes acceso.
+Devuelve los trabajos de entrenamiento interactivos visibles para quien llama, de la más reciente a la más antigua. Un trabajo interactivo es una ejecución de entrenamiento que creas y controlas paso a paso con el SDK compatible con Tinker; su ID de trabajo es el ID de ejecución del SDK. Configura el `base_url` del SDK como `https://api.fastino.ai/v1/training/compat/tinker` y pasa tu clave de API de Fastino mediante el comando de credenciales del SDK: `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Las claves `tml-` de Tinker se rechazan con `401`. Ves tus propias ejecuciones y las de tu equipo en los proyectos a los que tienes acceso.
 
 ## Solicitud
 
@@ -15,7 +15,7 @@ Devuelve las ejecuciones de entrenamiento visibles para quien llama, de la más 
 </ParamField>
 
 <ParamField query="type" type="string">
-  Tipo de trabajo. Usa `interactive` (el valor predeterminado aquí). `config` devuelve `400`.
+  Tipo de trabajo. Usa `interactive` (el valor predeterminado aquí). Por ahora, los trabajos de configuración se listan con [Listar trabajos de entrenamiento](/es/api-reference/training-jobs/list), por lo que `config` devuelve `400`.
 </ParamField>
 
 <ParamField query="limit" type="integer" default="20">
