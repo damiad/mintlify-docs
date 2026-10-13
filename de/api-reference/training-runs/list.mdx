@@ -6,7 +6,7 @@ description: "Rufen Sie GET /v1/training/jobs auf, um die Trainingsläufe Ihres 
 
 `GET /v1/training/jobs`
 
-Gibt die für den authentifizierten Aufrufer sichtbaren Trainingsläufe zurück, neueste zuerst. Trainingsläufe sind schrittweise Läufe, die Sie mit dem Tinker-kompatiblen SDK erstellen und steuern. Setzen Sie die `base_url` des SDK auf `https://api.fastino.ai/v1/training/compat/tinker` und übergeben Sie Ihren Fastino-API-Schlüssel über den Credential-Befehl des SDK: `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Tinker-Schlüssel mit `tml-` werden mit `401` abgelehnt. Sie sehen Ihre eigenen Läufe und die Läufe Ihres Teams in Projekten, auf die Sie Zugriff haben.
+Gibt die für den authentifizierten Aufrufer sichtbaren interaktiven Trainingsjobs zurück, neueste zuerst. Ein interaktiver Job ist ein Trainingslauf, den Sie mit dem Tinker-kompatiblen SDK erstellen und Schritt für Schritt steuern; seine Job-ID ist die Lauf-ID des SDK. Setzen Sie die `base_url` des SDK auf `https://api.fastino.ai/v1/training/compat/tinker` und übergeben Sie Ihren Fastino-API-Schlüssel über den Credential-Befehl des SDK: `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Tinker-Schlüssel mit `tml-` werden mit `401` abgelehnt. Sie sehen Ihre eigenen Läufe und die Läufe Ihres Teams in Projekten, auf die Sie Zugriff haben.
 
 ## Anfrage
 
@@ -15,7 +15,7 @@ Gibt die für den authentifizierten Aufrufer sichtbaren Trainingsläufe zurück,
 </ParamField>
 
 <ParamField query="type" type="string">
-  Jobtyp. Verwenden Sie `interactive` (hier der Standard). `config` liefert `400`.
+  Jobtyp. Verwenden Sie `interactive` (hier der Standard). Konfigurationsjobs werden vorerst über [Trainingsjobs auflisten](/de/api-reference/training-jobs/list) aufgelistet, daher liefert `config` `400`.
 </ParamField>
 
 <ParamField query="limit" type="integer" default="20">
