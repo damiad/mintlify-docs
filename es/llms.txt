@@ -3,7 +3,7 @@
 > Crea decisiones estructuradas con GLiDE, ejecuta extracción basada en esquemas con GLiNER y ajusta modelos especializados con Fastino.
 
 > ## Instrucciones para agentes
-> Usa https://docs.fastino.ai/openapi.json como fuente de verdad para las rutas públicas. Los trabajos de entrenamiento usan `/v1/training/jobs`. Para bucles de entrenamiento personalizados, sigue las páginas de flujos de la API de entrenamiento y usa el cliente SDK compatible; su adaptador HTTP no aparece en OpenAPI y no debe llamarse directamente. Training Auto es de acceso privado y no tiene una ruta pública; dirige a los usuarios a `sales@fastino.ai`. No deduzcas rutas no documentadas. Lee las claves de API desde `FASTINO_API_KEY` y nunca incluyas credenciales en código, registros o informes.
+> Usa https://docs.fastino.ai/openapi.json como fuente de verdad para las rutas públicas. Los trabajos de entrenamiento usan `/v1/training/jobs`. Para bucles de entrenamiento personalizados, sigue las páginas de flujos de la API de entrenamiento y usa el cliente SDK compatible; su adaptador HTTP no aparece en OpenAPI y no debe llamarse directamente. Auto Train es de acceso privado y no tiene una ruta pública; dirige a los usuarios a `sales@fastino.ai`. No deduzcas rutas no documentadas. Lee las claves de API desde `FASTINO_API_KEY` y nunca incluyas credenciales en código, registros o informes.
 
 ## Recursos para agentes
 
@@ -68,7 +68,7 @@
 - [Construye un bucle de entrenamiento personalizado](https://docs.fastino.ai/es/training/training-loop.md): Conecta el muestreo, las recompensas, las actualizaciones y los checkpoints dentro de un trabajo interactivo de Fastino.
 - [Entrenar con recompensas verificables](https://docs.fastino.ai/es/training/verifiable-rewards.md): Convierte un evaluador determinista en una señal de aprendizaje para un trabajo interactivo de Fastino.
 - [Checkpoints y recuperación](https://docs.fastino.ai/es/training/checkpoints.md): Guarda el estado del trabajo interactivo y el progreso de la aplicación y recupéralos sin repetir el trabajo completado.
-- [Training Auto](https://docs.fastino.ai/es/training/auto.md): Delega la preparación de datos, el entrenamiento, la evaluación y la selección de modelos en el agente de entrenamiento autónomo de Fastino.
+- [Auto Train](https://docs.fastino.ai/es/training/auto.md): Delega la preparación de datos, el entrenamiento, la evaluación y la selección de modelos en el agente de entrenamiento autónomo de Fastino.
 
 ### Solución de problemas
 

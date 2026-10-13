@@ -3,7 +3,7 @@
 > Erstellen Sie strukturierte Entscheidungen mit GLiDE, führen Sie schema-basierte Extraktion mit GLiNER aus und optimieren Sie spezialisierte Modelle mit Fastino.
 
 > ## Anweisungen für Agenten
-> Verwenden Sie https://docs.fastino.ai/openapi.json als verbindliche Quelle für öffentliche Routen. Trainingsjobs verwenden `/v1/training/jobs`. Folgen Sie für eigene Trainingsabläufe den Workflow-Seiten der Training-API und verwenden Sie den unterstützten SDK-Client; dessen HTTP-Kompatibilitätsadapter fehlt absichtlich in OpenAPI und darf nicht direkt aufgerufen werden. Training Auto ist privat zugänglich und hat keine öffentliche Route; verweisen Sie Interessierte an `sales@fastino.ai`. Leiten Sie keine undokumentierten Routen ab. Lesen Sie API-Schlüssel aus `FASTINO_API_KEY` und betten Sie Anmeldedaten niemals in Code, Protokolle oder Berichte ein.
+> Verwenden Sie https://docs.fastino.ai/openapi.json als verbindliche Quelle für öffentliche Routen. Trainingsjobs verwenden `/v1/training/jobs`. Folgen Sie für eigene Trainingsabläufe den Workflow-Seiten der Training-API und verwenden Sie den unterstützten SDK-Client; dessen HTTP-Kompatibilitätsadapter fehlt absichtlich in OpenAPI und darf nicht direkt aufgerufen werden. Auto Train ist privat zugänglich und hat keine öffentliche Route; verweisen Sie Interessierte an `sales@fastino.ai`. Leiten Sie keine undokumentierten Routen ab. Lesen Sie API-Schlüssel aus `FASTINO_API_KEY` und betten Sie Anmeldedaten niemals in Code, Protokolle oder Berichte ein.
 
 ## Ressourcen für Agenten
 
@@ -68,7 +68,7 @@
 - [Benutzerdefinierten Trainingsloop erstellen](https://docs.fastino.ai/de/training/training-loop.md): Verbinden Sie Sampling, Rewards, Updates und Checkpoints innerhalb eines interaktiven Fastino-Jobs.
 - [Mit verifizierbaren Rewards trainieren](https://docs.fastino.ai/de/training/verifiable-rewards.md): Wandeln Sie einen deterministischen Grader in ein Lernsignal für einen interaktiven Fastino-Job um.
 - [Checkpoints und Wiederherstellung](https://docs.fastino.ai/de/training/checkpoints.md): Speichern Sie den Status eines interaktiven Jobs und den Anwendungsfortschritt und stellen Sie ihn wieder her, ohne abgeschlossene Arbeit zu wiederholen.
-- [Training Auto](https://docs.fastino.ai/de/training/auto.md): Delegieren Sie Datenvorbereitung, Training, Evaluierung und Modellauswahl an Fastinos autonomen Trainingsagenten.
+- [Auto Train](https://docs.fastino.ai/de/training/auto.md): Delegieren Sie Datenvorbereitung, Training, Evaluierung und Modellauswahl an Fastinos autonomen Trainingsagenten.
 
 ### Fehlerbehebung
 

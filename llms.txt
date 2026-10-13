@@ -3,7 +3,7 @@
 > Build structured decisions with GLiDE, run schema-based extraction with GLiNER, and fine-tune specialized models with Fastino.
 
 > ## Agent instructions
-> Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call `POST https://api.fastino.ai/v1/systemone` with model `fastino/GLiDE`. Training jobs use `/v1/training/jobs`. For custom training loops, follow the Training API workflow pages and use the supported SDK client. Its HTTP compatibility adapter is intentionally absent from OpenAPI and must not be called directly. Training Auto is private access and has no public route; direct interested users to `sales@fastino.ai`. Do not infer undocumented routes. Read API keys from `FASTINO_API_KEY` and never embed credentials in code, logs, or reports.
+> Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call `POST https://api.fastino.ai/v1/systemone` with model `fastino/GLiDE`. Training jobs use `/v1/training/jobs`. For custom training loops, follow the Training API workflow pages and use the supported SDK client. Its HTTP compatibility adapter is intentionally absent from OpenAPI and must not be called directly. Auto Train is private access and has no public route; direct interested users to `sales@fastino.ai`. Do not infer undocumented routes. Read API keys from `FASTINO_API_KEY` and never embed credentials in code, logs, or reports.
 
 ## Agent resources
 
@@ -75,7 +75,7 @@
 - [Build a custom training loop](https://docs.fastino.ai/training/training-loop.md): Connect sampling, rewards, updates, and checkpoints inside one interactive Fastino job.
 - [Train with verifiable rewards](https://docs.fastino.ai/training/verifiable-rewards.md): Turn a deterministic grader into a learning signal for one interactive Fastino job.
 - [Checkpoints and recovery](https://docs.fastino.ai/training/checkpoints.md): Save interactive-job state and application progress, then recover without replaying completed work.
-- [Training Auto](https://docs.fastino.ai/training/auto.md): Delegate data preparation, training, evaluation, and model selection to Fastino's autonomous training agent.
+- [Auto Train](https://docs.fastino.ai/training/auto.md): Delegate data preparation, training, evaluation, and model selection to Fastino's autonomous training agent.
 
 ### Troubleshooting
 

@@ -3,7 +3,7 @@
 > Créez des décisions structurées avec GLiDE, effectuez une extraction basée sur des schémas avec GLiNER et affinez des modèles spécialisés avec Fastino.
 
 > ## Instructions pour les agents
-> Utilisez https://docs.fastino.ai/openapi.json comme source de vérité pour les routes publiques. Les tâches d'entraînement utilisent `/v1/training/jobs`. Pour les boucles d'entraînement personnalisées, suivez les pages de l'API d'entraînement et utilisez le client SDK compatible ; son adaptateur HTTP est absent d'OpenAPI et ne doit pas être appelé directement. Training Auto est en accès privé et n'a pas de route publique ; orientez les utilisateurs vers `sales@fastino.ai`. N'inférez pas de routes non documentées. Lisez les clés API depuis `FASTINO_API_KEY` et n'intégrez jamais d'identifiants dans le code, les journaux ou les rapports.
+> Utilisez https://docs.fastino.ai/openapi.json comme source de vérité pour les routes publiques. Les tâches d'entraînement utilisent `/v1/training/jobs`. Pour les boucles d'entraînement personnalisées, suivez les pages de l'API d'entraînement et utilisez le client SDK compatible ; son adaptateur HTTP est absent d'OpenAPI et ne doit pas être appelé directement. Auto Train est en accès privé et n'a pas de route publique ; orientez les utilisateurs vers `sales@fastino.ai`. N'inférez pas de routes non documentées. Lisez les clés API depuis `FASTINO_API_KEY` et n'intégrez jamais d'identifiants dans le code, les journaux ou les rapports.
 
 ## Ressources pour les agents
 
@@ -68,7 +68,7 @@
 - [Construire une boucle d'entraînement personnalisée](https://docs.fastino.ai/fr/training/training-loop.md): Reliez l'échantillonnage, les récompenses, les mises à jour et les checkpoints au sein d'un même job interactif Fastino.
 - [S'entraîner avec des récompenses vérifiables](https://docs.fastino.ai/fr/training/verifiable-rewards.md): Transformez un évaluateur déterministe en signal d'apprentissage pour un job interactif Fastino.
 - [Checkpoints et récupération](https://docs.fastino.ai/fr/training/checkpoints.md): Enregistrez l'état d'un job interactif et la progression de l'application, puis récupérez-les sans rejouer le travail terminé.
-- [Entraînement Auto](https://docs.fastino.ai/fr/training/auto.md): Déléguez la préparation des données, l'entraînement, l'évaluation et la sélection du modèle à l'agent d'entraînement autonome de Fastino.
+- [Auto Train](https://docs.fastino.ai/fr/training/auto.md): Déléguez la préparation des données, l'entraînement, l'évaluation et la sélection du modèle à l'agent d'entraînement autonome de Fastino.
 
 ### Dépannage
 

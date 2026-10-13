@@ -64,7 +64,7 @@ REQUIRED_DISCOVERY_LINKS = {
     "training loop": "/training/training-loop.md",
     "verifiable rewards": "/training/verifiable-rewards.md",
     "checkpoint recovery": "/training/checkpoints.md",
-    "Training Auto": "/training/auto.md",
+    "Auto Train": "/training/auto.md",
     "GLiNER fine-tuning": "/guides/fine-tune-gliner.md",
     "inference reference": "/api-reference/inference/overview.md",
     "GLiDE contract": "/api-reference/inference/systemone.md",
@@ -133,7 +133,7 @@ TRAINING_SIDEBAR_TITLES = {
     "training/training-loop": "Training loop",
     "training/verifiable-rewards": "Verifiable rewards",
     "training/checkpoints": "Checkpoints and recovery",
-    "training/auto": "Training Auto (Private access)",
+    "training/auto": "Auto Train",
 }
 
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\((?P<target>/[^)\s]+)\)")

@@ -42,7 +42,7 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
 - Follow the [Training API](https://docs.fastino.ai/training) for training-job operations.
 - Use `/v1/training/jobs` for canonical job operations. A supported SDK client
   uses the hidden HTTP compatibility adapter for custom-loop model operations.
-  Training Auto is private access and has no public route. Direct interested
+  Auto Train is private access and has no public route. Direct interested
   users to `sales@fastino.ai`.
 - For custom loops, start with the
   [Training quickstart](https://docs.fastino.ai/training/quickstart#custom-training-loop).
