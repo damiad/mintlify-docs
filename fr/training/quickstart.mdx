@@ -1,25 +1,28 @@
 ---
-title: "Démarrage rapide de l'entraînement"
+title: "Démarrage rapide de l'API d'entraînement"
 sidebarTitle: "Démarrage rapide"
-description: "Créez un job d'entraînement géré, conservez son ID et interrogez-le jusqu'à un résultat terminal."
+description: "Lancez un job d'entraînement géré ou une boucle d'entraînement contrôlée par l'application, puis vérifiez son ID de job canonique."
 ---
 
-Ce démarrage rapide crée un job `config`. Fastino gère la boucle d'entraînement
-à partir du dataset et de la configuration que vous fournissez.
+Ce démarrage rapide couvre les deux voies de l'API d'entraînement. Utilisez
+l'entraînement géré lorsque vous souhaitez que Fastino exécute la boucle.
+Utilisez une boucle d'entraînement personnalisée lorsque votre application doit
+contrôler l'échantillonnage, les récompenses et les mises à jour du modèle.
 
 <Warning>
-  Ce brouillon utilise le futur champ de requête `model`. La production continue
-  d'utiliser le contrat d'API généré actuel jusqu'au lancement de l'API
-  d'entraînement unifiée.
+  L'exemple géré de cette préversion utilise les champs prévus `model` et
+  `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
+  ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
+  généré n'inclut pas la nouvelle forme de requête.
 </Warning>
 
-## 1. Créer une clé API
+## 1. S'authentifier
 
 1. Créez un [compte Fastino](https://agent.fastino.ai/).
 2. Ouvrez la page des [clés API](https://agent.fastino.ai/api-keys).
 3. Créez une clé et copiez-la lorsqu'elle s'affiche.
 
-Enregistrez-la dans une variable d'environnement :
+Enregistrez la clé dans une variable d'environnement :
 
 <CodeGroup>
 
@@ -37,14 +40,25 @@ Envoyez cette clé sous la forme `X-API-Key: $FASTINO_API_KEY`. Consultez
 [Authentification](/fr/authentication) pour le contrat d'authentification
 complet.
 
-## 2. Préparer un dataset
+## 2. Choisir une voie
+
+| Objectif | Voie |
+| --- | --- |
+| Fournir des données et une configuration, puis laisser Fastino exécuter l'entraînement | [Entraînement géré](#managed-training) |
+| Contrôler l'échantillonnage, les récompenses et les mises à jour dans votre application | [Boucle d'entraînement personnalisée](#custom-training-loop) |
+
+<span id="managed-training" />
+
+## Entraînement géré
+
+### 3. Préparer un dataset
 
 [Importez et traitez un dataset d'entraînement](/fr/concepts/datasets), puis
 attendez que sa version soit `ready`.
 
-## 3. Choisir un modèle
+### 4. Choisir un modèle
 
-Interrogez le catalogue actif juste avant la soumission :
+Interrogez le catalogue actif avant la soumission :
 
 ```bash
 curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
@@ -53,7 +67,7 @@ curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
 
 Conservez l'ID du modèle sélectionné.
 
-## 4. Créer le job
+### 5. Créer le job
 
 ```bash
 curl -X POST "https://api.fastino.ai/v1/training/jobs" \
@@ -75,7 +89,7 @@ Conservez l'`id` renvoyé. Il s'agit du `job_id` utilisé par chaque route propr
 à un job. Réutilisez la même valeur `Idempotency-Key` uniquement lorsque vous
 réessayez exactement cette requête de création.
 
-## 5. Interroger le job
+### 6. Interroger le job
 
 ```bash
 curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
@@ -92,7 +106,176 @@ Pour les jobs de configuration :
 Continuez jusqu'à ce que `is_terminal_status` soit `true`, puis examinez le
 statut final, les checkpoints, les logs et l'admissibilité au déploiement.
 
-## 6. Continuer
+<span id="custom-training-loop" />
+
+## Boucle d'entraînement personnalisée
+
+Les boucles d'entraînement personnalisées nécessitent un accès pour l'équipe et
+Python 3.11 ou une version ultérieure. Le client SDK pris en charge communique
+avec l'adaptateur de compatibilité HTTP masqué de Fastino. Utilisez les
+méthodes du client ci-dessous. Ne construisez pas de requêtes vers
+l'adaptateur.
+
+### 3. Installer le client testé
+
+<CodeGroup>
+
+```bash uv
+uv init fastino-training
+cd fastino-training
+uv add "tinker==0.33.1"
+```
+
+```bash pip
+mkdir fastino-training && cd fastino-training
+python -m venv .venv
+source .venv/bin/activate
+pip install "tinker==0.33.1"
+```
+
+```powershell pip · Windows
+mkdir fastino-training
+cd fastino-training
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install "tinker==0.33.1"
+```
+
+</CodeGroup>
+
+### 4. Configurer le client
+
+`TINKER_CREDENTIAL_CMD` est exécuté à chaque demande de token et doit afficher
+un seul identifiant non vide.
+
+<CodeGroup>
+
+```bash macOS/Linux
+export TINKER_BASE_URL="https://api.fastino.ai/v1/training/compat/tinker"
+export TINKER_CREDENTIAL_CMD='printf "%s\n" "$FASTINO_API_KEY"'
+```
+
+```powershell Windows
+$env:TINKER_BASE_URL = "https://api.fastino.ai/v1/training/compat/tinker"
+$env:TINKER_CREDENTIAL_CMD = 'powershell -NoProfile -Command "[Console]::Out.WriteLine($env:FASTINO_API_KEY)"'
+```
+
+</CodeGroup>
+
+Utilisez une clé Fastino normale commençant par `fast_sk_`. Les identifiants
+commençant par `tml-` sont rejetés. Ne définissez pas `TINKER_API_KEY`.
+
+### 5. Choisir un modèle activé
+
+Appelez `ServiceClient.get_server_capabilities()` et sélectionnez un modèle et
+un rang LoRA dans sa réponse :
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_TRAINING_MODEL="<model from capabilities>"
+export FASTINO_TRAINING_LORA_RANK="<supported rank>"
+```
+
+```powershell Windows
+$env:FASTINO_TRAINING_MODEL = "<model from capabilities>"
+$env:FASTINO_TRAINING_LORA_RANK = "<supported rank>"
+```
+
+</CodeGroup>
+
+### 6. Créer le job et échantillonner
+
+Créez `quickstart.py` :
+
+```python
+import os
+
+import tinker
+
+
+service_client = tinker.ServiceClient()
+outcome = "errored"
+try:
+    capabilities = service_client.get_server_capabilities()
+    print(capabilities)
+
+    training_client = service_client.create_lora_training_client(
+        base_model=os.environ["FASTINO_TRAINING_MODEL"],
+        rank=int(os.environ["FASTINO_TRAINING_LORA_RANK"]),
+    )
+
+    job_id = training_client.get_info().model_data.model_id
+    print(f"TRAINING_JOB_ID={job_id}")
+
+    checkpoint = training_client.save_weights_for_sampler(
+        "quickstart-sampler"
+    ).result()
+    sampling_client = service_client.create_sampling_client(
+        model_path=checkpoint.path
+    )
+
+    tokenizer = sampling_client.get_tokenizer()
+    prompt_tokens = tokenizer.apply_chat_template(
+        conversation=[
+            {
+                "role": "user",
+                "content": "Explain the purpose of a reward function in one sentence.",
+            }
+        ],
+        add_generation_prompt=True,
+        return_dict=False,
+    )
+    result = sampling_client.sample(
+        prompt=tinker.types.ModelInput.from_ints(prompt_tokens),
+        num_samples=1,
+        sampling_params=tinker.types.SamplingParams(max_tokens=64),
+    ).result()
+
+    print(tokenizer.decode(result.sequences[0].tokens))
+except KeyboardInterrupt:
+    outcome = "interrupted"
+    raise
+else:
+    outcome = "success"
+finally:
+    service_client.close(outcome).result()
+```
+
+Exécutez le script :
+
+```bash
+python quickstart.py
+```
+
+Copiez la valeur affichée après `TRAINING_JOB_ID=`.
+
+### 7. Vérifier le job canonique
+
+<CodeGroup>
+
+```bash macOS/Linux
+export TRAINING_JOB_ID="<ID printed by quickstart.py>"
+curl --fail-with-body \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID"
+```
+
+```powershell Windows
+$env:TRAINING_JOB_ID = "<ID printed by quickstart.py>"
+Invoke-RestMethod `
+  -Headers @{ "X-API-Key" = "$env:FASTINO_API_KEY" } `
+  -Uri "https://api.fastino.ai/v1/training/jobs/$env:TRAINING_JOB_ID"
+```
+
+</CodeGroup>
+
+La réponse décrit le même job que celui créé par
+`create_lora_training_client(...)`. Continuez à utiliser le client SDK pour les
+opérations sur le modèle et l'API canonique des jobs pour les lectures de jobs
+documentées.
+
+## Continuer
 
 <CardGroup cols={3}>
   <Card title="Datasets" icon="database" href="/fr/concepts/datasets">
@@ -101,8 +284,8 @@ statut final, les checkpoints, les logs et l'admissibilité au déploiement.
   <Card title="Référence des jobs" icon="book" href="/fr/api-reference/training-jobs/create">
     Consultez le contrat complet de requête et de réponse.
   </Card>
-  <Card title="Entraînement interactif" icon="repeat-2" href="/fr/rl-api">
-    Pilotez une boucle de RL ou de post-entraînement personnalisée via le SDK
-    pris en charge.
+  <Card title="Boucle d'entraînement" icon="repeat-2" href="/fr/training/training-loop">
+    Ajoutez des récompenses, des mises à jour et la récupération à une boucle
+    personnalisée.
   </Card>
 </CardGroup>

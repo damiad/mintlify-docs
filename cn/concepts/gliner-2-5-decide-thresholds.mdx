@@ -4,6 +4,11 @@ sidebarTitle: "评估与训练"
 description: "使用代表性数据评估 GLiNER 2.5 Decide、选择多标签阈值，并针对特定领域微调模型。"
 ---
 
+<Warning>
+  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
+  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
+</Warning>
+
 评估应用将发送给 `fastino/GLiNER-2.5-Decide` 的确切 `classifications` schema。仅在两次评估运行之间更改标签或任务设置，以确保结果可比。
 
 ## 评估 Decide schema

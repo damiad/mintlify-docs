@@ -17,8 +17,10 @@ d'un compte Fastino et d'un terminal.
     en lieu sûr, car vous ne pourrez plus l'afficher après avoir fermé la boîte de dialogue.
 
     <Warning>
-      Ne placez jamais votre clé API sous contrôle de version. Utilisez une variable d'environnement
-      ou un gestionnaire de secrets plutôt que de l'écrire en dur dans vos fichiers sources.
+      L'exemple géré de cette préversion utilise les champs prévus `model` et
+      `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
+      ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
+      généré n'inclut pas la nouvelle forme de requête.
     </Warning>
 
     Définissez votre clé comme variable d'environnement pour que les exemples ci-dessous fonctionnent tels quels :
@@ -212,6 +214,13 @@ d'un compte Fastino et d'un terminal.
 
   <Step title="Lancer un job d'entraînement (facultatif)">
     Lorsque vous êtes prêt à effectuer un fine-tuning sur vos propres données, lancez un job d'entraînement :
+
+    <Warning>
+  L'exemple géré de cette préversion utilise les champs prévus `model` et
+  `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
+  ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
+  généré n'inclut pas la nouvelle forme de requête.
+</Warning>
 
     <CodeGroup>
 

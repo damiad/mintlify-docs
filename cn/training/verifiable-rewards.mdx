@@ -1,5 +1,6 @@
 ---
 title: "使用可验证奖励进行训练"
+sidebarTitle: "可验证奖励"
 description: "将确定性评分器转化为一个 Fastino 交互式任务的学习信号。"
 ---
 
@@ -14,7 +15,7 @@ prompt -> sample a group -> grade -> center rewards -> build datums -> update
 
 ## 开始之前
 
-完成[快速入门](/cn/rl-api/quickstart)，然后通过功能确认所选模型和训练操作已启用。
+完成[自定义循环快速入门](/cn/training/quickstart#custom-training-loop)，然后通过功能确认所选模型和训练操作已启用。
 以下代码片段侧重于用户负责的奖励流程；请根据 `tinker==0.33.1` 和所选模型调整 datum 构建。
 
 <Note>
@@ -91,7 +92,7 @@ if not (
     == len(padded_logprobs)
     == len(padded_advantages)
 ):
-    raise ValueError("RL datum arrays are not aligned")
+    raise ValueError("training datum arrays are not aligned")
 ```
 
 使用与所选 `base_model` 关联的渲染器和 tokenizer。保留从功能中选择的 SDK
@@ -142,4 +143,4 @@ state = training_client.save_state(f"step-{step:06d}").result()
 - 留出评估与训练奖励批次保持独立。
 
 有关完整生命周期，请阅读
-[RL 训练循环](/cn/rl-api/training-loop)。
+[构建自定义训练循环](/cn/training/training-loop)。

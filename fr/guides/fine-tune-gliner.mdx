@@ -5,7 +5,10 @@ description: "Préparez un dataset GLiNER, créez un job de configuration géré
 ---
 
 <Warning>
-  Ce brouillon utilise les futurs champs natifs `model` et `type`. La production continue d’utiliser son contrat OpenAPI généré jusqu’au lancement de l’API Training unifiée.
+  L'exemple géré de cette préversion utilise les champs prévus `model` et
+  `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
+  ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
+  généré n'inclut pas la nouvelle forme de requête.
 </Warning>
 
 Ce guide crée un job d'entraînement `config`. Vous fournissez un dataset prêt

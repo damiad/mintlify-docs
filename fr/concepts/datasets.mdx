@@ -89,6 +89,13 @@ curl --fail-with-body -sS https://api.fastino.ai/v1/datasets/docs-example-ner \
 Transmettez le nom exact du dataset à l'[endpoint de création de
 jobs d'entraînement](/fr/api-reference/training-jobs/create) :
 
+<Warning>
+  L'exemple géré de cette préversion utilise les champs prévus `model` et
+  `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
+  ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
+  généré n'inclut pas la nouvelle forme de requête.
+</Warning>
+
 ```json
 {
   "type": "config",

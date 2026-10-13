@@ -1,0 +1,161 @@
+---
+title: "Migrate from Tinker"
+description: "Move a compatible Tinker SDK workload onto Fastino interactive training jobs."
+---
+
+Fastino supports a defined subset of the `tinker` SDK as a client interface for
+interactive training jobs. A migrated training client is a Fastino job in
+`/v1/training/jobs`; its SDK model ID and canonical Fastino job ID are identical.
+
+Treat your existing program as the acceptance test. Change the connection,
+check every operation, and run a small smoke test before restoring production
+workload sizes.
+
+## 1. Pin the tested package
+
+<CodeGroup>
+
+```bash uv
+uv add "tinker==0.33.1"
+```
+
+```bash pip
+pip install "tinker==0.33.1"
+```
+
+</CodeGroup>
+
+## 2. Replace endpoint and authentication
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_API_KEY="fast_sk_..."
+export TINKER_BASE_URL="https://api.fastino.ai/v1/training/compat/tinker"
+export TINKER_CREDENTIAL_CMD='printf "%s\n" "$FASTINO_API_KEY"'
+```
+
+```powershell Windows
+$env:FASTINO_API_KEY = "fast_sk_..."
+$env:TINKER_BASE_URL = "https://api.fastino.ai/v1/training/compat/tinker"
+$env:TINKER_CREDENTIAL_CMD = 'powershell -NoProfile -Command "[Console]::Out.WriteLine($env:FASTINO_API_KEY)"'
+```
+
+</CodeGroup>
+
+The SDK appends `/api/v1/{operation}` to `TINKER_BASE_URL`.
+`TINKER_CREDENTIAL_CMD` runs on every token request and must print a nonempty
+credential. Use a normal `fast_sk_` Fastino key; `tml-` credentials are rejected.
+Do not set `TINKER_API_KEY`.
+
+## 3. Check the workload
+
+1. Query `ServiceClient.get_server_capabilities()` and choose an available base
+   model. Keep the SDK parameter name `base_model`.
+2. Compare every method in your code with the
+   [supported client behavior](#supported-client-behavior).
+3. Remove dependencies on unsupported batch future retrieval, external weight
+   export, or external weight URLs.
+4. Keep prompt rendering, reward logic, batching, evaluation, and stopping
+   criteria in your application.
+
+Capabilities are the source of truth for environment-dependent support. Do not
+carry over model, rank, context, loss, or request-limit assumptions from another
+deployment.
+
+## 4. Run a smoke test
+
+Use the smallest valid datums and optimizer settings from your existing
+workload for a low-cost test that:
+
+- Creates one client with `create_lora_training_client(base_model=...)`
+- Reads `training_client.get_info().model_data.model_id`
+- Saves sampler weights and samples once
+- Runs one supported forward/backward operation and one optimizer step
+- Saves and reloads a state checkpoint
+- Fetches the same ID from `GET /v1/training/jobs/{job_id}`
+
+Use the SDK for interactive operations. The adapter is intentionally absent
+from Fastino's OpenAPI and API reference, so do not construct adapter HTTP calls.
+
+## Supported client behavior
+
+Fastino's HTTP adapter translates supported calls from `tinker==0.33.1` into
+operations on one interactive Fastino job.
+
+### Training and sampling
+
+| SDK method or operation | Fastino behavior |
+| --- | --- |
+| `create_lora_training_client` | Creates an interactive job |
+| `copy_weights` | Starts an interactive job from a checkpoint |
+| `TrainingClient.get_info` | Returns the interactive job |
+| `forward` | Runs a forward-only operation |
+| `forward_backward` | Runs a forward and backward operation |
+| Custom forward/backward operation | Runs a supported custom-loss operation |
+| `optim_step` | Applies an optimizer update |
+| `save_state` | Saves training state |
+| `save_weights_for_sampler` | Saves sampler weights |
+| Load training state | Restores a state checkpoint |
+| Create or get a sampling client | Resolves sampler weights |
+| `SamplingClient.sample` | Samples through the selected checkpoint |
+
+Keep the SDK parameter `base_model` unchanged. Query
+`ServiceClient.get_server_capabilities()` before selecting a model, rank, loss,
+or optional operation.
+
+### Futures and administration
+
+| SDK method or operation | Fastino behavior |
+| --- | --- |
+| Future result/get | Retrieves one asynchronous result |
+| Future cancel | Requests cancellation of one future |
+| `RestClient` list or get training runs | Reads canonical Fastino jobs |
+| List checkpoints | Reads checkpoints that belong to the job |
+| Download checkpoint archive | Downloads an interactive checkpoint |
+| Delete checkpoint | Deletes a checkpoint through the SDK |
+| Publish or unpublish checkpoint | Changes checkpoint publication through the SDK |
+| Set or clear checkpoint TTL | Changes checkpoint retention through the SDK |
+| Checkpoint storage usage | Reads current checkpoint storage through the SDK |
+| Billing usage | Reads hourly usage events through the SDK |
+
+These administration methods are supported SDK operations, not public Training
+API routes. The adapter also handles token exchange automatically using the key
+printed by `TINKER_CREDENTIAL_CMD`. Do not construct adapter requests.
+
+### Unsupported calls
+
+Fastino does not support:
+
+- Batch future retrieval through `retrieve_futures`
+- `save_weights_external`
+- `external_weights_urls`
+
+Do not infer support because a method exists in the installed package. The live
+capability response is authoritative for environment-dependent behavior.
+
+## Troubleshoot the connection
+
+| Symptom | Check |
+| --- | --- |
+| Authentication fails | Confirm that `TINKER_CREDENTIAL_CMD` prints one current `fast_sk_` key and no extra output |
+| The client cannot connect | Confirm that `TINKER_BASE_URL` is exactly `https://api.fastino.ai/v1/training/compat/tinker` |
+| A model or operation is rejected | Query capabilities again and compare the call with the support table |
+| Canonical job lookup fails | Confirm that the ID came from `get_info().model_data.model_id` and that the same Fastino team is authenticated |
+
+## Migration checklist
+
+- [ ] Pin `tinker==0.33.1`.
+- [ ] Set the Fastino adapter base URL.
+- [ ] Deliver a `fast_sk_` key through `TINKER_CREDENTIAL_CMD`.
+- [ ] Confirm interactive training is enabled for the Fastino team.
+- [ ] Check every SDK method against the supported client behavior.
+- [ ] Select the model and optional features from capabilities.
+- [ ] Complete one sampling and training update.
+- [ ] Save and reload one state checkpoint.
+- [ ] Verify the SDK model ID through the canonical job endpoint.
+- [ ] Increase workload size only after the smoke test passes.
+
+<Card title="Build the training loop" icon="diagram-project" href="/training/training-loop">
+  Connect sampling, rewards, updates, and checkpoints in one job.
+</Card>

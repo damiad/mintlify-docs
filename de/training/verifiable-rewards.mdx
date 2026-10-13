@@ -1,5 +1,6 @@
 ---
 title: "Mit verifizierbaren Rewards trainieren"
+sidebarTitle: "Verifizierbare Rewards"
 description: "Wandeln Sie einen deterministischen Grader in ein Lernsignal für einen interaktiven Fastino-Job um."
 ---
 
@@ -17,7 +18,7 @@ Anwendungsstatus bleiben in Ihrem Code.
 
 ## Bevor Sie beginnen
 
-Schließen Sie den [Schnellstart](/de/rl-api/quickstart) ab und prüfen Sie
+Schließen Sie den [Schnellstart für benutzerdefinierte Loops](/de/training/quickstart#custom-training-loop) ab und prüfen Sie
 anschließend über die Fähigkeiten, ob das ausgewählte Modell und die
 Trainingsoperationen aktiviert sind. Die folgenden Snippets konzentrieren sich
 auf den benutzereigenen Reward-Ablauf; passen Sie die Erstellung der Datums an
@@ -108,7 +109,7 @@ if not (
     == len(padded_logprobs)
     == len(padded_advantages)
 ):
-    raise ValueError("RL datum arrays are not aligned")
+    raise ValueError("training datum arrays are not aligned")
 ```
 
 Verwenden Sie den Renderer und Tokenizer, die dem ausgewählten `base_model`
@@ -163,4 +164,4 @@ anhand seines Namens raten zu müssen.
 - Die zurückgehaltene Evaluierung bleibt vom Trainings-Reward-Batch getrennt.
 
 Den umgebenden Lebenszyklus finden Sie unter
-[Der RL-Trainingsloop](/de/rl-api/training-loop).
+[Benutzerdefinierten Trainingsloop erstellen](/de/training/training-loop).

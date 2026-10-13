@@ -89,6 +89,13 @@ curl --fail-with-body -sS https://api.fastino.ai/v1/datasets/docs-example-ner \
 Übergeben Sie den exakten Datensatznamen an den [Endpunkt zum Erstellen
 von Trainingsjobs](/de/api-reference/training-jobs/create):
 
+<Warning>
+  Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
+  `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
+  und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
+  generierte Backend-Vertrag die neue Request-Form enthält.
+</Warning>
+
 ```json
 {
   "type": "config",

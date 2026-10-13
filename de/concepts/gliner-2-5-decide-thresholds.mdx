@@ -4,6 +4,13 @@ sidebarTitle: "Evaluierung & Training"
 description: "Evaluieren Sie GLiNER 2.5 Decide, wählen Sie Multi-Label-Schwellenwerte aus und stimmen Sie das Modell für Ihre Domäne fein ab."
 ---
 
+<Warning>
+  Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
+  `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
+  und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
+  generierte Backend-Vertrag die neue Request-Form enthält.
+</Warning>
+
 Evaluieren Sie genau das `classifications`-Schema, das Ihre Anwendung an `fastino/GLiNER-2.5-Decide` senden wird. Ändern Sie Labels oder Aufgabeneinstellungen nur zwischen Evaluierungsdurchläufen, damit die Ergebnisse vergleichbar bleiben.
 
 ## Ein Decide-Schema evaluieren

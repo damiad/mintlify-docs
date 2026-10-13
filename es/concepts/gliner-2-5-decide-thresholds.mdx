@@ -4,6 +4,13 @@ sidebarTitle: "Evaluación y entrenamiento"
 description: "Evalúa GLiNER 2.5 Decide, selecciona umbrales multietiqueta y ajusta el modelo con datos de clasificación representativos."
 ---
 
+<Warning>
+  El ejemplo gestionado de esta versión preliminar usa los campos previstos
+  `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
+  y rechazan esos campos. No fusiones esta versión preliminar hasta que el
+  contrato de backend generado incluya la nueva forma de la solicitud.
+</Warning>
+
 Evalúa el esquema `classifications` exacto que tu aplicación enviará a `fastino/GLiNER-2.5-Decide`. Cambia las etiquetas o la configuración de la tarea únicamente entre ejecuciones de evaluación para que los resultados sigan siendo comparables.
 
 ## Evalúa un esquema de Decide

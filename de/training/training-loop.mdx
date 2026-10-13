@@ -1,5 +1,6 @@
 ---
-title: "Der RL-Trainingsloop"
+title: "Benutzerdefinierten Trainingsloop erstellen"
+sidebarTitle: "Trainingsloop"
 description: "Verbinden Sie Sampling, Rewards, Updates und Checkpoints innerhalb eines interaktiven Fastino-Jobs."
 ---
 
@@ -55,24 +56,15 @@ Fastino-Job.
 | `ServiceClient` | Fragt Fähigkeiten ab und erstellt SDK-Clients |
 | `TrainingClient` | Repräsentiert einen interaktiven Fastino-Job und sendet dessen Modelloperationen |
 | `SamplingClient` | Sampelt aus einem aufgelösten Checkpoint |
-| `RestClient` | Listet kanonische Jobs auf oder ruft sie ab und verwaltet Checkpoints |
+| `RestClient` | Listet kanonische Jobs auf oder ruft sie ab und verwaltet Checkpoints über unterstützte SDK-Methoden |
 | Future | Verfolgt eine an den Job gesendete Operation |
 
 Die SDK-Modell-ID ist die kanonische Fastino-Job-ID. Futures und
 Sampling-Clients erstellen keine unabhängigen Läufe.
 
-## Gruppenrelative Rewards
-
-Eine übliche, von der Anwendung ausgeführte Transformation für eine Gruppe von
-Antworten zieht den mittleren Reward der Gruppe ab:
-
-```python
-mean_reward = sum(rewards) / len(rewards)
-advantages = [reward - mean_reward for reward in rewards]
-```
-
-Wenn jeder zentrierte Advantage null ist, enthält die Gruppe kein relatives
-Signal. Ihre Anwendung kann dies protokollieren und die Gruppe überspringen.
+Wie Sie deterministisches Grading in gruppenrelative Advantages umwandeln,
+erfahren Sie unter
+[Mit verifizierbaren Rewards trainieren](/de/training/verifiable-rewards).
 
 ## Ausgerichtete Datums erstellen
 
@@ -103,21 +95,16 @@ verändern.
 Das SDK führt diese interaktiven Operationen aus. Bilden Sie sie nicht als
 direkte HTTP-Aufrufe nach.
 
-## Checkpoint-Art auswählen
+Verfolgen Sie jedes Future, das ein unterstützter Aufruf zurückgibt. Lösen Sie
+Futures einzeln auf oder brechen Sie sie einzeln ab. Der Batch-Abruf über
+`retrieve_futures` wird nicht unterstützt.
 
-```python
-state = training_client.save_state("step-000100").result()
-sampler = training_client.save_weights_for_sampler(
-    "step-000100"
-).result()
-```
+## Loop wiederherstellen
 
-Verwenden Sie den Status-Checkpoint als Wiederherstellungsgrenze für das
-Training. Verwenden Sie den Sampler-Checkpoint für Rollouts oder Evaluierung.
-Speichern Sie die ausgewählte Checkpoint-ID mit Ihren Anwendungsmetadaten,
-anstatt den Status aus einem Namen abzuleiten.
+Speichern Sie die kanonische Job-ID, den Anwendungsschritt, den
+Datensatz-Cursor und die relevanten Future- oder Checkpoint-IDs dauerhaft. Ein
+neu gestarteter Controller kann dann ermitteln, welche Arbeit abgeschlossen
+wurde, ohne ein Update zu wiederholen.
 
-Um diesen Loop mit einem deterministischen Grader zu implementieren, fahren Sie
-mit [Mit verifizierbaren Rewards trainieren](/de/rl-api/verifiable-rewards)
-fort. Folgen Sie zur Wiederherstellung
-[Checkpoint speichern und fortsetzen](/de/rl-api/checkpoint-and-resume).
+Die Wiederherstellungsreihenfolge und die Checkpoint-Arten finden Sie unter
+[Checkpoints und Wiederherstellung](/de/training/checkpoints).

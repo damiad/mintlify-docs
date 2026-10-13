@@ -17,8 +17,10 @@ is a Fastino account and a terminal.
     somewhere safe because you won't be able to view it again after closing the dialog.
 
     <Warning>
-      Keep your API key out of version control. Use an environment variable or a secrets
-      manager rather than hardcoding it in your source files.
+      The managed example in this preview uses the planned `model` and `type`
+      fields. Current Pioneer deployments require `base_model` and reject those
+      fields. Do not merge this preview until the generated backend contract
+      includes the new request shape.
     </Warning>
 
     Set your key as an environment variable so the examples below work as-is:
@@ -212,6 +214,13 @@ is a Fastino account and a terminal.
 
   <Step title="Start a training job (optional)">
     When you're ready to fine-tune on your own data, start a training job:
+
+    <Warning>
+  The managed example in this preview uses the planned `model` and `type`
+  fields. Current Pioneer deployments require `base_model` and reject those
+  fields. Do not merge this preview until the generated backend contract
+  includes the new request shape.
+</Warning>
 
     <CodeGroup>
 

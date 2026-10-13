@@ -1,5 +1,6 @@
 ---
-title: "El bucle de entrenamiento de RL"
+title: "Construye un bucle de entrenamiento personalizado"
+sidebarTitle: "Bucle de entrenamiento"
 description: "Conecta el muestreo, las recompensas, las actualizaciones y los checkpoints dentro de un trabajo interactivo de Fastino."
 ---
 
@@ -49,24 +50,14 @@ un trabajo interactivo de Fastino durante todo el bucle.
 | `ServiceClient` | Consulta capacidades y crea clientes del SDK |
 | `TrainingClient` | Representa un trabajo interactivo de Fastino y envía sus operaciones del modelo |
 | `SamplingClient` | Muestrea desde un checkpoint resuelto |
-| `RestClient` | Lista u obtiene trabajos canónicos y administra checkpoints |
+| `RestClient` | Lista u obtiene trabajos canónicos y administra checkpoints con métodos compatibles del SDK |
 | Future | Realiza el seguimiento de una operación enviada al trabajo |
 
 El ID de modelo del SDK es el ID canónico del trabajo de Fastino. Los futures y
 los clientes de muestreo no crean ejecuciones independientes.
 
-## Recompensas relativas al grupo
-
-Para un grupo de respuestas, una transformación habitual controlada por la
-aplicación resta la recompensa media del grupo:
-
-```python
-mean_reward = sum(rewards) / len(rewards)
-advantages = [reward - mean_reward for reward in rewards]
-```
-
-Si todas las ventajas centradas son cero, el grupo no contiene una señal
-relativa. Tu aplicación puede registrarlo y omitirlo.
+Para convertir una evaluación determinista en ventajas relativas al grupo,
+sigue [Entrenar con recompensas verificables](/es/training/verifiable-rewards).
 
 ## Construye datums alineados
 
@@ -95,19 +86,16 @@ sin coordinación en la aplicación.
 El SDK realiza estas operaciones interactivas. No las reproduzcas como llamadas
 HTTP directas.
 
-## Elige el tipo de checkpoint
+Haz un seguimiento de cada future que devuelva una llamada compatible. Resuelve
+o cancela los futures de forma individual. No se admite la recuperación por
+lotes mediante `retrieve_futures`.
 
-```python
-state = training_client.save_state("step-000100").result()
-sampler = training_client.save_weights_for_sampler(
-    "step-000100"
-).result()
-```
+## Recupera el bucle
 
-Usa el checkpoint de estado como límite de recuperación del entrenamiento y el
-checkpoint de muestreador para rollouts o evaluación. Guarda el identificador
-elegido con los metadatos de tu aplicación en lugar de deducir el estado del nombre.
+Conserva el ID canónico del trabajo, el paso de la aplicación, el cursor del
+dataset y los identificadores de futures o checkpoints relevantes. Así, un
+controlador reiniciado puede determinar qué trabajo se completó sin repetir una
+actualización.
 
-Para implementar este bucle con un evaluador determinista, continúa con
-[Entrenar con recompensas verificables](/es/rl-api/verifiable-rewards). Para la
-recuperación, sigue [Guardar un checkpoint y reanudar](/es/rl-api/checkpoint-and-resume).
+Para conocer la secuencia de recuperación y los tipos de checkpoint, sigue
+[Checkpoints y recuperación](/es/training/checkpoints).

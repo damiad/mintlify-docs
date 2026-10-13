@@ -1,5 +1,6 @@
 ---
 title: "Entrenar con recompensas verificables"
+sidebarTitle: "Recompensas verificables"
 description: "Convierte un evaluador determinista en una señal de aprendizaje para un trabajo interactivo de Fastino."
 ---
 
@@ -17,7 +18,7 @@ ejecución de recompensas y el estado de la aplicación permanecen en tu código
 
 ## Antes de comenzar
 
-Completa la [Guía rápida](/es/rl-api/quickstart) y confirma después mediante las
+Completa la [Guía rápida del bucle personalizado](/es/training/quickstart#custom-training-loop) y confirma después mediante las
 capacidades que estén habilitados el modelo y las operaciones elegidos. Los
 fragmentos siguientes se centran en el flujo de recompensas controlado por el
 usuario; adapta la construcción de datums a `tinker==0.33.1` y al modelo elegido.
@@ -107,7 +108,7 @@ if not (
     == len(padded_logprobs)
     == len(padded_advantages)
 ):
-    raise ValueError("RL datum arrays are not aligned")
+    raise ValueError("training datum arrays are not aligned")
 ```
 
 Usa el renderizador y el tokenizador asociados al `base_model` seleccionado.
@@ -161,4 +162,4 @@ por su nombre.
 - La evaluación con datos reservados permanece separada del lote de recompensas de entrenamiento.
 
 Para consultar el ciclo de vida circundante, lee
-[El bucle de entrenamiento de RL](/es/rl-api/training-loop).
+[Construye un bucle de entrenamiento personalizado](/es/training/training-loop).

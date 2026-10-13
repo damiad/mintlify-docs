@@ -6,7 +6,10 @@ api: "POST /v1/training/jobs"
 ---
 
 <Warning>
-  Dieser Entwurf verwendet die kommenden nativen Anfragefelder `model` und `type`. Bis zum Start der einheitlichen Training API gilt in der Produktion weiterhin der generierte OpenAPI-Vertrag.
+  Diese Vorschau verwendet die geplanten Anfragefelder `model` und `type`.
+  Aktuelle Pioneer-Bereitstellungen verlangen `base_model` und lehnen diese
+  Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der generierte
+  Backend-Vertrag die Felder enthält.
 </Warning>
 
 `POST /v1/training/jobs`
@@ -14,8 +17,9 @@ api: "POST /v1/training/jobs"
 Erstellt einen asynchronen `config`-Trainingsjob und gibt dessen Job-Datensatz
 zurück. Bei einem Config-Job stellen Sie einen Datensatz und eine Konfiguration
 bereit, und Fastino führt den Trainingsloop aus. Um den Loop Schritt für Schritt
-zu steuern, verwenden Sie einen
-[`interactive`-Job über die RL API](/de/rl-api/quickstart).
+zu steuern, folgen Sie dem
+[Pfad für einen eigenen Trainingsablauf](/de/training/quickstart#custom-training-loop).
+Dieser Pfad erstellt einen `interactive`-Job.
 
 Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
 

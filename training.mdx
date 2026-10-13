@@ -4,25 +4,21 @@ sidebarTitle: "Overview"
 description: "Choose managed training, application-directed training, or a private autonomous training agent."
 ---
 
-The Training API groups every training workflow under `/v1/training`:
+Every Fastino training workload is a job. Choose who controls the training
+loop, then use `/v1/training/jobs` to inspect the job.
 
 <CardGroup cols={3}>
-  <Card title="Jobs" icon="sliders" href="/training/quickstart">
-    Create and inspect managed `config` jobs through `/v1/training/jobs`.
+  <Card title="Managed training" icon="sliders" href="/training/quickstart#managed-training">
+    Provide a dataset and configuration. Fastino runs the training loop.
   </Card>
-  <Card title="SDK adapter" icon="code" href="/rl-api">
-    Direct an `interactive` job through the supported SDK adapter at
-    `/v1/training/compat/tinker`.
+  <Card title="Custom training loop" icon="code" href="/training/quickstart#custom-training-loop">
+    Use a supported SDK client while your application controls each update.
   </Card>
-  <Card title="Auto" icon="sparkles" href="/training/auto">
+  <Card title="Training Auto" icon="sparkles" href="/training/auto">
     Delegate the training lifecycle to Fastino's autonomous training agent.
   </Card>
 </CardGroup>
 
-<Warning>
-  This draft describes the upcoming unified Training API. Do not use its
-  request examples against production until Fastino announces availability.
-</Warning>
 
 ## Choose a job type
 
@@ -31,16 +27,20 @@ Every job has a `type`:
 | Type | Who controls the loop? | How it starts |
 | --- | --- | --- |
 | `config` | Fastino | Send a dataset and configuration to `POST /v1/training/jobs`. |
-| `interactive` | Your application | Create a training client through the supported SDK adapter. |
+| `interactive` | Your application | Create a training client through a supported SDK client. |
 
 Both types share the same job identity. Canonical reads use
 `GET /v1/training/jobs`, `GET /v1/training/jobs/{job_id}`, and
 `GET /v1/training/jobs/{job_id}/checkpoints`.
 
-The compatibility adapter is not a second training service. It translates
-supported SDK calls into operations on an interactive Fastino job. Adapter
-operations are intentionally absent from OpenAPI; do not construct their HTTP
-paths yourself.
+For custom loops, the SDK client uses Fastino's HTTP compatibility adapter. The
+adapter is not an SDK or a second training service. Its operations stay out of
+OpenAPI and the API reference. Do not construct adapter requests yourself.
+
+<Note>
+  Custom training loops require team access. Without access, job lists contain
+  only config jobs and interactive job IDs return `404`.
+</Note>
 
 ## Config-job lifecycle
 
@@ -83,10 +83,10 @@ terminal failure. `status` remains the persisted value, such as `errored`.
 
 <CardGroup cols={3}>
   <Card title="Quickstart" icon="play" href="/training/quickstart">
-    Create and monitor a managed config job.
+    Run managed training or start a custom training loop.
   </Card>
-  <Card title="RL API" icon="repeat-2" href="/rl-api">
-    Direct an interactive training job through the SDK.
+  <Card title="Migrate from Tinker" icon="arrow-right-arrow-left" href="/training/migrate-from-tinker">
+    Move an existing compatible workload to Fastino.
   </Card>
   <Card title="Fine-tune GLiNER" icon="tags" href="/guides/fine-tune-gliner">
     Prepare entity data and train a GLiNER model.

@@ -3,7 +3,7 @@
 > Crea decisiones estructuradas con GLiDE, ejecuta extracción basada en esquemas con GLiNER y ajusta modelos especializados con Fastino.
 
 > ## Instrucciones para agentes
-> Usa https://docs.fastino.ai/openapi.json como fuente de verdad para las rutas públicas. Los trabajos de entrenamiento usan `/v1/training/jobs`. Para operaciones RL interactivas, sigue las páginas de RL API y usa el SDK compatible; su adaptador no aparece en OpenAPI y no debe llamarse directamente. Training Auto es de acceso privado; no deduzcas llamadas a `/v1/training/auto` y dirige a los usuarios a `sales@fastino.ai`. No deduzcas rutas no documentadas. Lee las claves de API desde `FASTINO_API_KEY` y nunca incluyas credenciales en código, registros o informes.
+> Usa https://docs.fastino.ai/openapi.json como fuente de verdad para las rutas públicas. Los trabajos de entrenamiento usan `/v1/training/jobs`. Para bucles de entrenamiento personalizados, sigue las páginas de flujos de la API de entrenamiento y usa el cliente SDK compatible; su adaptador HTTP no aparece en OpenAPI y no debe llamarse directamente. Training Auto es de acceso privado y no tiene una ruta pública; dirige a los usuarios a `sales@fastino.ai`. No deduzcas rutas no documentadas. Lee las claves de API desde `FASTINO_API_KEY` y nunca incluyas credenciales en código, registros o informes.
 
 ## Recursos para agentes
 
@@ -47,6 +47,7 @@
 ### Entidades y clasificación
 
 - [GLiNER2.5](https://docs.fastino.ai/es/concepts/gliner.md): Descubre cuándo y cómo usar GLiNER2.5 Multi para extracción de información multilingüe basada en esquemas.
+- [Skill de agente GLiNER](https://docs.fastino.ai/es/concepts/gliner-agent-skill.md): Instala el skill GLiNER alojado de Fastino para Cursor, Claude Code y Codex.
 - [Inferencia de GLiNER con /v1/chat/completions](https://docs.fastino.ai/es/inference/chat-completions.md): Usa POST /v1/chat/completions para extracción, clasificación, registros y relaciones con GLiNER, no para decisiones de GLiDE.
 - [Receta: Extrae entidades de texto multilingüe](https://docs.fastino.ai/es/cookbooks/gliner-entity-extraction.md): Extrae personas, organizaciones, lugares y fechas de texto en cualquier idioma compatible con GLiNER 2.5 Multi.
 - [Receta: Clasifica texto con tus propias etiquetas](https://docs.fastino.ai/es/cookbooks/gliner-text-classification.md): Etiqueta texto con varias tareas de clasificación independientes en una sola llamada a GLiNER 2.5 Multi.
@@ -60,21 +61,14 @@
 ### API de entrenamiento
 
 - [API de entrenamiento](https://docs.fastino.ai/es/training.md): Elige entre entrenamiento gestionado, entrenamiento dirigido por la aplicación o un agente de entrenamiento autónomo privado.
-- [Guía rápida de entrenamiento](https://docs.fastino.ai/es/training/quickstart.md): Crea un trabajo de entrenamiento gestionado, guarda su ID y consúltalo hasta obtener un resultado terminal.
-- [Training Auto](https://docs.fastino.ai/es/training/auto.md): Delega la preparación de datos, el entrenamiento, la evaluación y la selección de modelos en el agente de entrenamiento autónomo de Fastino.
-- [Ajustar GLiNER](https://docs.fastino.ai/es/guides/fine-tune-gliner.md): Prepara un dataset de GLiNER, crea un trabajo de configuración gestionado y supervísalo hasta los checkpoints y la finalización.
-- [Skill de agente para entrenamiento](https://docs.fastino.ai/es/concepts/gliner-agent-skill.md): Instala el skill GLiNER alojado de Fastino para Cursor, Claude Code y Codex.
+- [Guía rápida de la API de entrenamiento](https://docs.fastino.ai/es/training/quickstart.md): Inicia un trabajo de entrenamiento gestionado o un bucle de entrenamiento controlado por la aplicación y, después, verifica su ID canónico de trabajo.
+- [Migrar desde Tinker](https://docs.fastino.ai/es/training/migrate-from-tinker.md): Traslada una carga de trabajo compatible del SDK de Tinker a los trabajos de entrenamiento interactivos de Fastino.
 - [Preparar y subir datasets de entrenamiento](https://docs.fastino.ai/es/concepts/datasets.md): Formatea, sube, valida e inspecciona datasets de NER, clasificación o decoder antes de iniciar un trabajo de entrenamiento de Fastino.
-
-### API de RL
-
-- [API de RL](https://docs.fastino.ai/es/rl-api.md): Ejecuta cargas de trabajo de aprendizaje por refuerzo y postentrenamiento personalizado como trabajos de entrenamiento interactivos de Fastino.
-- [Guía rápida de la API de RL](https://docs.fastino.ai/es/rl-api/quickstart.md): Crea, muestrea y verifica un trabajo de entrenamiento interactivo de Fastino.
-- [Migrar desde Tinker](https://docs.fastino.ai/es/rl-api/migrate-from-tinker.md): Traslada una carga de trabajo compatible del SDK de Tinker a los trabajos de entrenamiento interactivos de Fastino.
-- [El bucle de entrenamiento de RL](https://docs.fastino.ai/es/rl-api/training-loop.md): Conecta el muestreo, las recompensas, las actualizaciones y los checkpoints dentro de un trabajo interactivo de Fastino.
-- [Entrenar con recompensas verificables](https://docs.fastino.ai/es/rl-api/verifiable-rewards.md): Convierte un evaluador determinista en una señal de aprendizaje para un trabajo interactivo de Fastino.
-- [Guardar un checkpoint y reanudar un trabajo de RL](https://docs.fastino.ai/es/rl-api/checkpoint-and-resume.md): Guarda el estado del trabajo interactivo y el progreso de la aplicación y reanuda sin repetir el trabajo completado.
-- [Comportamiento en tiempo de ejecución y errores](https://docs.fastino.ai/es/rl-api/runtime.md): Comprende las operaciones, los checkpoints, la recuperación y los errores de un trabajo interactivo de Fastino.
+- [Ajustar GLiNER](https://docs.fastino.ai/es/guides/fine-tune-gliner.md): Prepara un dataset de GLiNER, crea un trabajo de configuración gestionado y supervísalo hasta los checkpoints y la finalización.
+- [Construye un bucle de entrenamiento personalizado](https://docs.fastino.ai/es/training/training-loop.md): Conecta el muestreo, las recompensas, las actualizaciones y los checkpoints dentro de un trabajo interactivo de Fastino.
+- [Entrenar con recompensas verificables](https://docs.fastino.ai/es/training/verifiable-rewards.md): Convierte un evaluador determinista en una señal de aprendizaje para un trabajo interactivo de Fastino.
+- [Checkpoints y recuperación](https://docs.fastino.ai/es/training/checkpoints.md): Guarda el estado del trabajo interactivo y el progreso de la aplicación y recupéralos sin repetir el trabajo completado.
+- [Training Auto](https://docs.fastino.ai/es/training/auto.md): Delega la preparación de datos, el entrenamiento, la evaluación y la selección de modelos en el agente de entrenamiento autónomo de Fastino.
 
 ### Solución de problemas
 

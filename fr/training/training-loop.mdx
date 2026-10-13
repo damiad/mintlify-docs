@@ -1,5 +1,6 @@
 ---
-title: "La boucle d'entraînement RL"
+title: "Construire une boucle d'entraînement personnalisée"
+sidebarTitle: "Boucle d'entraînement"
 description: "Reliez l'échantillonnage, les récompenses, les mises à jour et les checkpoints au sein d'un même job interactif Fastino."
 ---
 
@@ -54,24 +55,14 @@ la boucle.
 | `ServiceClient` | Interroge les capacités et crée les clients SDK |
 | `TrainingClient` | Représente un job interactif Fastino et soumet ses opérations de modèle |
 | `SamplingClient` | Échantillonne depuis un checkpoint résolu |
-| `RestClient` | Liste ou obtient les jobs canoniques et administre les checkpoints |
+| `RestClient` | Liste ou obtient les jobs canoniques et administre les checkpoints avec des méthodes SDK prises en charge |
 | Future | Suit une opération soumise au job |
 
 L'ID de modèle du SDK est l'ID de job Fastino canonique. Les futures et les
 clients d'échantillonnage ne créent pas d'exécutions indépendantes.
 
-## Récompenses relatives au groupe
-
-Pour un groupe de réponses, une transformation courante contrôlée par
-l'application soustrait la récompense moyenne du groupe :
-
-```python
-mean_reward = sum(rewards) / len(rewards)
-advantages = [reward - mean_reward for reward in rewards]
-```
-
-Si tous les avantages centrés sont nuls, le groupe ne contient aucun signal
-relatif. Votre application peut le journaliser et l'ignorer.
+Pour transformer une évaluation déterministe en avantages relatifs au groupe,
+suivez [S'entraîner avec des récompenses vérifiables](/fr/training/verifiable-rewards).
 
 ## Construire des datums alignés
 
@@ -102,21 +93,16 @@ job sans coordination au niveau de l'application.
 Le SDK exécute ces opérations interactives. Ne les reproduisez pas sous forme
 d'appels HTTP directs.
 
-## Choisir le type de checkpoint
+Suivez chaque future renvoyée par un appel pris en charge. Résolvez ou annulez
+les futures individuellement. La récupération par lots via `retrieve_futures`
+n'est pas prise en charge.
 
-```python
-state = training_client.save_state("step-000100").result()
-sampler = training_client.save_weights_for_sampler(
-    "step-000100"
-).result()
-```
+## Récupérer la boucle
 
-Utilisez le checkpoint d'état comme limite de récupération de l'entraînement.
-Utilisez le checkpoint d'échantillonneur pour les rollouts ou l'évaluation.
-Conservez l'identifiant du checkpoint sélectionné avec les métadonnées de votre
-application plutôt que de déduire l'état à partir d'un nom.
+Conservez l'ID de job canonique, l'étape de l'application, le curseur du
+dataset et les identifiants de futures ou de checkpoints pertinents. Un
+contrôleur redémarré peut alors déterminer quel travail est terminé sans
+rejouer une mise à jour.
 
-Pour implémenter cette boucle avec un évaluateur déterministe, poursuivez avec
-[S'entraîner avec des récompenses vérifiables](/fr/rl-api/verifiable-rewards).
-Pour la récupération, consultez
-[Créer un checkpoint et reprendre](/fr/rl-api/checkpoint-and-resume).
+Pour la séquence de récupération et les types de checkpoints, consultez
+[Checkpoints et récupération](/fr/training/checkpoints).

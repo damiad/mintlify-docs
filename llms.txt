@@ -3,7 +3,7 @@
 > Build structured decisions with GLiDE, run schema-based extraction with GLiNER, and fine-tune specialized models with Fastino.
 
 > ## Agent instructions
-> Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call `POST https://api.fastino.ai/v1/systemone` with model `fastino/GLiDE`. Training jobs use `/v1/training/jobs`. For interactive RL operations, follow the RL API pages and use the supported SDK; its compatibility adapter is intentionally absent from OpenAPI and must not be called directly. Training Auto is private access; do not infer `/v1/training/auto` calls and direct interested users to `sales@fastino.ai`. Do not infer undocumented routes. Read API keys from `FASTINO_API_KEY` and never embed credentials in code, logs, or reports.
+> Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call `POST https://api.fastino.ai/v1/systemone` with model `fastino/GLiDE`. Training jobs use `/v1/training/jobs`. For custom training loops, follow the Training API workflow pages and use the supported SDK client. Its HTTP compatibility adapter is intentionally absent from OpenAPI and must not be called directly. Training Auto is private access and has no public route; direct interested users to `sales@fastino.ai`. Do not infer undocumented routes. Read API keys from `FASTINO_API_KEY` and never embed credentials in code, logs, or reports.
 
 ## Agent resources
 
@@ -54,6 +54,7 @@
 ### Entity & Classification
 
 - [GLiNER2.5](https://docs.fastino.ai/concepts/gliner.md): Learn when and how to use GLiNER2.5 Multi for multilingual, schema-driven information extraction.
+- [GLiNER Agent Skill](https://docs.fastino.ai/concepts/gliner-agent-skill.md): Install Fastino's hosted GLiNER skill for Cursor, Claude Code, and Codex.
 - [GLiNER inference with /v1/chat/completions](https://docs.fastino.ai/inference/chat-completions.md): Use POST /v1/chat/completions for GLiNER extraction, classification, records, and relations-not for GLiDE decisions.
 - [Cookbook: Extract entities from multilingual text](https://docs.fastino.ai/cookbooks/gliner-entity-extraction.md): Pull people, organizations, places, and dates out of text in any supported language with GLiNER 2.5 Multi.
 - [Cookbook: Classify text into your own labels](https://docs.fastino.ai/cookbooks/gliner-text-classification.md): Label text with several independent classification tasks in one GLiNER 2.5 Multi call.
@@ -67,21 +68,14 @@
 ### Training API
 
 - [Training API](https://docs.fastino.ai/training.md): Choose managed training, application-directed training, or a private autonomous training agent.
-- [Training quickstart](https://docs.fastino.ai/training/quickstart.md): Create a managed training job, save its ID, and poll it to a terminal result.
-- [Training Auto](https://docs.fastino.ai/training/auto.md): Delegate data preparation, training, evaluation, and model selection to Fastino's autonomous training agent.
-- [Fine-tune GLiNER](https://docs.fastino.ai/guides/fine-tune-gliner.md): Prepare a GLiNER dataset, create a managed config job, and monitor it through checkpoints and completion.
-- [Training Agent Skill](https://docs.fastino.ai/concepts/gliner-agent-skill.md): Install Fastino's hosted GLiNER skill for Cursor, Claude Code, and Codex.
+- [Training API quickstart](https://docs.fastino.ai/training/quickstart.md): Start a managed training job or an application-controlled training loop, then verify its canonical job ID.
+- [Migrate from Tinker](https://docs.fastino.ai/training/migrate-from-tinker.md): Move a compatible Tinker SDK workload onto Fastino interactive training jobs.
 - [Prepare and upload training datasets](https://docs.fastino.ai/concepts/datasets.md): Format, upload, validate, and inspect NER, classification, or decoder datasets before starting a Fastino training job.
-
-### RL API
-
-- [RL API](https://docs.fastino.ai/rl-api.md): Run reinforcement-learning and custom post-training workloads as Fastino interactive training jobs.
-- [RL API quickstart](https://docs.fastino.ai/rl-api/quickstart.md): Create, sample from, and verify a Fastino interactive training job.
-- [Migrate from Tinker](https://docs.fastino.ai/rl-api/migrate-from-tinker.md): Move a compatible Tinker SDK workload onto Fastino interactive training jobs.
-- [The RL training loop](https://docs.fastino.ai/rl-api/training-loop.md): Connect sampling, rewards, updates, and checkpoints inside one interactive Fastino job.
-- [Train with verifiable rewards](https://docs.fastino.ai/rl-api/verifiable-rewards.md): Turn a deterministic grader into a learning signal for one interactive Fastino job.
-- [Checkpoint and resume an RL job](https://docs.fastino.ai/rl-api/checkpoint-and-resume.md): Save interactive-job state and application progress, then resume without replaying completed work.
-- [Runtime behavior and errors](https://docs.fastino.ai/rl-api/runtime.md): Reason about operations, checkpoints, recovery, and errors for an interactive Fastino job.
+- [Fine-tune GLiNER](https://docs.fastino.ai/guides/fine-tune-gliner.md): Prepare a GLiNER dataset, create a managed config job, and monitor it through checkpoints and completion.
+- [Build a custom training loop](https://docs.fastino.ai/training/training-loop.md): Connect sampling, rewards, updates, and checkpoints inside one interactive Fastino job.
+- [Train with verifiable rewards](https://docs.fastino.ai/training/verifiable-rewards.md): Turn a deterministic grader into a learning signal for one interactive Fastino job.
+- [Checkpoints and recovery](https://docs.fastino.ai/training/checkpoints.md): Save interactive-job state and application progress, then recover without replaying completed work.
+- [Training Auto](https://docs.fastino.ai/training/auto.md): Delegate data preparation, training, evaluation, and model selection to Fastino's autonomous training agent.
 
 ### Troubleshooting
 

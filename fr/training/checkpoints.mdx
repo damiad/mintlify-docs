@@ -1,6 +1,6 @@
 ---
-title: "Créer un checkpoint et reprendre un job RL"
-description: "Enregistrez l'état d'un job interactif et la progression de l'application, puis reprenez sans rejouer le travail terminé."
+title: "Checkpoints et récupération"
+description: "Enregistrez l'état d'un job interactif et la progression de l'application, puis récupérez-les sans rejouer le travail terminé."
 ---
 
 Un checkpoint d'état protège l'état d'entraînement côté serveur. Un
@@ -127,11 +127,15 @@ un checkpoint d'échantillonneur pour les rollouts ou l'évaluation. N'utilisez
 pas un checkpoint d'échantillonneur comme point de récupération de l'état de
 l'optimiseur.
 
-L'administration canonique des checkpoints permet de les lister, les obtenir,
-les télécharger, les supprimer, les publier, les dépublier, mettre à jour leur
-TTL et consulter l'utilisation du stockage. Votre application contrôle la
-politique de rétention et le nettoyage ; ce guide ne promet aucun TTL ni aucune
-durée de rétention.
+L'API d'entraînement publique permet de lister les checkpoints. Elle permet de
+télécharger un checkpoint interactif lorsque l'équipe dispose à la fois de
+l'accès à l'entraînement interactif et de l'autorisation de télécharger les
+poids. Le SDK prend aussi en charge des méthodes
+de suppression, de publication, de rétention et d'utilisation du stockage des
+checkpoints. Ce sont des opérations SDK, et non des routes publiques de l'API
+d'entraînement. Ne construisez pas
+de requêtes vers l'adaptateur et ne supposez pas une durée de rétention non
+documentée.
 
 ## 6. Vérifier la poursuite
 
@@ -144,6 +148,12 @@ Avant d'augmenter la taille du workload repris :
 5. Enregistrez un nouveau checkpoint d'état sous un nouveau nom.
 6. Conservez l'enregistrement de boucle suivant.
 
-Utilisez le SDK pour toutes les opérations interactives. Pour la sémantique des
-jobs, des futures et des checkpoints, consultez
-[Comportement à l'exécution et erreurs](/fr/rl-api/runtime).
+Utilisez le SDK pour toutes les opérations interactives sur le modèle.
+
+## Diagnostiquer les erreurs de récupération
+
+| Symptôme | Vérification |
+| --- | --- |
+| Une future échoue | Enregistrez l'ID du job et le résultat de l'opération. Ne faites pas avancer l'état dépendant de l'application |
+| Un checkpoint ne peut pas être chargé | Vérifiez son job, son type de checkpoint et l'enregistrement de récupération contrôlé par le client |
+| La recherche du job canonique échoue | Vérifiez que l'ID provient de `get_info().model_data.model_id` et que la même équipe Fastino est authentifiée |

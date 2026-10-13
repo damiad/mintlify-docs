@@ -1,5 +1,6 @@
 ---
 title: "S'entraîner avec des récompenses vérifiables"
+sidebarTitle: "Récompenses vérifiables"
 description: "Transformez un évaluateur déterministe en signal d'apprentissage pour un job interactif Fastino."
 ---
 
@@ -17,7 +18,7 @@ des récompenses et l'état de l'application restent dans votre code.
 
 ## Avant de commencer
 
-Terminez le [démarrage rapide](/fr/rl-api/quickstart), puis confirmez via les
+Terminez le [démarrage rapide de la boucle personnalisée](/fr/training/quickstart#custom-training-loop), puis confirmez via les
 capacités que le modèle et les opérations d'entraînement choisis sont activés.
 Les extraits ci-dessous se concentrent sur le flux de récompense contrôlé par
 l'utilisateur ; adaptez la construction des datums à `tinker==0.33.1` et au
@@ -108,7 +109,7 @@ if not (
     == len(padded_logprobs)
     == len(padded_advantages)
 ):
-    raise ValueError("RL datum arrays are not aligned")
+    raise ValueError("training datum arrays are not aligned")
 ```
 
 Utilisez le renderer et le tokenizer associés au `base_model` sélectionné.
@@ -163,4 +164,4 @@ déduire de son nom.
 - L'évaluation sur un ensemble de validation reste distincte du lot de récompense d'entraînement.
 
 Pour le cycle de vie global, consultez
-[La boucle d'entraînement RL](/fr/rl-api/training-loop).
+[Construire une boucle d'entraînement personnalisée](/fr/training/training-loop).

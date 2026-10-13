@@ -8,15 +8,16 @@ api: "POST /v1/training/jobs"
 `POST /v1/training/jobs`
 
 <Warning>
-  This draft shows the upcoming `model` and `type` request fields. Production
-  continues to use its generated OpenAPI contract until the unified Training
-  API launches.
+  This preview shows the planned `model` and `type` request fields. Current
+  Pioneer deployments require `base_model` and reject those fields. Do not
+  merge this preview until the generated backend contract includes them.
 </Warning>
 
 Creates an asynchronous `config` training job and returns its job record. In a
 config job, you provide a dataset and configuration and Fastino runs the
-training loop. To control the loop step by step, use an
-[`interactive` job through the RL API](/rl-api/quickstart).
+training loop. To control the loop step by step, follow the
+[custom training loop path](/training/quickstart#custom-training-loop), which
+creates an `interactive` job.
 
 This endpoint is limited to 20 requests per minute per user.
 

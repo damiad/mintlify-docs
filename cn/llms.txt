@@ -3,7 +3,7 @@
 > 使用 GLiDE 构建结构化决策，使用 GLiNER 进行基于模式的抽取，并通过 Fastino 微调专用模型。
 
 > ## 代理说明
-> 使用 https://docs.fastino.ai/openapi.json 作为面向客户的 API 路由的事实来源。训练作业使用 `/v1/training/jobs`。对于交互式 RL 操作，请遵循 RL API 页面并使用受支持的 SDK；其兼容适配器不会出现在 OpenAPI 中，也不应被直接调用。Training Auto 属于私有访问；不要推断 `/v1/training/auto` 调用，请引导用户联系 `sales@fastino.ai`。不要推断未记录的路由。请从 `FASTINO_API_KEY` 读取 API 密钥，切勿在代码、日志或报告中嵌入凭据。
+> 使用 https://docs.fastino.ai/openapi.json 作为面向客户的 API 路由的事实来源。训练作业使用 `/v1/training/jobs`。对于自定义训练循环，请遵循训练 API 工作流页面并使用受支持的 SDK 客户端；其 HTTP 兼容适配器不会出现在 OpenAPI 中，也不应被直接调用。Training Auto 属于私有访问且没有公共路由；请引导用户联系 `sales@fastino.ai`。不要推断未记录的路由。请从 `FASTINO_API_KEY` 读取 API 密钥，切勿在代码、日志或报告中嵌入凭据。
 
 ## 代理资源
 
@@ -47,6 +47,7 @@
 ### 实体与分类
 
 - [GLiNER2.5](https://docs.fastino.ai/cn/concepts/gliner.md): 了解何时以及如何使用 GLiNER2.5 Multi 进行多语言、由 schema 驱动的信息抽取。
+- [GLiNER 智能体技能](https://docs.fastino.ai/cn/concepts/gliner-agent-skill.md): 为 Cursor、Claude Code 和 Codex 安装 Fastino 托管的 GLiNER 技能。
 - [GLiNER 推理：/v1/chat/completions](https://docs.fastino.ai/cn/inference/chat-completions.md): 使用 POST /v1/chat/completions 进行 GLiNER 提取、分类、记录构建和关系抽取，而不是用于 GLiDE 决策。
 - [实战示例：从多语言文本中提取实体](https://docs.fastino.ai/cn/cookbooks/gliner-entity-extraction.md): 使用 GLiNER 2.5 Multi，从任意受支持语言的文本中提取人名、组织、地点和日期。
 - [实战示例：使用自定义标签对文本分类](https://docs.fastino.ai/cn/cookbooks/gliner-text-classification.md): 在一次 GLiNER 2.5 Multi 调用中，用多个相互独立的分类任务为文本打标签。
@@ -60,21 +61,14 @@
 ### 训练 API
 
 - [训练 API](https://docs.fastino.ai/cn/training.md): 选择托管训练、应用主导的训练，或私有自治训练智能体。
-- [训练快速入门](https://docs.fastino.ai/cn/training/quickstart.md): 创建托管式训练任务、保存其 ID，并轮询至最终结果。
-- [Training Auto](https://docs.fastino.ai/cn/training/auto.md): 将数据准备、训练、评估和模型选择委托给 Fastino 的自治训练智能体。
-- [微调 GLiNER](https://docs.fastino.ai/cn/guides/fine-tune-gliner.md): 准备 GLiNER 数据集、创建托管式配置任务，并通过检查点直至任务完成进行监控。
-- [训练智能体技能](https://docs.fastino.ai/cn/concepts/gliner-agent-skill.md): 为 Cursor、Claude Code 和 Codex 安装 Fastino 托管的 GLiNER 技能。
+- [训练 API 快速入门](https://docs.fastino.ai/cn/training/quickstart.md): 启动托管训练任务或由应用控制的训练循环，然后验证其规范任务 ID。
+- [从 Tinker 迁移](https://docs.fastino.ai/cn/training/migrate-from-tinker.md): 将兼容的 Tinker SDK 工作负载迁移到 Fastino 交互式训练任务。
 - [准备并上传训练数据集](https://docs.fastino.ai/cn/concepts/datasets.md): 在启动 Fastino 训练任务之前，格式化、上传、验证并检查 NER、分类或解码器数据集。
-
-### RL API
-
-- [RL API](https://docs.fastino.ai/cn/rl-api.md): 以 Fastino 交互式训练任务的形式运行强化学习和自定义后训练工作负载。
-- [RL API 快速入门](https://docs.fastino.ai/cn/rl-api/quickstart.md): 创建 Fastino 交互式训练任务、从中采样并验证该任务。
-- [从 Tinker 迁移](https://docs.fastino.ai/cn/rl-api/migrate-from-tinker.md): 将兼容的 Tinker SDK 工作负载迁移到 Fastino 交互式训练任务。
-- [RL 训练循环](https://docs.fastino.ai/cn/rl-api/training-loop.md): 在一个 Fastino 交互式任务中连接采样、奖励、更新和检查点。
-- [使用可验证奖励进行训练](https://docs.fastino.ai/cn/rl-api/verifiable-rewards.md): 将确定性评分器转化为一个 Fastino 交互式任务的学习信号。
-- [为 RL 任务创建检查点并恢复](https://docs.fastino.ai/cn/rl-api/checkpoint-and-resume.md): 保存交互式任务状态和应用进度，然后在不重放已完成工作的情况下恢复。
-- [运行时行为和错误](https://docs.fastino.ai/cn/rl-api/runtime.md): 理解 Fastino 交互式任务的操作、检查点、恢复和错误。
+- [微调 GLiNER](https://docs.fastino.ai/cn/guides/fine-tune-gliner.md): 准备 GLiNER 数据集、创建托管式配置任务，并通过检查点直至任务完成进行监控。
+- [构建自定义训练循环](https://docs.fastino.ai/cn/training/training-loop.md): 在一个 Fastino 交互式任务中连接采样、奖励、更新和检查点。
+- [使用可验证奖励进行训练](https://docs.fastino.ai/cn/training/verifiable-rewards.md): 将确定性评分器转化为一个 Fastino 交互式任务的学习信号。
+- [检查点与恢复](https://docs.fastino.ai/cn/training/checkpoints.md): 保存交互式任务状态和应用进度，然后在不重放已完成工作的情况下恢复。
+- [Training Auto](https://docs.fastino.ai/cn/training/auto.md): 将数据准备、训练、评估和模型选择委托给 Fastino 的自治训练智能体。
 
 ### 故障排除
 

@@ -6,15 +6,18 @@ api: "POST /v1/training/jobs"
 ---
 
 <Warning>
-  Este borrador usa los próximos campos nativos `model` y `type`. Producción sigue usando su contrato OpenAPI generado hasta el lanzamiento de la API de entrenamiento unificada.
+  Esta vista previa usa los campos planificados `model` y `type`. Los despliegues
+  actuales de Pioneer requieren `base_model` y rechazan esos campos. No
+  fusiones esta vista previa hasta que el contrato generado del backend los incluya.
 </Warning>
 
 `POST /v1/training/jobs`
 
 Crea un trabajo de entrenamiento asíncrono `config` y devuelve su registro. En
 un trabajo de configuración, proporcionas un dataset y una configuración, y
-Fastino ejecuta el bucle. Para controlar el bucle paso a paso, usa un trabajo
-[`interactive` mediante la API de RL](/es/rl-api/quickstart).
+Fastino ejecuta el bucle. Para controlar el bucle paso a paso, sigue la
+[ruta del bucle de entrenamiento personalizado](/es/training/quickstart#custom-training-loop),
+que crea un trabajo `interactive`.
 
 Este endpoint está limitado a 20 solicitudes por minuto por usuario.
 

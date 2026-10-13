@@ -1,5 +1,6 @@
 ---
-title: "RL 训练循环"
+title: "构建自定义训练循环"
+sidebarTitle: "训练循环"
 description: "在一个 Fastino 交互式任务中连接采样、奖励、更新和检查点。"
 ---
 
@@ -42,21 +43,13 @@ description: "在一个 Fastino 交互式任务中连接采样、奖励、更新
 | `ServiceClient` | 查询功能并创建 SDK 客户端 |
 | `TrainingClient` | 代表一个 Fastino 交互式任务并提交其模型操作 |
 | `SamplingClient` | 从已解析的检查点采样 |
-| `RestClient` | 列出或获取规范任务并管理检查点 |
+| `RestClient` | 列出或获取规范任务，并使用受支持的 SDK 方法管理检查点 |
 | Future | 跟踪提交给任务的一项操作 |
 
 SDK 模型 ID 就是规范的 Fastino 任务 ID。Future 和采样客户端不会创建独立运行。
 
-## 组相对奖励
-
-对于一组响应，一种常见的应用侧转换是减去该组的平均奖励：
-
-```python
-mean_reward = sum(rewards) / len(rewards)
-advantages = [reward - mean_reward for reward in rewards]
-```
-
-如果所有居中后的优势值都为零，则该组没有相对信号。你的应用可以记录并跳过它。
+要将确定性评分转换为组相对优势值，请参阅
+[使用可验证奖励进行训练](/cn/training/verifiable-rewards)。
 
 ## 构建对齐的 datum
 
@@ -80,18 +73,11 @@ advantages = [reward - mean_reward for reward in rewards]
 
 SDK 执行这些交互式操作。不要将它们复现为直接 HTTP 调用。
 
-## 选择检查点类型
+跟踪受支持调用返回的每个 future。逐个解析或取消 future。不支持通过 `retrieve_futures` 批量检索。
 
-```python
-state = training_client.save_state("step-000100").result()
-sampler = training_client.save_weights_for_sampler(
-    "step-000100"
-).result()
-```
+## 恢复循环
 
-使用状态检查点作为训练恢复边界。使用采样器检查点进行 rollout 或评估。将所选检查点标识符
-与应用元数据一起存储，不要根据名称推断状态。
+持久化规范任务 ID、应用步骤、数据集游标以及相关的 future 或检查点标识符。
+这样，重启后的控制器无需重放更新即可确定哪些工作已完成。
 
-要使用确定性评分器实现此循环，请继续阅读
-[使用可验证奖励进行训练](/cn/rl-api/verifiable-rewards)。有关恢复，请参阅
-[创建检查点并恢复](/cn/rl-api/checkpoint-and-resume)。
+有关恢复顺序和检查点类型，请参阅[检查点与恢复](/cn/training/checkpoints)。

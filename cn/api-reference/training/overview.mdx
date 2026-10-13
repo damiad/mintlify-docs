@@ -6,9 +6,15 @@ description: "查看训练 API 契约的字段级细节。构建端到端训练�
 
 使用这些契约查看字段级细节。构建端到端训练流程时，请从生命周期指南开始。
 
+本参考发布面向客户的 `/v1/training/jobs` 契约。受支持的 SDK 客户端所使用的
+HTTP 兼容适配器不会出现在 OpenAPI 中。Training Auto 仍为私有访问。
+
 <CardGroup cols={2}>
   <Card title="训练生命周期" icon="route" href="/cn/training">
     选择模型、创建任务、轮询状态并处理生成的产物。
+  </Card>
+  <Card title="快速入门" icon="play" href="/cn/training/quickstart">
+    启动托管式训练或自定义训练循环。
   </Card>
   <Card title="上传数据集" icon="upload" href="/cn/concepts/datasets">
     准备 JSONL、上传、处理并确认可用版本。

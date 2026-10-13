@@ -60,6 +60,10 @@ REQUIRED_DISCOVERY_LINKS = {
     "datasets": "/concepts/datasets.md",
     "training": "/training.md",
     "training quickstart": "/training/quickstart.md",
+    "Tinker migration": "/training/migrate-from-tinker.md",
+    "training loop": "/training/training-loop.md",
+    "verifiable rewards": "/training/verifiable-rewards.md",
+    "checkpoint recovery": "/training/checkpoints.md",
     "Training Auto": "/training/auto.md",
     "GLiNER fine-tuning": "/guides/fine-tune-gliner.md",
     "inference reference": "/api-reference/inference/overview.md",
@@ -70,13 +74,6 @@ REQUIRED_DISCOVERY_LINKS = {
     "base models": "/api-reference/training/base-models.md",
     "dataset upload": "/api-reference/datasets/upload-url.md",
     "training creation": "/api-reference/training-jobs/create.md",
-    "RL API": "/rl-api.md",
-    "RL API quickstart": "/rl-api/quickstart.md",
-    "SDK migration": "/rl-api/migrate-from-tinker.md",
-    "verifiable rewards": "/rl-api/verifiable-rewards.md",
-    "RL checkpoint resume": "/rl-api/checkpoint-and-resume.md",
-    "RL training loop": "/rl-api/training-loop.md",
-    "RL API runtime": "/rl-api/runtime.md",
     "errors": "/troubleshooting/errors.md",
     "retries": "/troubleshooting/retries.md",
 }
@@ -93,16 +90,12 @@ JOURNEY_PAGES = (
     "inference/chat-completions.mdx",
     "training.mdx",
     "training/quickstart.mdx",
+    "training/migrate-from-tinker.mdx",
+    "training/training-loop.mdx",
+    "training/verifiable-rewards.mdx",
+    "training/checkpoints.mdx",
     "training/auto.mdx",
     "guides/fine-tune-gliner.mdx",
-    "rl-api.mdx",
-    "rl-api/quickstart.mdx",
-    "rl-api/migrate-from-tinker.mdx",
-    "rl-api/verifiable-rewards.mdx",
-    "rl-api/checkpoint-and-resume.mdx",
-    "rl-api/training-loop.mdx",
-    "rl-api/compatibility.mdx",
-    "rl-api/runtime.mdx",
     "troubleshooting/errors.mdx",
     "troubleshooting/retries.mdx",
     "api-reference/inference/overview.mdx",
@@ -114,15 +107,34 @@ COOKBOOK_ENDPOINTS = {
     "/v1/systemone": "X-API-Key: $FASTINO_API_KEY",
     "/v1/chat/completions": "Authorization: Bearer $FASTINO_API_KEY",
 }
-RL_PAGE_ORDER = (
-    "rl-api",
-    "rl-api/quickstart",
-    "rl-api/migrate-from-tinker",
-    "rl-api/training-loop",
-    "rl-api/verifiable-rewards",
-    "rl-api/checkpoint-and-resume",
-    "rl-api/runtime",
-)
+TRAINING_NAVIGATION = [
+    "training",
+    "training/quickstart",
+    "training/migrate-from-tinker",
+    "concepts/datasets",
+    "guides/fine-tune-gliner",
+    {
+        "group": "Training workflows",
+        "expanded": False,
+        "pages": [
+            "training/training-loop",
+            "training/verifiable-rewards",
+            "training/checkpoints",
+        ],
+    },
+    "training/auto",
+]
+TRAINING_SIDEBAR_TITLES = {
+    "training": "Overview",
+    "training/quickstart": "Quickstart",
+    "training/migrate-from-tinker": "Migrate from Tinker",
+    "concepts/datasets": "Datasets",
+    "guides/fine-tune-gliner": "Fine-tune GLiNER",
+    "training/training-loop": "Training loop",
+    "training/verifiable-rewards": "Verifiable rewards",
+    "training/checkpoints": "Checkpoints and recovery",
+    "training/auto": "Training Auto (Private access)",
+}
 
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\((?P<target>/[^)\s]+)\)")
 HREF_LINK = re.compile(r'href=["\'](?P<target>/[^"\']+)["\']')
@@ -444,11 +456,11 @@ def _ordered_navigation_pages(node: object) -> list[str]:
     return pages
 
 
-def _rl_navigation_findings(config: dict[str, object]) -> list[str]:
+def _training_navigation_findings(config: dict[str, object]) -> list[str]:
     navigation = config.get("navigation")
     languages = navigation.get("languages") if isinstance(navigation, dict) else None
     if not isinstance(languages, list):
-        return ["RL FLOW: docs.json has no navigation languages"]
+        return ["TRAINING FLOW: docs.json has no navigation languages"]
     english = next(
         (
             language
@@ -458,12 +470,70 @@ def _rl_navigation_findings(config: dict[str, object]) -> list[str]:
         None,
     )
     if not isinstance(english, dict):
-        return ["RL FLOW: English navigation is missing"]
-    pages = _ordered_navigation_pages(english)
-    rl_pages = tuple(page for page in pages if page == "rl-api" or page.startswith("rl-api/"))
-    if rl_pages != RL_PAGE_ORDER:
-        return [f"RL FLOW: expected page order {RL_PAGE_ORDER}, found {rl_pages}"]
-    return []
+        return ["TRAINING FLOW: English navigation is missing"]
+    tabs = english.get("tabs")
+    if not isinstance(tabs, list):
+        return ["TRAINING FLOW: English navigation has no tabs"]
+    documentation = next(
+        (
+            tab
+            for tab in tabs
+            if isinstance(tab, dict) and tab.get("tab") == "Documentation"
+        ),
+        None,
+    )
+    if not isinstance(documentation, dict):
+        return ["TRAINING FLOW: English Documentation tab is missing"]
+    groups = documentation.get("pages")
+    if not isinstance(groups, list):
+        return ["TRAINING FLOW: English Documentation tab has no groups"]
+    training = next(
+        (
+            group
+            for group in groups
+            if isinstance(group, dict) and group.get("group") == "Training API"
+        ),
+        None,
+    )
+    if not isinstance(training, dict):
+        return ["TRAINING FLOW: Training API group is missing"]
+    findings: list[str] = []
+    if training.get("pages") != TRAINING_NAVIGATION:
+        findings.append(
+            "TRAINING FLOW: expected exact Training API navigation "
+            f"{TRAINING_NAVIGATION}, found {training.get('pages')}"
+        )
+    stale_pages = [
+        page
+        for page in _ordered_navigation_pages(english)
+        if page == "rl-api" or page.startswith("rl-api/")
+    ]
+    if stale_pages:
+        findings.append(f"TRAINING FLOW: stale RL navigation pages: {stale_pages}")
+    for page, expected in TRAINING_SIDEBAR_TITLES.items():
+        text = (ROOT / f"{page}.mdx").read_text(encoding="utf-8")
+        sidebar = re.search(r'^sidebarTitle:\s*"(?P<title>[^"]+)"', text, re.MULTILINE)
+        title = re.search(r'^title:\s*"(?P<title>[^"]+)"', text, re.MULTILINE)
+        actual = sidebar.group("title") if sidebar else title.group("title") if title else None
+        if actual != expected:
+            findings.append(
+                f"TRAINING FLOW: expected {page} sidebar title {expected!r}, found {actual!r}"
+            )
+    return findings
+
+
+def _private_training_route_findings() -> list[str]:
+    findings: list[str] = []
+    for path in [*ROOT.rglob("*.mdx"), *ROOT.rglob("llms.txt")]:
+        relative = path.relative_to(ROOT)
+        text = path.read_text(encoding="utf-8")
+        if "/v1/training/auto" in text:
+            findings.append(f"TRAINING PRIVATE: {relative} exposes /v1/training/auto")
+        if "/v1/training/compat/tinker/" in text:
+            findings.append(
+                f"TRAINING PRIVATE: {relative} constructs a compatibility-adapter route"
+            )
+    return findings
 
 
 def _redirect_map(config: dict[str, object]) -> tuple[dict[str, str], list[str]]:
@@ -849,7 +919,8 @@ def run_static() -> None:
     config = json.loads((ROOT / "docs.json").read_text(encoding="utf-8"))
     findings = local_docs_findings(ROOT, document)
     findings.extend(_journey_discovery_findings())
-    findings.extend(_rl_navigation_findings(config))
+    findings.extend(_training_navigation_findings(config))
+    findings.extend(_private_training_route_findings())
     findings.extend(_local_link_findings())
     findings.extend(_redirect_findings(config))
     findings.extend(_locale_parity_findings(config, operations))

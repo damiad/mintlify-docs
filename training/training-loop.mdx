@@ -1,5 +1,6 @@
 ---
-title: "The RL training loop"
+title: "Build a custom training loop"
+sidebarTitle: "Training loop"
 description: "Connect sampling, rewards, updates, and checkpoints inside one interactive Fastino job."
 ---
 
@@ -49,24 +50,14 @@ represents one interactive Fastino job throughout the loop.
 | `ServiceClient` | Queries capabilities and creates SDK clients |
 | `TrainingClient` | Represents one interactive Fastino job and submits its model operations |
 | `SamplingClient` | Samples from a resolved checkpoint |
-| `RestClient` | Lists or gets canonical jobs and administers checkpoints |
+| `RestClient` | Lists or gets canonical jobs and uses supported SDK methods to administer checkpoints |
 | Future | Tracks one operation submitted to the job |
 
 The SDK model ID is the canonical Fastino job ID. Futures and sampling clients
 do not create independent runs.
 
-## Group-relative rewards
-
-For a group of responses, a common application-owned transformation subtracts
-the group's mean reward:
-
-```python
-mean_reward = sum(rewards) / len(rewards)
-advantages = [reward - mean_reward for reward in rewards]
-```
-
-If every centered advantage is zero, the group has no relative signal. Your
-application can log and skip it.
+To turn deterministic grading into group-relative advantages, follow
+[Train with verifiable rewards](/training/verifiable-rewards).
 
 ## Build aligned datums
 
@@ -95,19 +86,14 @@ coordination.
 The SDK performs these interactive operations. Do not reproduce them as direct
 HTTP calls.
 
-## Choose the checkpoint kind
+Track each future returned by a supported call. Resolve or cancel futures
+individually. Batch retrieval through `retrieve_futures` is not supported.
 
-```python
-state = training_client.save_state("step-000100").result()
-sampler = training_client.save_weights_for_sampler(
-    "step-000100"
-).result()
-```
+## Recover the loop
 
-Use the state checkpoint as a training recovery boundary. Use the sampler
-checkpoint for rollouts or evaluation. Store the chosen checkpoint identifier
-with your application metadata instead of inferring state from a name.
+Persist the canonical job ID, the application step, the dataset cursor, and
+the relevant future or checkpoint identifiers. A restarted controller can then
+determine which work completed without replaying an update.
 
-To implement this loop with a deterministic grader, continue to
-[Train with verifiable rewards](/rl-api/verifiable-rewards). For recovery,
-follow [Checkpoint and resume](/rl-api/checkpoint-and-resume).
+For the recovery sequence and checkpoint kinds, follow
+[Checkpoints and recovery](/training/checkpoints).

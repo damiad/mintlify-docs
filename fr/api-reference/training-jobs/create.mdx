@@ -6,7 +6,9 @@ api: "POST /v1/training/jobs"
 ---
 
 <Warning>
-  Ce brouillon utilise les futurs champs natifs `model` et `type`. La production continue d’utiliser son contrat OpenAPI généré jusqu’au lancement de l’API Training unifiée.
+  Cet aperçu utilise les champs planifiés `model` et `type`. Les déploiements
+  Pioneer actuels exigent `base_model` et refusent ces champs. Ne fusionnez pas
+  cet aperçu avant que le contrat généré du backend ne les inclue.
 </Warning>
 
 `POST /v1/training/jobs`
@@ -14,8 +16,9 @@ api: "POST /v1/training/jobs"
 Crée un job d'entraînement asynchrone `config` et renvoie son enregistrement.
 Dans un job de configuration, vous fournissez un dataset et une configuration,
 et Fastino exécute la boucle d'entraînement. Pour contrôler la boucle étape par
-étape, utilisez un
-[job `interactive` via l'API RL](/fr/rl-api/quickstart).
+étape, suivez le
+[parcours de la boucle personnalisée](/fr/training/quickstart#custom-training-loop),
+qui crée un job `interactive`.
 
 Cet endpoint est limité à 20 requêtes par minute et par utilisateur.
 

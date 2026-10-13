@@ -5,7 +5,8 @@ description: "准备 GLiNER 数据集、创建托管式配置任务，并通过�
 ---
 
 <Warning>
-  此草稿使用即将推出的原生 `model` 和 `type` 请求字段。在统一训练 API 发布前，生产环境仍以其生成的 OpenAPI 契约为准。
+  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
+  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
 </Warning>
 
 本指南将创建一个 `config` 训练任务。你提供就绪的数据集和训练设置；Fastino 负责运行训练循环。

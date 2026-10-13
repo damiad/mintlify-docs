@@ -17,8 +17,10 @@ una cuenta de Fastino y una terminal.
     en un lugar seguro, porque no podrás volver a verla después de cerrar el cuadro de diálogo.
 
     <Warning>
-      Mantén tu clave de API fuera del control de versiones. Usa una variable de entorno o un gestor
-      de secretos en lugar de escribirla directamente en tus archivos de código fuente.
+      El ejemplo gestionado de esta versión preliminar usa los campos previstos
+      `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
+      y rechazan esos campos. No fusiones esta versión preliminar hasta que el
+      contrato de backend generado incluya la nueva forma de la solicitud.
     </Warning>
 
     Define tu clave como variable de entorno para que los ejemplos siguientes funcionen tal cual:
@@ -212,6 +214,13 @@ una cuenta de Fastino y una terminal.
 
   <Step title="Inicia un trabajo de entrenamiento (opcional)">
     Cuando quieras hacer ajuste fino con tus propios datos, inicia un trabajo de entrenamiento:
+
+    <Warning>
+  El ejemplo gestionado de esta versión preliminar usa los campos previstos
+  `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
+  y rechazan esos campos. No fusiones esta versión preliminar hasta que el
+  contrato de backend generado incluya la nueva forma de la solicitud.
+</Warning>
 
     <CodeGroup>
 

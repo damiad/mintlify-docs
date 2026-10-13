@@ -1,6 +1,6 @@
 ---
-title: "Checkpoint and resume an RL job"
-description: "Save interactive-job state and application progress, then resume without replaying completed work."
+title: "Checkpoints and recovery"
+description: "Save interactive-job state and application progress, then recover without replaying completed work."
 ---
 
 A state checkpoint protects server-side training state. A complete recovery
@@ -122,10 +122,11 @@ Use a state checkpoint for training recovery. Use a sampler checkpoint for
 rollouts or evaluation. Do not use a sampler checkpoint as an optimizer-state
 recovery point.
 
-Canonical checkpoint administration supports list, get, download, delete,
-publish, unpublish, TTL updates, and storage-usage lookup. Your application owns
-retention policy and cleanup; this guide does not promise a TTL or retention
-duration.
+The public Training API can list checkpoints. It can download an interactive
+checkpoint when the team has both interactive-training and weight-download
+access. The SDK also supports checkpoint deletion, publication, retention, and
+storage-usage methods. These are SDK operations, not public Training API routes.
+Do not construct adapter requests or assume an undocumented retention period.
 
 ## 6. Verify the continuation
 
@@ -139,5 +140,12 @@ Before scaling the resumed workload:
 5. Save a new state checkpoint under a new name.
 6. Persist the next loop record.
 
-Use the SDK for all interactive operations. For job, future, and checkpoint
-semantics, see [Runtime behavior and errors](/rl-api/runtime).
+Use the SDK for all interactive model operations.
+
+## Diagnose recovery errors
+
+| Symptom | Check |
+| --- | --- |
+| A future fails | Record the job ID and operation result. Do not advance dependent application state |
+| A checkpoint cannot be loaded | Verify its job, checkpoint kind, and client-owned recovery record |
+| Canonical job lookup fails | Confirm that the ID came from `get_info().model_data.model_id` and that the same Fastino team is authenticated |

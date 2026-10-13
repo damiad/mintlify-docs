@@ -8,9 +8,10 @@ This guide creates a `config` training job. You provide a ready dataset and
 training settings; Fastino runs the training loop.
 
 <Warning>
-  This draft uses the upcoming native `model` request field. Production
-  continues to use its generated OpenAPI contract until the unified Training
-  API launches.
+  The managed example in this preview uses the planned `model` and `type`
+  fields. Current Pioneer deployments require `base_model` and reject those
+  fields. Do not merge this preview until the generated backend contract
+  includes the new request shape.
 </Warning>
 
 ## Before you begin

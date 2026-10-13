@@ -12,13 +12,14 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
 
 - Start with the documentation index at [https://docs.fastino.ai/llms.txt](https://docs.fastino.ai/llms.txt).
 - Read [https://docs.fastino.ai/openapi.json](https://docs.fastino.ai/openapi.json) for customer-facing routes, authentication, request schemas, and response schemas.
-- Use only operations present in that OpenAPI specification, except for the RL API described below.
+- Use only customer-authored HTTP operations present in that OpenAPI specification.
 - Use [https://docs.fastino.ai/concepts/models](https://docs.fastino.ai/concepts/models) for documented model IDs and `GET /v1/base-models` for current availability.
-- For reinforcement learning and custom post-training, use the
-  [RL API](https://docs.fastino.ai/rl-api) and the documented `tinker` Python
-  SDK contract. RL API routes are intentionally absent from Fastino's OpenAPI.
-- The RL API is a limited-access preview. Do not assume that a team has access;
-  verify capabilities before planning or running a workload.
+- For reinforcement learning and custom post-training, follow the
+  [Training API](https://docs.fastino.ai/training) custom-loop guidance and use
+  the documented Python client. The client's HTTP compatibility adapter stays
+  out of OpenAPI and is not a customer-authored REST API.
+- Custom training loops require team access. Verify capabilities before
+  planning or running a workload.
 
 ## API conventions
 
@@ -39,28 +40,28 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
   [GLiNER Inference](https://docs.fastino.ai/inference/chat-completions). Use
   `POST /v1/chat/completions` with `model`, `messages`, and `schema`.
 - Follow the [Training API](https://docs.fastino.ai/training) for training-job operations.
-- The Training API has three product surfaces: public jobs under
-  `/v1/training/jobs`, SDK-only interactive training through
-  `/v1/training/compat/tinker`, and private-access Training Auto. Do not invent
-  public `/v1/training/auto` calls; direct interested users to
-  `sales@fastino.ai`.
-- For RL workloads, start with the [RL API overview](https://docs.fastino.ai/rl-api)
-  and [quickstart](https://docs.fastino.ai/rl-api/quickstart). Use the focused
-  guides for SDK migration, verifiable rewards, and checkpointing.
+- Use `/v1/training/jobs` for canonical job operations. A supported SDK client
+  uses the hidden HTTP compatibility adapter for custom-loop model operations.
+  Training Auto is private access and has no public route. Direct interested
+  users to `sales@fastino.ai`.
+- For custom loops, start with the
+  [Training quickstart](https://docs.fastino.ai/training/quickstart#custom-training-loop).
+  Use the focused guides for migration, verifiable rewards, and recovery.
 - Treat every workload as a job under `GET /v1/training/jobs`. Config jobs let
   Fastino run the loop; interactive jobs let the application direct each step.
-- Query `ServiceClient.get_server_capabilities()` before selecting an RL model.
-- Do not construct RL API HTTP routes directly. Configure the `tinker` SDK with
+- Query `ServiceClient.get_server_capabilities()` before selecting a model for
+  a custom loop.
+- Do not construct compatibility-adapter HTTP routes directly. Configure the
+  supported client with
   `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` and
   `TINKER_CREDENTIAL_CMD` that prints the normal `fast_sk_...` credential.
 - Never wrap a Fastino key with `tml-`; `tml-` credentials are rejected.
 - The SDK training run ID is the interactive Fastino job ID. Use that same ID
-  with the canonical job and checkpoint administration routes.
+  with documented canonical job reads.
 - Do not invent routes, model IDs, request fields, or response fields.
-- For RL workloads, use Fastino's
-  [SDK adapter](https://docs.fastino.ai/rl-api/compatibility) page
-  for Fastino-specific support boundaries. The pinned `tinker==0.33.1` package
-  defines method signatures; an explicitly unsupported item on Fastino's page
-  overrides its availability in the client package. Use
-  [runtime behavior and errors](https://docs.fastino.ai/rl-api/runtime) for
-  operation, checkpoint, recovery, and error behavior.
+- Use [Migrate from Tinker](https://docs.fastino.ai/training/migrate-from-tinker#supported-client-behavior)
+  for client support boundaries. The pinned `tinker==0.33.1` package defines
+  method signatures, but Fastino's documented unsupported list takes
+  precedence. Use [Training loop](https://docs.fastino.ai/training/training-loop)
+  and [Checkpoints and recovery](https://docs.fastino.ai/training/checkpoints)
+  for operation and recovery behavior.

@@ -8,7 +8,7 @@ api: "GET /v1/training/jobs/{job_id}"
 `GET /v1/training/jobs/{job_id}`
 
 Returns one config or interactive training job visible to the caller's team.
-For an RL workload, this `job_id` is also the SDK training run ID returned by
+For an interactive job, this `job_id` is also the SDK training run ID returned by
 `training_client.get_info().model_data.model_id`.
 
 ## Request
@@ -94,7 +94,8 @@ references, progress, metrics, and artifact metadata.
 </ResponseField>
 
 <ResponseField name="base_model" type="string">
-  Base model used by the compatible SDK. Native create requests call this field
+  Base model used by the compatible SDK. Current native create requests also
+  use `base_model`; the preview contract plans to rename that request field to
   `model`.
 </ResponseField>
 

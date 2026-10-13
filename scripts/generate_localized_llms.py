@@ -37,9 +37,9 @@ LOCALE_COPY = {
         instructions_heading="代理说明",
         instructions=(
             f"使用 {BASE_URL}/openapi.json 作为面向客户的 API 路由的事实来源。"
-            "训练作业使用 `/v1/training/jobs`。对于交互式 RL 操作，请遵循 RL API 页面并使用"
-            "受支持的 SDK；其兼容适配器不会出现在 OpenAPI 中，也不应被直接调用。"
-            "Training Auto 属于私有访问；不要推断 `/v1/training/auto` 调用，请引导用户联系 `sales@fastino.ai`。"
+            "训练作业使用 `/v1/training/jobs`。对于自定义训练循环，请遵循训练 API 工作流页面并使用"
+            "受支持的 SDK 客户端；其 HTTP 兼容适配器不会出现在 OpenAPI 中，也不应被直接调用。"
+            "Training Auto 属于私有访问且没有公共路由；请引导用户联系 `sales@fastino.ai`。"
             "不要推断未记录的路由。请从 `FASTINO_API_KEY` 读取 API 密钥，"
             "切勿在代码、日志或报告中嵌入凭据。"
         ),
@@ -60,11 +60,11 @@ LOCALE_COPY = {
         instructions_heading="Instrucciones para agentes",
         instructions=(
             f"Usa {BASE_URL}/openapi.json como fuente de verdad para las rutas públicas. "
-            "Los trabajos de entrenamiento usan `/v1/training/jobs`. Para operaciones RL "
-            "interactivas, sigue las páginas de RL API y usa el SDK compatible; su adaptador "
-            "no aparece en OpenAPI y no debe llamarse directamente. "
-            "Training Auto es de acceso privado; no deduzcas llamadas a `/v1/training/auto` "
-            "y dirige a los usuarios a `sales@fastino.ai`. "
+            "Los trabajos de entrenamiento usan `/v1/training/jobs`. Para bucles de "
+            "entrenamiento personalizados, sigue las páginas de flujos de la API de "
+            "entrenamiento y usa el cliente SDK compatible; su adaptador HTTP no aparece "
+            "en OpenAPI y no debe llamarse directamente. Training Auto es de acceso "
+            "privado y no tiene una ruta pública; dirige a los usuarios a `sales@fastino.ai`. "
             "No deduzcas rutas no documentadas. Lee las claves de API desde `FASTINO_API_KEY` "
             "y nunca incluyas credenciales en código, registros o informes."
         ),
@@ -89,11 +89,11 @@ LOCALE_COPY = {
         instructions_heading="Instructions pour les agents",
         instructions=(
             f"Utilisez {BASE_URL}/openapi.json comme source de vérité pour les routes publiques. "
-            "Les tâches d'entraînement utilisent `/v1/training/jobs`. Pour les opérations RL "
-            "interactives, suivez les pages RL API et utilisez le SDK compatible ; son adaptateur "
-            "est absent d'OpenAPI et ne doit pas être appelé directement. "
-            "Training Auto est en accès privé ; n'inférez aucun appel `/v1/training/auto` "
-            "et orientez les utilisateurs vers `sales@fastino.ai`. "
+            "Les tâches d'entraînement utilisent `/v1/training/jobs`. Pour les boucles "
+            "d'entraînement personnalisées, suivez les pages de l'API d'entraînement et "
+            "utilisez le client SDK compatible ; son adaptateur HTTP est absent d'OpenAPI "
+            "et ne doit pas être appelé directement. Training Auto est en accès privé et "
+            "n'a pas de route publique ; orientez les utilisateurs vers `sales@fastino.ai`. "
             "N'inférez pas de routes non documentées. Lisez les clés API depuis `FASTINO_API_KEY` "
             "et n'intégrez jamais d'identifiants dans le code, les journaux ou les rapports."
         ),
@@ -119,11 +119,11 @@ LOCALE_COPY = {
         instructions_heading="Anweisungen für Agenten",
         instructions=(
             f"Verwenden Sie {BASE_URL}/openapi.json als verbindliche Quelle für öffentliche Routen. "
-            "Trainingsjobs verwenden `/v1/training/jobs`. Folgen Sie für interaktive RL-Operationen "
-            "den RL-API-Seiten und verwenden Sie das kompatible SDK; dessen Adapter fehlt absichtlich "
-            "in OpenAPI und darf nicht direkt aufgerufen werden. "
-            "Training Auto ist privat zugänglich; leiten Sie keine `/v1/training/auto`-Aufrufe ab "
-            "und verweisen Sie Interessierte an `sales@fastino.ai`. "
+            "Trainingsjobs verwenden `/v1/training/jobs`. Folgen Sie für eigene "
+            "Trainingsabläufe den Workflow-Seiten der Training-API und verwenden Sie den "
+            "unterstützten SDK-Client; dessen HTTP-Kompatibilitätsadapter fehlt absichtlich "
+            "in OpenAPI und darf nicht direkt aufgerufen werden. Training Auto ist privat "
+            "zugänglich und hat keine öffentliche Route; verweisen Sie Interessierte an `sales@fastino.ai`. "
             "Leiten Sie keine undokumentierten Routen ab. Lesen Sie API-Schlüssel aus "
             "`FASTINO_API_KEY` und betten Sie Anmeldedaten niemals in Code, Protokolle oder Berichte ein."
         ),
@@ -249,10 +249,10 @@ def _render_english_index(root: Path, language: dict[str, object]) -> str:
             "> Use https://docs.fastino.ai/openapi.json as the source of truth for "
             "customer-facing routes. For GLiDE decision inference, call "
             "`POST https://api.fastino.ai/v1/systemone` with model `fastino/GLiDE`. "
-            "Training jobs use `/v1/training/jobs`. For interactive RL operations, "
-            "follow the RL API pages and use the supported SDK; its compatibility "
-            "adapter is intentionally absent from OpenAPI and must not be called directly. "
-            "Training Auto is private access; do not infer `/v1/training/auto` calls and "
+            "Training jobs use `/v1/training/jobs`. For custom training loops, follow "
+            "the Training API workflow pages and use the supported SDK client. Its HTTP "
+            "compatibility adapter is intentionally absent from OpenAPI and must not be "
+            "called directly. Training Auto is private access and has no public route; "
             "direct interested users to `sales@fastino.ai`. "
             "Do not infer undocumented routes. Read API keys from `FASTINO_API_KEY` "
             "and never embed credentials in code, logs, or reports."

@@ -3,7 +3,7 @@
 > Créez des décisions structurées avec GLiDE, effectuez une extraction basée sur des schémas avec GLiNER et affinez des modèles spécialisés avec Fastino.
 
 > ## Instructions pour les agents
-> Utilisez https://docs.fastino.ai/openapi.json comme source de vérité pour les routes publiques. Les tâches d'entraînement utilisent `/v1/training/jobs`. Pour les opérations RL interactives, suivez les pages RL API et utilisez le SDK compatible ; son adaptateur est absent d'OpenAPI et ne doit pas être appelé directement. Training Auto est en accès privé ; n'inférez aucun appel `/v1/training/auto` et orientez les utilisateurs vers `sales@fastino.ai`. N'inférez pas de routes non documentées. Lisez les clés API depuis `FASTINO_API_KEY` et n'intégrez jamais d'identifiants dans le code, les journaux ou les rapports.
+> Utilisez https://docs.fastino.ai/openapi.json comme source de vérité pour les routes publiques. Les tâches d'entraînement utilisent `/v1/training/jobs`. Pour les boucles d'entraînement personnalisées, suivez les pages de l'API d'entraînement et utilisez le client SDK compatible ; son adaptateur HTTP est absent d'OpenAPI et ne doit pas être appelé directement. Training Auto est en accès privé et n'a pas de route publique ; orientez les utilisateurs vers `sales@fastino.ai`. N'inférez pas de routes non documentées. Lisez les clés API depuis `FASTINO_API_KEY` et n'intégrez jamais d'identifiants dans le code, les journaux ou les rapports.
 
 ## Ressources pour les agents
 
@@ -47,6 +47,7 @@
 ### Entités et classification
 
 - [GLiNER2.5](https://docs.fastino.ai/fr/concepts/gliner.md): Découvrez quand et comment utiliser GLiNER2.5 Multi pour l'extraction d'informations multilingue pilotée par schéma.
+- [Skill d'agent GLiNER](https://docs.fastino.ai/fr/concepts/gliner-agent-skill.md): Installez le skill GLiNER hébergé par Fastino pour Cursor, Claude Code et Codex.
 - [Inférence GLiNER avec /v1/chat/completions](https://docs.fastino.ai/fr/inference/chat-completions.md): Utilisez POST /v1/chat/completions pour l'extraction, la classification, les enregistrements et les relations GLiNER, et non pour les décisions GLiDE.
 - [Recette : Extraire des entités d'un texte multilingue](https://docs.fastino.ai/fr/cookbooks/gliner-entity-extraction.md): Extrayez les personnes, organisations, lieux et dates d'un texte dans n'importe quelle langue prise en charge avec GLiNER 2.5 Multi.
 - [Recette : Classer un texte selon vos propres libellés](https://docs.fastino.ai/fr/cookbooks/gliner-text-classification.md): Étiquetez un texte avec plusieurs tâches de classification indépendantes en un seul appel GLiNER 2.5 Multi.
@@ -60,21 +61,14 @@
 ### API d'entraînement
 
 - [API d'entraînement](https://docs.fastino.ai/fr/training.md): Choisissez l'entraînement géré, l'entraînement piloté par l'application ou un agent d'entraînement autonome privé.
-- [Démarrage rapide de l'entraînement](https://docs.fastino.ai/fr/training/quickstart.md): Créez un job d'entraînement géré, conservez son ID et interrogez-le jusqu'à un résultat terminal.
-- [Entraînement Auto](https://docs.fastino.ai/fr/training/auto.md): Déléguez la préparation des données, l'entraînement, l'évaluation et la sélection du modèle à l'agent d'entraînement autonome de Fastino.
-- [Fine-tuner GLiNER](https://docs.fastino.ai/fr/guides/fine-tune-gliner.md): Préparez un dataset GLiNER, créez un job de configuration géré et surveillez-le jusqu'aux checkpoints et à son achèvement.
-- [Skill d'agent pour l'entraînement](https://docs.fastino.ai/fr/concepts/gliner-agent-skill.md): Installez le skill GLiNER hébergé par Fastino pour Cursor, Claude Code et Codex.
+- [Démarrage rapide de l'API d'entraînement](https://docs.fastino.ai/fr/training/quickstart.md): Lancez un job d'entraînement géré ou une boucle d'entraînement contrôlée par l'application, puis vérifiez son ID de job canonique.
+- [Migrer depuis Tinker](https://docs.fastino.ai/fr/training/migrate-from-tinker.md): Migrez un workload compatible utilisant le SDK Tinker vers les jobs d'entraînement interactifs Fastino.
 - [Préparer et importer des datasets d'entraînement](https://docs.fastino.ai/fr/concepts/datasets.md): Formatez, importez, validez et inspectez des datasets NER, de classification ou de décodeur avant de lancer un job d'entraînement Fastino.
-
-### API RL
-
-- [API RL](https://docs.fastino.ai/fr/rl-api.md): Exécutez des workloads d'apprentissage par renforcement et de post-entraînement personnalisé sous forme de jobs d'entraînement interactifs Fastino.
-- [Démarrage rapide de l'API RL](https://docs.fastino.ai/fr/rl-api/quickstart.md): Créez, échantillonnez et vérifiez un job d'entraînement interactif Fastino.
-- [Migrer depuis Tinker](https://docs.fastino.ai/fr/rl-api/migrate-from-tinker.md): Migrez un workload compatible utilisant le SDK Tinker vers les jobs d'entraînement interactifs Fastino.
-- [La boucle d'entraînement RL](https://docs.fastino.ai/fr/rl-api/training-loop.md): Reliez l'échantillonnage, les récompenses, les mises à jour et les checkpoints au sein d'un même job interactif Fastino.
-- [S'entraîner avec des récompenses vérifiables](https://docs.fastino.ai/fr/rl-api/verifiable-rewards.md): Transformez un évaluateur déterministe en signal d'apprentissage pour un job interactif Fastino.
-- [Créer un checkpoint et reprendre un job RL](https://docs.fastino.ai/fr/rl-api/checkpoint-and-resume.md): Enregistrez l'état d'un job interactif et la progression de l'application, puis reprenez sans rejouer le travail terminé.
-- [Comportement à l'exécution et erreurs](https://docs.fastino.ai/fr/rl-api/runtime.md): Comprenez les opérations, les checkpoints, la récupération et les erreurs d'un job interactif Fastino.
+- [Fine-tuner GLiNER](https://docs.fastino.ai/fr/guides/fine-tune-gliner.md): Préparez un dataset GLiNER, créez un job de configuration géré et surveillez-le jusqu'aux checkpoints et à son achèvement.
+- [Construire une boucle d'entraînement personnalisée](https://docs.fastino.ai/fr/training/training-loop.md): Reliez l'échantillonnage, les récompenses, les mises à jour et les checkpoints au sein d'un même job interactif Fastino.
+- [S'entraîner avec des récompenses vérifiables](https://docs.fastino.ai/fr/training/verifiable-rewards.md): Transformez un évaluateur déterministe en signal d'apprentissage pour un job interactif Fastino.
+- [Checkpoints et récupération](https://docs.fastino.ai/fr/training/checkpoints.md): Enregistrez l'état d'un job interactif et la progression de l'application, puis récupérez-les sans rejouer le travail terminé.
+- [Entraînement Auto](https://docs.fastino.ai/fr/training/auto.md): Déléguez la préparation des données, l'entraînement, l'évaluation et la sélection du modèle à l'agent d'entraînement autonome de Fastino.
 
 ### Dépannage
 

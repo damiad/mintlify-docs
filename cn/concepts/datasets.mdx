@@ -85,6 +85,11 @@ curl --fail-with-body -sS https://api.fastino.ai/v1/datasets/docs-example-ner \
 
 将确切的数据集名称传递给[训练任务创建端点](/cn/api-reference/training-jobs/create)：
 
+<Warning>
+  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
+  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
+</Warning>
+
 ```json
 {
   "type": "config",

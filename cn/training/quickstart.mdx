@@ -1,22 +1,24 @@
 ---
-title: "训练快速入门"
+title: "训练 API 快速入门"
 sidebarTitle: "快速入门"
-description: "创建托管式训练任务、保存其 ID，并轮询至最终结果。"
+description: "启动托管训练任务或由应用控制的训练循环，然后验证其规范任务 ID。"
 ---
 
-本快速入门将创建一个 `config` 任务。Fastino 根据你提供的数据集和配置管理训练循环。
+本快速入门涵盖训练 API 的两种路径。希望由 Fastino 运行循环时，请使用托管训练。
+当你的应用必须控制采样、奖励和模型更新时，请使用自定义训练循环。
 
 <Warning>
-  本草案使用即将推出的 `model` 请求字段。在统一训练 API 发布之前，生产环境仍使用当前生成的 API 契约。
+  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
+  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
 </Warning>
 
-## 1. 创建 API 密钥
+## 1. 身份验证
 
 1. 创建 [Fastino 账户](https://agent.fastino.ai/)。
 2. 打开 [API 密钥](https://agent.fastino.ai/api-keys)页面。
 3. 创建密钥，并在显示时复制。
 
-将其存储在环境变量中：
+将密钥存储在环境变量中：
 
 <CodeGroup>
 
@@ -33,13 +35,24 @@ $env:FASTINO_API_KEY = "fast_sk_..."
 以 `X-API-Key: $FASTINO_API_KEY` 发送此密钥。完整的身份验证契约请参阅
 [身份验证](/cn/authentication)。
 
-## 2. 准备数据集
+## 2. 选择路径
+
+| 目标 | 路径 |
+| --- | --- |
+| 提供数据和配置，然后由 Fastino 运行训练 | [托管训练](#managed-training) |
+| 在你的应用中控制采样、奖励和更新 | [自定义训练循环](#custom-training-loop) |
+
+<span id="managed-training" />
+
+## 托管训练
+
+### 3. 准备数据集
 
 [上传并处理训练数据集](/cn/concepts/datasets)，然后等待其版本变为 `ready`。
 
-## 3. 选择模型
+### 4. 选择模型
 
-提交前立即查询实时目录：
+提交前查询实时目录：
 
 ```bash
 curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
@@ -48,7 +61,7 @@ curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
 
 保存所选模型的 ID。
 
-## 4. 创建任务
+### 5. 创建任务
 
 ```bash
 curl -X POST "https://api.fastino.ai/v1/training/jobs" \
@@ -68,7 +81,7 @@ curl -X POST "https://api.fastino.ai/v1/training/jobs" \
 
 保存返回的 `id`。它就是所有任务专属路由使用的 `job_id`。仅在重试完全相同的创建请求时复用同一个 `Idempotency-Key`。
 
-## 5. 轮询任务
+### 6. 轮询任务
 
 ```bash
 curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
@@ -84,7 +97,169 @@ curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
 
 继续轮询，直到 `is_terminal_status` 为 `true`，然后检查最终状态、检查点、日志和部署资格。
 
-## 6. 继续了解
+<span id="custom-training-loop" />
+
+## 自定义训练循环
+
+自定义训练循环需要团队访问权限以及 Python 3.11 或更高版本。受支持的 SDK 客户端与
+Fastino 隐藏的 HTTP 兼容适配器通信。请使用下面的客户端方法，不要自行构造适配器请求。
+
+### 3. 安装经过测试的客户端
+
+<CodeGroup>
+
+```bash uv
+uv init fastino-training
+cd fastino-training
+uv add "tinker==0.33.1"
+```
+
+```bash pip
+mkdir fastino-training && cd fastino-training
+python -m venv .venv
+source .venv/bin/activate
+pip install "tinker==0.33.1"
+```
+
+```powershell pip · Windows
+mkdir fastino-training
+cd fastino-training
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install "tinker==0.33.1"
+```
+
+</CodeGroup>
+
+### 4. 配置客户端
+
+每次请求令牌时都会执行 `TINKER_CREDENTIAL_CMD`，该命令必须打印一个非空凭据。
+
+<CodeGroup>
+
+```bash macOS/Linux
+export TINKER_BASE_URL="https://api.fastino.ai/v1/training/compat/tinker"
+export TINKER_CREDENTIAL_CMD='printf "%s\n" "$FASTINO_API_KEY"'
+```
+
+```powershell Windows
+$env:TINKER_BASE_URL = "https://api.fastino.ai/v1/training/compat/tinker"
+$env:TINKER_CREDENTIAL_CMD = 'powershell -NoProfile -Command "[Console]::Out.WriteLine($env:FASTINO_API_KEY)"'
+```
+
+</CodeGroup>
+
+使用以 `fast_sk_` 开头的普通 Fastino 密钥。以 `tml-` 开头的凭据会被拒绝。
+不要设置 `TINKER_API_KEY`。
+
+### 5. 选择已启用的模型
+
+调用 `ServiceClient.get_server_capabilities()`，并从其响应中选择模型和 LoRA 秩：
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_TRAINING_MODEL="<model from capabilities>"
+export FASTINO_TRAINING_LORA_RANK="<supported rank>"
+```
+
+```powershell Windows
+$env:FASTINO_TRAINING_MODEL = "<model from capabilities>"
+$env:FASTINO_TRAINING_LORA_RANK = "<supported rank>"
+```
+
+</CodeGroup>
+
+### 6. 创建任务并采样
+
+创建 `quickstart.py`：
+
+```python
+import os
+
+import tinker
+
+
+service_client = tinker.ServiceClient()
+outcome = "errored"
+try:
+    capabilities = service_client.get_server_capabilities()
+    print(capabilities)
+
+    training_client = service_client.create_lora_training_client(
+        base_model=os.environ["FASTINO_TRAINING_MODEL"],
+        rank=int(os.environ["FASTINO_TRAINING_LORA_RANK"]),
+    )
+
+    job_id = training_client.get_info().model_data.model_id
+    print(f"TRAINING_JOB_ID={job_id}")
+
+    checkpoint = training_client.save_weights_for_sampler(
+        "quickstart-sampler"
+    ).result()
+    sampling_client = service_client.create_sampling_client(
+        model_path=checkpoint.path
+    )
+
+    tokenizer = sampling_client.get_tokenizer()
+    prompt_tokens = tokenizer.apply_chat_template(
+        conversation=[
+            {
+                "role": "user",
+                "content": "Explain the purpose of a reward function in one sentence.",
+            }
+        ],
+        add_generation_prompt=True,
+        return_dict=False,
+    )
+    result = sampling_client.sample(
+        prompt=tinker.types.ModelInput.from_ints(prompt_tokens),
+        num_samples=1,
+        sampling_params=tinker.types.SamplingParams(max_tokens=64),
+    ).result()
+
+    print(tokenizer.decode(result.sequences[0].tokens))
+except KeyboardInterrupt:
+    outcome = "interrupted"
+    raise
+else:
+    outcome = "success"
+finally:
+    service_client.close(outcome).result()
+```
+
+运行脚本：
+
+```bash
+python quickstart.py
+```
+
+复制 `TRAINING_JOB_ID=` 后打印的值。
+
+### 7. 验证规范任务
+
+<CodeGroup>
+
+```bash macOS/Linux
+export TRAINING_JOB_ID="<ID printed by quickstart.py>"
+curl --fail-with-body \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID"
+```
+
+```powershell Windows
+$env:TRAINING_JOB_ID = "<ID printed by quickstart.py>"
+Invoke-RestMethod `
+  -Headers @{ "X-API-Key" = "$env:FASTINO_API_KEY" } `
+  -Uri "https://api.fastino.ai/v1/training/jobs/$env:TRAINING_JOB_ID"
+```
+
+</CodeGroup>
+
+响应描述的任务与 `create_lora_training_client(...)` 创建的任务相同。继续使用 SDK
+客户端执行模型操作，并使用规范任务 API 执行有文档说明的任务读取。
+
+## 继续了解
 
 <CardGroup cols={3}>
   <Card title="数据集" icon="database" href="/cn/concepts/datasets">
@@ -93,7 +268,7 @@ curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
   <Card title="任务参考" icon="book" href="/cn/api-reference/training-jobs/create">
     查看完整的请求和响应契约。
   </Card>
-  <Card title="交互式训练" icon="repeat-2" href="/cn/rl-api">
-    通过受支持的 SDK 主导 RL 或自定义后训练循环。
+  <Card title="训练循环" icon="repeat-2" href="/cn/training/training-loop">
+    为自定义循环添加奖励、更新和恢复。
   </Card>
 </CardGroup>

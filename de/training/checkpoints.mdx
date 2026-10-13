@@ -1,6 +1,6 @@
 ---
-title: "Checkpoint speichern und RL-Job fortsetzen"
-description: "Speichern Sie den Status eines interaktiven Jobs und den Anwendungsfortschritt und setzen Sie ihn fort, ohne abgeschlossene Arbeit zu wiederholen."
+title: "Checkpoints und Wiederherstellung"
+description: "Speichern Sie den Status eines interaktiven Jobs und den Anwendungsfortschritt und stellen Sie ihn wieder her, ohne abgeschlossene Arbeit zu wiederholen."
 ---
 
 Ein Status-Checkpoint schützt den serverseitigen Trainingsstatus. Ein
@@ -130,11 +130,13 @@ Verwenden Sie einen Sampler-Checkpoint für Rollouts oder Evaluierung. Verwenden
 Sie einen Sampler-Checkpoint nicht als Wiederherstellungspunkt für den
 Optimizer-Status.
 
-Die kanonische Checkpoint-Verwaltung unterstützt Auflisten, Abrufen,
-Herunterladen, Löschen, Veröffentlichen, Aufheben der Veröffentlichung,
-TTL-Aktualisierungen und das Abrufen der Speichernutzung. Ihre Anwendung ist
-für Aufbewahrungsrichtlinie und Bereinigung verantwortlich; dieser Leitfaden
-verspricht keine TTL oder Aufbewahrungsdauer.
+Die öffentliche Training API kann Checkpoints auflisten. Sie kann einen
+interaktiven Checkpoint herunterladen, wenn das Team sowohl Zugriff auf
+interaktives Training als auch die Berechtigung zum Herunterladen von Gewichten
+hat. Das SDK unterstützt außerdem Methoden zum Löschen,
+Veröffentlichen und Aufbewahren von Checkpoints sowie zur Speichernutzung. Das
+sind SDK-Operationen, keine öffentlichen Routen der Training API. Konstruieren Sie keine Adapter-Requests und gehen Sie nicht von
+einer undokumentierten Aufbewahrungsdauer aus.
 
 ## 6. Fortsetzung prüfen
 
@@ -147,6 +149,12 @@ Vor dem Skalieren des fortgesetzten Workloads:
 5. Speichern Sie einen neuen Status-Checkpoint unter einem neuen Namen.
 6. Persistieren Sie den nächsten Loop-Datensatz.
 
-Verwenden Sie das SDK für alle interaktiven Operationen. Die Semantik von Jobs,
-Futures und Checkpoints finden Sie unter
-[Laufzeitverhalten und Fehler](/de/rl-api/runtime).
+Verwenden Sie das SDK für alle interaktiven Modelloperationen.
+
+## Wiederherstellungsfehler diagnostizieren
+
+| Symptom | Prüfung |
+| --- | --- |
+| Ein Future schlägt fehl | Zeichnen Sie Job-ID und Operationsergebnis auf. Setzen Sie abhängigen Anwendungsstatus nicht fort |
+| Ein Checkpoint kann nicht geladen werden | Prüfen Sie Job, Checkpoint-Art und den clientseitigen Wiederherstellungsdatensatz |
+| Kanonischer Job kann nicht abgerufen werden | Prüfen Sie, ob die ID aus `get_info().model_data.model_id` stammt und dasselbe Fastino-Team authentifiziert ist |

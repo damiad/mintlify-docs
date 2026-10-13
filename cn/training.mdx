@@ -4,24 +4,21 @@ sidebarTitle: "概览"
 description: "选择托管训练、应用主导的训练，或私有自治训练智能体。"
 ---
 
-训练 API 将所有训练工作流归入 `/v1/training`：
+每个 Fastino 训练工作负载都是一个任务。先选择由谁控制训练循环，然后使用
+`/v1/training/jobs` 检查该任务。
 
 <CardGroup cols={3}>
-  <Card title="任务" icon="sliders" href="/cn/training/quickstart">
-    通过 `/v1/training/jobs` 创建和检查托管式 `config` 任务。
+  <Card title="托管训练" icon="sliders" href="/cn/training/quickstart#managed-training">
+    提供数据集和配置。Fastino 运行训练循环。
   </Card>
-  <Card title="SDK 适配器" icon="code" href="/cn/rl-api">
-    通过 `/v1/training/compat/tinker` 上受支持的 SDK 适配器主导
-    `interactive` 任务。
+  <Card title="自定义训练循环" icon="code" href="/cn/training/quickstart#custom-training-loop">
+    使用受支持的 SDK 客户端，由你的应用控制每次更新。
   </Card>
-  <Card title="Auto" icon="sparkles" href="/cn/training/auto">
+  <Card title="Training Auto" icon="sparkles" href="/cn/training/auto">
     将训练生命周期委托给 Fastino 的自治训练智能体。
   </Card>
 </CardGroup>
 
-<Warning>
-  本草案介绍即将推出的统一训练 API。在 Fastino 宣布可用之前，请勿对生产环境使用其中的请求示例。
-</Warning>
 
 ## 选择任务类型
 
@@ -30,14 +27,18 @@ description: "选择托管训练、应用主导的训练，或私有自治训练
 | 类型 | 谁控制循环？ | 如何启动 |
 | --- | --- | --- |
 | `config` | Fastino | 将数据集和配置发送到 `POST /v1/training/jobs`。 |
-| `interactive` | 你的应用 | 通过受支持的 SDK 适配器创建训练客户端。 |
+| `interactive` | 你的应用 | 通过受支持的 SDK 客户端创建训练客户端。 |
 
 两种类型共享同一套任务标识。规范读取操作使用
 `GET /v1/training/jobs`、`GET /v1/training/jobs/{job_id}` 和
 `GET /v1/training/jobs/{job_id}/checkpoints`。
 
-兼容适配器并非第二套训练服务。它将受支持的 SDK 调用转换为对 Fastino
-交互式任务的操作。适配器操作有意不出现在 OpenAPI 中；请勿自行构造其 HTTP 路径。
+对于自定义循环，SDK 客户端使用 Fastino 的 HTTP 兼容适配器。该适配器既不是 SDK，
+也不是第二套训练服务。其操作不会出现在 OpenAPI 和 API 参考中。请勿自行构造适配器请求。
+
+<Note>
+  自定义训练循环需要团队访问权限。没有访问权限时，任务列表仅包含配置任务，交互式任务 ID 会返回 `404`。
+</Note>
 
 ## 配置任务生命周期
 
@@ -79,10 +80,10 @@ description: "选择托管训练、应用主导的训练，或私有自治训练
 
 <CardGroup cols={3}>
   <Card title="快速入门" icon="play" href="/cn/training/quickstart">
-    创建并监控托管式配置任务。
+    运行托管训练或启动自定义训练循环。
   </Card>
-  <Card title="RL API" icon="repeat-2" href="/cn/rl-api">
-    通过 SDK 主导交互式训练任务。
+  <Card title="从 Tinker 迁移" icon="arrow-right-arrow-left" href="/cn/training/migrate-from-tinker">
+    将现有的兼容工作负载迁移到 Fastino。
   </Card>
   <Card title="微调 GLiNER" icon="tags" href="/cn/guides/fine-tune-gliner">
     准备实体数据并训练 GLiNER 模型。

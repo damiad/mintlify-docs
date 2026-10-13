@@ -4,28 +4,24 @@ sidebarTitle: "Übersicht"
 description: "Wählen Sie verwaltetes Training, anwendungsgesteuertes Training oder einen privaten autonomen Trainingsagenten."
 ---
 
-Die Training API fasst alle Trainingsworkflows unter `/v1/training` zusammen:
+Jeder Fastino-Trainingsworkload ist ein Job. Wählen Sie, wer den Trainingsloop
+kontrolliert, und prüfen Sie den Job anschließend über `/v1/training/jobs`.
 
 <CardGroup cols={3}>
-  <Card title="Jobs" icon="sliders" href="/de/training/quickstart">
-    Erstellen und prüfen Sie verwaltete `config`-Jobs über
-    `/v1/training/jobs`.
+  <Card title="Verwaltetes Training" icon="sliders" href="/de/training/quickstart#managed-training">
+    Stellen Sie einen Datensatz und eine Konfiguration bereit. Fastino führt den
+    Trainingsloop aus.
   </Card>
-  <Card title="SDK-Adapter" icon="code" href="/de/rl-api">
-    Steuern Sie einen `interactive`-Job über den unterstützten SDK-Adapter
-    unter `/v1/training/compat/tinker`.
+  <Card title="Benutzerdefinierter Trainingsloop" icon="code" href="/de/training/quickstart#custom-training-loop">
+    Verwenden Sie einen unterstützten SDK-Client, während Ihre Anwendung jedes
+    Update steuert.
   </Card>
-  <Card title="Auto" icon="sparkles" href="/de/training/auto">
+  <Card title="Training Auto" icon="sparkles" href="/de/training/auto">
     Delegieren Sie den Trainingslebenszyklus an Fastinos autonomen
     Trainingsagenten.
   </Card>
 </CardGroup>
 
-<Warning>
-  Dieser Entwurf beschreibt die kommende einheitliche Training API. Verwenden
-  Sie die Request-Beispiele erst dann in der Produktion, wenn Fastino die
-  Verfügbarkeit bekannt gegeben hat.
-</Warning>
 
 ## Jobtyp auswählen
 
@@ -34,16 +30,21 @@ Jeder Job hat einen `type`:
 | Typ | Wer kontrolliert den Loop? | Start |
 | --- | --- | --- |
 | `config` | Fastino | Senden Sie einen Datensatz und eine Konfiguration an `POST /v1/training/jobs`. |
-| `interactive` | Ihre Anwendung | Erstellen Sie über den unterstützten SDK-Adapter einen Trainingsclient. |
+| `interactive` | Ihre Anwendung | Erstellen Sie über einen unterstützten SDK-Client einen Trainingsclient. |
 
 Beide Typen verwenden dieselbe Job-Identität. Kanonische Lesezugriffe erfolgen
 über `GET /v1/training/jobs`, `GET /v1/training/jobs/{job_id}` und
 `GET /v1/training/jobs/{job_id}/checkpoints`.
 
-Der Kompatibilitätsadapter ist kein zweiter Trainingsdienst. Er übersetzt
-unterstützte SDK-Aufrufe in Operationen für einen interaktiven Fastino-Job.
-Adapteroperationen fehlen absichtlich in OpenAPI; konstruieren Sie ihre
-HTTP-Pfade nicht selbst.
+Bei benutzerdefinierten Loops verwendet der SDK-Client Fastinos
+HTTP-Kompatibilitätsadapter. Der Adapter ist weder ein SDK noch ein zweiter
+Trainingsdienst. Seine Operationen sind nicht in OpenAPI und der API-Referenz
+enthalten. Konstruieren Sie Adapter-Requests nicht selbst.
+
+<Note>
+  Benutzerdefinierte Trainingsloops erfordern Teamzugang. Ohne Zugang enthalten
+  Joblisten nur Config-Jobs, und IDs von Interactive-Jobs geben `404` zurück.
+</Note>
 
 ## Lebenszyklus von Config-Jobs
 
@@ -88,10 +89,11 @@ beispielsweise `errored`.
 
 <CardGroup cols={3}>
   <Card title="Schnellstart" icon="play" href="/de/training/quickstart">
-    Erstellen und überwachen Sie einen verwalteten Config-Job.
+    Führen Sie verwaltetes Training aus oder starten Sie einen
+    benutzerdefinierten Trainingsloop.
   </Card>
-  <Card title="RL API" icon="repeat-2" href="/de/rl-api">
-    Steuern Sie einen interaktiven Trainingsjob über das SDK.
+  <Card title="Von Tinker migrieren" icon="arrow-right-arrow-left" href="/de/training/migrate-from-tinker">
+    Verlagern Sie einen vorhandenen kompatiblen Workload zu Fastino.
   </Card>
   <Card title="GLiNER feinabstimmen" icon="tags" href="/de/guides/fine-tune-gliner">
     Bereiten Sie Entitätsdaten vor und trainieren Sie ein GLiNER-Modell.

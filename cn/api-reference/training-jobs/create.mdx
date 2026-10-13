@@ -6,14 +6,16 @@ api: "POST /v1/training/jobs"
 ---
 
 <Warning>
-  此草稿使用即将推出的原生 `model` 和 `type` 请求字段。在统一训练 API 发布前，生产环境仍以其生成的 OpenAPI 契约为准。
+  此预览使用计划中的 `model` 和 `type` 请求字段。当前 Pioneer 部署仍要求
+  `base_model`，并会拒绝这些字段。在后端生成的契约包含这些字段之前，请勿合并此预览。
 </Warning>
 
 `POST /v1/training/jobs`
 
 创建一个异步 `config` 训练任务并返回其任务记录。在配置任务中，你提供数据集和配置，
-Fastino 负责运行训练循环。若要逐步控制该循环，请通过
-[RL API 使用 `interactive` 任务](/cn/rl-api/quickstart)。
+Fastino 负责运行训练循环。若要逐步控制该循环，请按照
+[自定义训练循环路径](/cn/training/quickstart#custom-training-loop)操作。该路径会创建
+`interactive` 任务。
 
 此端点限制为每个用户每分钟 20 次请求。
 

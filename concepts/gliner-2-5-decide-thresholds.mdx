@@ -4,6 +4,13 @@ sidebarTitle: "Evaluation & Train"
 description: "Evaluate classification quality, select multi-label thresholds, and fine-tune GLiNER 2.5 Decide for your domain."
 ---
 
+<Warning>
+  The managed example in this preview uses the planned `model` and `type`
+  fields. Current Pioneer deployments require `base_model` and reject those
+  fields. Do not merge this preview until the generated backend contract
+  includes the new request shape.
+</Warning>
+
 Evaluate the exact `classifications` schema your application will send to `fastino/GLiNER-2.5-Decide`. Change the labels or task settings only between evaluation runs so results remain comparable.
 
 ## Evaluate a Decide schema

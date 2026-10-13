@@ -4,28 +4,24 @@ sidebarTitle: "Vue d'ensemble"
 description: "Choisissez l'entraînement géré, l'entraînement piloté par l'application ou un agent d'entraînement autonome privé."
 ---
 
-L'API d'entraînement regroupe tous les workflows d'entraînement sous
-`/v1/training` :
+Chaque workload d'entraînement Fastino est un job. Choisissez qui contrôle la
+boucle d'entraînement, puis utilisez `/v1/training/jobs` pour inspecter le job.
 
 <CardGroup cols={3}>
-  <Card title="Jobs" icon="sliders" href="/fr/training/quickstart">
-    Créez et inspectez des jobs `config` gérés via `/v1/training/jobs`.
+  <Card title="Entraînement géré" icon="sliders" href="/fr/training/quickstart#managed-training">
+    Fournissez un dataset et une configuration. Fastino exécute la boucle
+    d'entraînement.
   </Card>
-  <Card title="Adaptateur SDK" icon="code" href="/fr/rl-api">
-    Pilotez un job `interactive` via l'adaptateur SDK pris en charge à
-    l'adresse `/v1/training/compat/tinker`.
+  <Card title="Boucle d'entraînement personnalisée" icon="code" href="/fr/training/quickstart#custom-training-loop">
+    Utilisez un client SDK pris en charge pendant que votre application contrôle
+    chaque mise à jour.
   </Card>
-  <Card title="Auto" icon="sparkles" href="/fr/training/auto">
+  <Card title="Entraînement Auto" icon="sparkles" href="/fr/training/auto">
     Déléguez le cycle de vie de l'entraînement à l'agent d'entraînement autonome
     de Fastino.
   </Card>
 </CardGroup>
 
-<Warning>
-  Ce brouillon décrit la future API d'entraînement unifiée. N'utilisez pas ses
-  exemples de requêtes en production avant que Fastino n'annonce sa
-  disponibilité.
-</Warning>
 
 ## Choisir un type de job
 
@@ -34,16 +30,22 @@ Chaque job possède un `type` :
 | Type | Qui contrôle la boucle ? | Mode de démarrage |
 | --- | --- | --- |
 | `config` | Fastino | Envoyez un dataset et une configuration à `POST /v1/training/jobs`. |
-| `interactive` | Votre application | Créez un client d'entraînement via l'adaptateur SDK pris en charge. |
+| `interactive` | Votre application | Créez un client d'entraînement via un client SDK pris en charge. |
 
 Les deux types partagent la même identité de job. Les lectures canoniques
 utilisent `GET /v1/training/jobs`, `GET /v1/training/jobs/{job_id}` et
 `GET /v1/training/jobs/{job_id}/checkpoints`.
 
-L'adaptateur de compatibilité n'est pas un second service d'entraînement. Il
-traduit les appels SDK pris en charge en opérations sur un job Fastino
-interactif. Les opérations de l'adaptateur sont volontairement absentes de
-l'OpenAPI ; ne construisez pas vous-même leurs chemins HTTP.
+Pour les boucles personnalisées, le client SDK utilise l'adaptateur de
+compatibilité HTTP de Fastino. L'adaptateur n'est ni un SDK ni un second
+service d'entraînement. Ses opérations ne figurent ni dans l'OpenAPI ni dans la
+référence API. Ne construisez pas vous-même de requêtes vers l'adaptateur.
+
+<Note>
+  Les boucles d'entraînement personnalisées nécessitent un accès pour l'équipe.
+  Sans cet accès, les listes de jobs ne contiennent que des jobs de
+  configuration et les ID de jobs interactifs renvoient `404`.
+</Note>
 
 ## Cycle de vie d'un job de configuration
 
@@ -88,10 +90,11 @@ leur cycle de vie à partir de ce tableau.
 
 <CardGroup cols={3}>
   <Card title="Démarrage rapide" icon="play" href="/fr/training/quickstart">
-    Créez et surveillez un job de configuration géré.
+    Lancez un entraînement géré ou démarrez une boucle d'entraînement
+    personnalisée.
   </Card>
-  <Card title="API RL" icon="repeat-2" href="/fr/rl-api">
-    Pilotez un job d'entraînement interactif via le SDK.
+  <Card title="Migrer depuis Tinker" icon="arrow-right-arrow-left" href="/fr/training/migrate-from-tinker">
+    Transférez vers Fastino un workload compatible existant.
   </Card>
   <Card title="Fine-tuner GLiNER" icon="tags" href="/fr/guides/fine-tune-gliner">
     Préparez des données d'entités et entraînez un modèle GLiNER.

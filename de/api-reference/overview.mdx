@@ -17,8 +17,10 @@ lediglich ein Fastino-Konto und ein Terminal.
     an einen sicheren Ort, denn nach dem Schließen des Dialogs können Sie ihn nicht mehr einsehen.
 
     <Warning>
-      Halten Sie Ihren API-Schlüssel aus der Versionsverwaltung heraus. Verwenden Sie eine Umgebungsvariable oder einen
-      Secrets-Manager, anstatt ihn fest in Ihren Quelldateien zu hinterlegen.
+      Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
+      `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
+      und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
+      generierte Backend-Vertrag die neue Request-Form enthält.
     </Warning>
 
     Legen Sie Ihren Schlüssel als Umgebungsvariable fest, damit die folgenden Beispiele unverändert funktionieren:
@@ -212,6 +214,13 @@ lediglich ein Fastino-Konto und ein Terminal.
 
   <Step title="Einen Trainingsjob starten (optional)">
     Wenn Sie bereit sind, ein Modell mit Ihren eigenen Daten feinabzustimmen, starten Sie einen Trainingsjob:
+
+    <Warning>
+  Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
+  `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
+  und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
+  generierte Backend-Vertrag die neue Request-Form enthält.
+</Warning>
 
     <CodeGroup>
 

@@ -4,6 +4,13 @@ sidebarTitle: "Évaluation et entraînement"
 description: "Évaluez GLiNER 2.5 Decide, sélectionnez des seuils multi-étiquettes et adaptez le modèle à votre domaine par fine-tuning."
 ---
 
+<Warning>
+  L'exemple géré de cette préversion utilise les champs prévus `model` et
+  `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
+  ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
+  généré n'inclut pas la nouvelle forme de requête.
+</Warning>
+
 Évaluez le schéma `classifications` exact que votre application enverra à `fastino/GLiNER-2.5-Decide`. Ne modifiez les étiquettes ou les paramètres de tâche qu'entre les exécutions d'évaluation afin que les résultats restent comparables.
 
 ## Évaluer un schéma Decide

@@ -1,5 +1,6 @@
 ---
 title: "Train with verifiable rewards"
+sidebarTitle: "Verifiable rewards"
 description: "Turn a deterministic grader into a learning signal for one interactive Fastino job."
 ---
 
@@ -16,7 +17,8 @@ in your code.
 
 ## Before you start
 
-Complete the [Quickstart](/rl-api/quickstart), then confirm through capabilities
+Complete the [custom-loop Quickstart](/training/quickstart#custom-training-loop),
+then confirm through capabilities
 that your chosen model and training operations are enabled. The snippets below
 focus on the user-owned reward flow; adapt datum construction to
 `tinker==0.33.1` and your selected model.
@@ -104,7 +106,7 @@ if not (
     == len(padded_logprobs)
     == len(padded_advantages)
 ):
-    raise ValueError("RL datum arrays are not aligned")
+    raise ValueError("training datum arrays are not aligned")
 ```
 
 Use the renderer and tokenizer associated with the selected `base_model`. Keep
@@ -158,4 +160,4 @@ name.
 - Held-out evaluation remains separate from the training reward batch.
 
 For the surrounding lifecycle, read
-[The RL training loop](/rl-api/training-loop).
+[Build a custom training loop](/training/training-loop).

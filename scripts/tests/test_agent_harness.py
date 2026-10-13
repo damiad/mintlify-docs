@@ -164,10 +164,13 @@ class AgentHarnessTests(unittest.TestCase):
     def test_agent_index_orders_guides_before_contracts(self) -> None:
         self.assertEqual(CHECKS._journey_order_findings(HARNESS.ROOT), [])
 
-    def test_rl_navigation_starts_with_overview_and_quickstart(self) -> None:
+    def test_training_navigation_matches_the_unified_flow(self) -> None:
         config = json.loads((HARNESS.ROOT / "docs.json").read_text())
 
-        self.assertEqual(HARNESS._rl_navigation_findings(config), [])
+        self.assertEqual(HARNESS._training_navigation_findings(config), [])
+
+    def test_private_training_routes_are_not_published(self) -> None:
+        self.assertEqual(HARNESS._private_training_route_findings(), [])
 
     def test_operation_matching_handles_path_parameters_and_queries(self) -> None:
         operations = {

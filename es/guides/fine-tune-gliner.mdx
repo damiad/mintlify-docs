@@ -5,7 +5,10 @@ description: "Prepara un dataset de GLiNER, crea un trabajo de configuración ge
 ---
 
 <Warning>
-  Este borrador usa los próximos campos nativos `model` y `type`. Producción sigue usando su contrato OpenAPI generado hasta el lanzamiento de la API de entrenamiento unificada.
+  El ejemplo gestionado de esta versión preliminar usa los campos previstos
+  `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
+  y rechazan esos campos. No fusiones esta versión preliminar hasta que el
+  contrato de backend generado incluya la nueva forma de la solicitud.
 </Warning>
 
 Esta guía crea un trabajo de entrenamiento `config`. Tú proporcionas un dataset
