@@ -8,13 +8,6 @@ This quickstart covers both Training API paths. Use managed training when you
 want Fastino to run the loop. Use a custom training loop when your application
 must control sampling, rewards, and model updates.
 
-<Warning>
-  The managed example in this preview uses the planned `model` and `type`
-  fields. Current Pioneer deployments require `base_model` and reject those
-  fields. Do not merge this preview until the generated backend contract
-  includes the new request shape.
-</Warning>
-
 ## 1. Authenticate
 
 1. Create a [Fastino account](https://agent.fastino.ai/).
@@ -71,9 +64,8 @@ curl -X POST "https://api.fastino.ai/v1/training/jobs" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: $(uuidgen)" \
   -d '{
-    "type": "config",
     "model_name": "my-trained-model",
-    "model": "MODEL_ID_FROM_CATALOG",
+    "base_model": "MODEL_ID_FROM_CATALOG",
     "datasets": [
       {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
     ],

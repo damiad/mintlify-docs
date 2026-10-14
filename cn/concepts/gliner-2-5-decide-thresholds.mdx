@@ -4,11 +4,6 @@ sidebarTitle: "评估与训练"
 description: "使用代表性数据评估 GLiNER 2.5 Decide、选择多标签阈值，并针对特定领域微调模型。"
 ---
 
-<Warning>
-  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
-  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
-</Warning>
-
 评估应用将发送给 `fastino/GLiNER-2.5-Decide` 的确切 `classifications` schema。仅在两次评估运行之间更改标签或任务设置，以确保结果可比。
 
 ## 评估 Decide schema
@@ -62,7 +57,7 @@ description: "使用代表性数据评估 GLiNER 2.5 Decide、选择多标签阈
 }
 ```
 
-创建任务前，请检查 `GET /v1/base-models?supports_training=true`，因为目录中的可用模型可能会发生变化。使用 `fastino/GLiNER-2.5-Decide` 作为 `model`，使用 `lora` 作为 `training_type`。
+创建任务前，请检查 `GET /v1/base-models?supports_training=true`，因为目录中的可用模型可能会发生变化。使用 `fastino/GLiNER-2.5-Decide` 作为 `base_model`，使用 `lora` 作为 `training_type`。
 
 ### 准备 Decide 分类数据
 
@@ -88,9 +83,8 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "config",
     "model_name": "support-decide",
-    "model": "fastino/GLiNER-2.5-Decide",
+    "base_model": "fastino/GLiNER-2.5-Decide",
     "datasets": [{"name": "support-decide-training"}],
     "training_type": "lora",
     "validation_data_percentage": 0.2

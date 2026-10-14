@@ -24,6 +24,43 @@ HARNESS = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = HARNESS
 SPEC.loader.exec_module(HARNESS)
 
+CONFIG_CREATE_PAGES = (
+    "training/quickstart.mdx",
+    "concepts/datasets.mdx",
+    "guides/fine-tune-gliner.mdx",
+    "api-reference/training-jobs/create.mdx",
+    "api-reference/overview.mdx",
+    "concepts/gliner-2-5-decide-thresholds.mdx",
+)
+
+
+def _json_objects(text: str) -> list[object]:
+    decoder = json.JSONDecoder()
+    objects: list[object] = []
+    index = 0
+    while index < len(text):
+        if text[index] == "{":
+            try:
+                obj, end = decoder.raw_decode(text, index)
+            except json.JSONDecodeError:
+                index += 1
+                continue
+            objects.append(obj)
+            index = end
+        else:
+            index += 1
+    return objects
+
+
+def _is_config_create_request(obj: object) -> bool:
+    if not isinstance(obj, dict):
+        return False
+    if "model_name" not in obj or "datasets" not in obj:
+        return False
+    if "id" in obj or "status" in obj:
+        return False
+    return True
+
 
 class AgentHarnessTests(unittest.TestCase):
     def test_secret_bearing_workflows_are_pinned_to_main(self) -> None:
@@ -36,6 +73,35 @@ class AgentHarnessTests(unittest.TestCase):
         self.assertEqual(daily.count("ref: main"), 2)
         self.assertIn("github.ref == 'refs/heads/main'", lifecycle)
         self.assertIn("ref: main", lifecycle)
+
+    def test_training_job_create_matches_deployed_request_contract(self) -> None:
+        document = HARNESS._load_openapi()
+        create = document["components"]["schemas"]["TrainingJobCreate"]
+        properties = create["properties"]
+        response = document["components"]["schemas"]["TrainingJobResponse"]
+
+        self.assertEqual(create["required"], ["model_name", "datasets", "base_model"])
+        self.assertIn("base_model", properties)
+        self.assertNotIn("type", properties)
+        self.assertNotIn("model", properties)
+        self.assertNotIn("x-fastino-preview", create)
+        self.assertNotIn("preview", create.get("description", "").lower())
+        self.assertIn("type", response["properties"])
+
+    def test_english_config_create_requests_use_base_model_and_omit_type(self) -> None:
+        found = 0
+        for page in CONFIG_CREATE_PAGES:
+            text = (HARNESS.ROOT / page).read_text(encoding="utf-8")
+            requests = [
+                obj for obj in _json_objects(text) if _is_config_create_request(obj)
+            ]
+            self.assertTrue(requests, f"{page} has no config-create request example")
+            for obj in requests:
+                self.assertIn("base_model", obj, page)
+                self.assertNotIn("type", obj, page)
+                self.assertNotIn("model", obj, page)
+            found += len(requests)
+        self.assertGreaterEqual(found, len(CONFIG_CREATE_PAGES))
 
     def test_openapi_resolves_required_agent_operations(self) -> None:
         document = HARNESS._load_openapi()

@@ -7,11 +7,6 @@ description: "启动托管训练任务或由应用控制的训练循环，然后
 本快速入门涵盖训练 API 的两种路径。希望由 Fastino 运行循环时，请使用托管训练。
 当你的应用必须控制采样、奖励和模型更新时，请使用自定义训练循环。
 
-<Warning>
-  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
-  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
-</Warning>
-
 ## 1. 身份验证
 
 1. 创建 [Fastino 账户](https://agent.fastino.ai/)。
@@ -69,9 +64,8 @@ curl -X POST "https://api.fastino.ai/v1/training/jobs" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: $(uuidgen)" \
   -d '{
-    "type": "config",
     "model_name": "my-trained-model",
-    "model": "MODEL_ID_FROM_CATALOG",
+    "base_model": "MODEL_ID_FROM_CATALOG",
     "datasets": [
       {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
     ],

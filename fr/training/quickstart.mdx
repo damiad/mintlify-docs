@@ -9,13 +9,6 @@ l'entraînement géré lorsque vous souhaitez que Fastino exécute la boucle.
 Utilisez une boucle d'entraînement personnalisée lorsque votre application doit
 contrôler l'échantillonnage, les récompenses et les mises à jour du modèle.
 
-<Warning>
-  L'exemple géré de cette préversion utilise les champs prévus `model` et
-  `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
-  ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
-  généré n'inclut pas la nouvelle forme de requête.
-</Warning>
-
 ## 1. S'authentifier
 
 1. Créez un [compte Fastino](https://agent.fastino.ai/).
@@ -75,9 +68,8 @@ curl -X POST "https://api.fastino.ai/v1/training/jobs" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: $(uuidgen)" \
   -d '{
-    "type": "config",
     "model_name": "my-trained-model",
-    "model": "MODEL_ID_FROM_CATALOG",
+    "base_model": "MODEL_ID_FROM_CATALOG",
     "datasets": [
       {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
     ],

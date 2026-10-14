@@ -4,11 +4,6 @@ sidebarTitle: "微调 GLiNER"
 description: "准备 GLiNER 数据集、创建托管式配置任务，并通过检查点直至任务完成进行监控。"
 ---
 
-<Warning>
-  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
-  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
-</Warning>
-
 本指南将创建一个 `config` 训练任务。你提供就绪的数据集和训练设置；Fastino 负责运行训练循环。
 
 ## 开始之前
@@ -42,20 +37,19 @@ curl -sS "https://api.fastino.ai/v1/base-models?supports_training=true" \
   -H "X-API-Key: $FASTINO_API_KEY" | jq
 ```
 
-选择支持你的任务和所需训练类型的 GLiNER 模型。复制其确切 ID，用作原生训练 API 的 `model` 字段。
+选择支持你的任务和所需训练类型的 GLiNER 模型。复制其确切 ID，用作原生训练 API 的 `base_model` 字段。
 
 ## 3. 创建配置任务
 
-替换下面的目录模型、数据集名称和版本。保持 `type` 为 `config`。
+替换下面的目录模型、数据集名称和版本。
 
 ```bash
 curl -sS -X POST "https://api.fastino.ai/v1/training/jobs" \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "config",
     "model_name": "support-request-extractor",
-    "model": "BASE_MODEL_ID_FROM_CATALOG",
+    "base_model": "BASE_MODEL_ID_FROM_CATALOG",
     "datasets": [
       {
         "name": "READY_DATASET_NAME",

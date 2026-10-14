@@ -9,13 +9,6 @@ entrenamiento gestionado cuando quieras que Fastino ejecute el bucle. Usa un
 bucle de entrenamiento personalizado cuando tu aplicación deba controlar el
 muestreo, las recompensas y las actualizaciones del modelo.
 
-<Warning>
-  El ejemplo gestionado de esta versión preliminar usa los campos previstos
-  `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
-  y rechazan esos campos. No fusiones esta versión preliminar hasta que el
-  contrato de backend generado incluya la nueva forma de la solicitud.
-</Warning>
-
 ## 1. Autentícate
 
 1. Crea una [cuenta de Fastino](https://agent.fastino.ai/).
@@ -75,9 +68,8 @@ curl -X POST "https://api.fastino.ai/v1/training/jobs" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: $(uuidgen)" \
   -d '{
-    "type": "config",
     "model_name": "my-trained-model",
-    "model": "MODEL_ID_FROM_CATALOG",
+    "base_model": "MODEL_ID_FROM_CATALOG",
     "datasets": [
       {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
     ],

@@ -9,13 +9,6 @@ verwaltetes Training, wenn Fastino den Loop ausführen soll. Verwenden Sie einen
 benutzerdefinierten Trainingsloop, wenn Ihre Anwendung Sampling, Rewards und
 Modellupdates steuern muss.
 
-<Warning>
-  Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
-  `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
-  und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
-  generierte Backend-Vertrag die neue Request-Form enthält.
-</Warning>
-
 ## 1. Authentifizieren
 
 1. Erstellen Sie ein [Fastino-Konto](https://agent.fastino.ai/).
@@ -75,9 +68,8 @@ curl -X POST "https://api.fastino.ai/v1/training/jobs" \
   -H "Content-Type: application/json" \
   -H "Idempotency-Key: $(uuidgen)" \
   -d '{
-    "type": "config",
     "model_name": "my-trained-model",
-    "model": "MODEL_ID_FROM_CATALOG",
+    "base_model": "MODEL_ID_FROM_CATALOG",
     "datasets": [
       {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
     ],

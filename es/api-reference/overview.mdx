@@ -16,12 +16,6 @@ una cuenta de Fastino y una terminal.
     Después de iniciar sesión, ve a **Settings → API Keys** y genera una clave nueva. Cópiala
     en un lugar seguro, porque no podrás volver a verla después de cerrar el cuadro de diálogo.
 
-    <Warning>
-      El ejemplo gestionado de esta versión preliminar usa los campos previstos
-      `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
-      y rechazan esos campos. No fusiones esta versión preliminar hasta que el
-      contrato de backend generado incluya la nueva forma de la solicitud.
-    </Warning>
 
     Define tu clave como variable de entorno para que los ejemplos siguientes funcionen tal cual:
 
@@ -215,12 +209,6 @@ una cuenta de Fastino y una terminal.
   <Step title="Inicia un trabajo de entrenamiento (opcional)">
     Cuando quieras hacer ajuste fino con tus propios datos, inicia un trabajo de entrenamiento:
 
-    <Warning>
-  El ejemplo gestionado de esta versión preliminar usa los campos previstos
-  `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
-  y rechazan esos campos. No fusiones esta versión preliminar hasta que el
-  contrato de backend generado incluya la nueva forma de la solicitud.
-</Warning>
 
     <CodeGroup>
 
@@ -229,9 +217,8 @@ una cuenta de Fastino y una terminal.
       -H "X-API-Key: $FASTINO_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "type": "config",
         "model_name": "my-gliner-model",
-        "model": "fastino/gliner2-base-v1",
+        "base_model": "fastino/gliner2-base-v1",
         "datasets": [{"name": "my-dataset"}],
         "training_type": "lora",
         "nr_epochs": 5,
@@ -250,9 +237,8 @@ una cuenta de Fastino y una terminal.
             "Content-Type": "application/json",
         },
         json={
-            "type": "config",
             "model_name": "my-gliner-model",
-            "model": "fastino/gliner2-base-v1",
+            "base_model": "fastino/gliner2-base-v1",
             "datasets": [{"name": "my-dataset"}],
             "training_type": "lora",
             "nr_epochs": 5,

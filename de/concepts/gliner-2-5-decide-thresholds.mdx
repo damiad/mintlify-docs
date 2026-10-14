@@ -4,13 +4,6 @@ sidebarTitle: "Evaluierung & Training"
 description: "Evaluieren Sie GLiNER 2.5 Decide, wählen Sie Multi-Label-Schwellenwerte aus und stimmen Sie das Modell für Ihre Domäne fein ab."
 ---
 
-<Warning>
-  Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
-  `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
-  und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
-  generierte Backend-Vertrag die neue Request-Form enthält.
-</Warning>
-
 Evaluieren Sie genau das `classifications`-Schema, das Ihre Anwendung an `fastino/GLiNER-2.5-Decide` senden wird. Ändern Sie Labels oder Aufgabeneinstellungen nur zwischen Evaluierungsdurchläufen, damit die Ergebnisse vergleichbar bleiben.
 
 ## Ein Decide-Schema evaluieren
@@ -64,7 +57,7 @@ Der aktuelle Live-Katalog der Basismodelle gibt Folgendes an:
 }
 ```
 
-Prüfen Sie `GET /v1/base-models?supports_training=true`, bevor Sie einen Job erstellen, da sich die Verfügbarkeit im Katalog ändern kann. Verwenden Sie `fastino/GLiNER-2.5-Decide` als `model` und `lora` als `training_type`.
+Prüfen Sie `GET /v1/base-models?supports_training=true`, bevor Sie einen Job erstellen, da sich die Verfügbarkeit im Katalog ändern kann. Verwenden Sie `fastino/GLiNER-2.5-Decide` als `base_model` und `lora` als `training_type`.
 
 ### Decide-Klassifizierungsdaten vorbereiten
 
@@ -90,9 +83,8 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "config",
     "model_name": "support-decide",
-    "model": "fastino/GLiNER-2.5-Decide",
+    "base_model": "fastino/GLiNER-2.5-Decide",
     "datasets": [{"name": "support-decide-training"}],
     "training_type": "lora",
     "validation_data_percentage": 0.2

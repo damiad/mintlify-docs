@@ -16,12 +16,6 @@ lediglich ein Fastino-Konto und ein Terminal.
     Sobald Sie angemeldet sind, gehen Sie zu **Settings → API Keys** und generieren Sie einen neuen Schlüssel. Kopieren Sie ihn
     an einen sicheren Ort, denn nach dem Schließen des Dialogs können Sie ihn nicht mehr einsehen.
 
-    <Warning>
-      Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
-      `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
-      und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
-      generierte Backend-Vertrag die neue Request-Form enthält.
-    </Warning>
 
     Legen Sie Ihren Schlüssel als Umgebungsvariable fest, damit die folgenden Beispiele unverändert funktionieren:
 
@@ -215,12 +209,6 @@ lediglich ein Fastino-Konto und ein Terminal.
   <Step title="Einen Trainingsjob starten (optional)">
     Wenn Sie bereit sind, ein Modell mit Ihren eigenen Daten feinabzustimmen, starten Sie einen Trainingsjob:
 
-    <Warning>
-  Das verwaltete Beispiel in dieser Vorschau verwendet die geplanten Felder
-  `model` und `type`. Aktuelle Pioneer-Bereitstellungen erfordern `base_model`
-  und lehnen diese Felder ab. Führen Sie diese Vorschau erst zusammen, wenn der
-  generierte Backend-Vertrag die neue Request-Form enthält.
-</Warning>
 
     <CodeGroup>
 
@@ -229,9 +217,8 @@ lediglich ein Fastino-Konto und ein Terminal.
       -H "X-API-Key: $FASTINO_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "type": "config",
         "model_name": "my-gliner-model",
-        "model": "fastino/gliner2-base-v1",
+        "base_model": "fastino/gliner2-base-v1",
         "datasets": [{"name": "my-dataset"}],
         "training_type": "lora",
         "nr_epochs": 5,
@@ -250,9 +237,8 @@ lediglich ein Fastino-Konto und ein Terminal.
             "Content-Type": "application/json",
         },
         json={
-            "type": "config",
             "model_name": "my-gliner-model",
-            "model": "fastino/gliner2-base-v1",
+            "base_model": "fastino/gliner2-base-v1",
             "datasets": [{"name": "my-dataset"}],
             "training_type": "lora",
             "nr_epochs": 5,

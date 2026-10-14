@@ -13,10 +13,6 @@ noindex: true
 
     登录后，前往 **Settings → API Keys** 并生成新密钥。请将其复制并妥善保存，因为关闭对话框后将无法再次查看。
 
-    <Warning>
-      本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
-      部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
-    </Warning>
 
     将密钥设置为环境变量，以便下面的示例可以直接运行：
 
@@ -206,10 +202,6 @@ noindex: true
   <Step title="启动训练任务（可选）">
     当你准备好使用自己的数据进行微调时，请启动训练任务：
 
-    <Warning>
-  本预览中的托管示例使用计划中的 `model` 和 `type` 字段。当前的 Pioneer
-  部署要求提供 `base_model`，并会拒绝这些字段。在生成的后端契约包含新的请求形式之前，请勿合并本预览。
-</Warning>
 
     <CodeGroup>
 
@@ -218,9 +210,8 @@ noindex: true
       -H "X-API-Key: $FASTINO_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "type": "config",
         "model_name": "my-gliner-model",
-        "model": "fastino/gliner2-base-v1",
+        "base_model": "fastino/gliner2-base-v1",
         "datasets": [{"name": "my-dataset"}],
         "training_type": "lora",
         "nr_epochs": 5,
@@ -239,9 +230,8 @@ noindex: true
             "Content-Type": "application/json",
         },
         json={
-            "type": "config",
             "model_name": "my-gliner-model",
-            "model": "fastino/gliner2-base-v1",
+            "base_model": "fastino/gliner2-base-v1",
             "datasets": [{"name": "my-dataset"}],
             "training_type": "lora",
             "nr_epochs": 5,

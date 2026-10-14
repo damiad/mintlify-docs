@@ -16,12 +16,6 @@ d'un compte Fastino et d'un terminal.
     Une fois connecté, accédez à **Settings → API Keys** et générez une nouvelle clé. Copiez-la
     en lieu sûr, car vous ne pourrez plus l'afficher après avoir fermé la boîte de dialogue.
 
-    <Warning>
-      L'exemple géré de cette préversion utilise les champs prévus `model` et
-      `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
-      ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
-      généré n'inclut pas la nouvelle forme de requête.
-    </Warning>
 
     Définissez votre clé comme variable d'environnement pour que les exemples ci-dessous fonctionnent tels quels :
 
@@ -215,12 +209,6 @@ d'un compte Fastino et d'un terminal.
   <Step title="Lancer un job d'entraînement (facultatif)">
     Lorsque vous êtes prêt à effectuer un fine-tuning sur vos propres données, lancez un job d'entraînement :
 
-    <Warning>
-  L'exemple géré de cette préversion utilise les champs prévus `model` et
-  `type`. Les déploiements Pioneer actuels exigent `base_model` et rejettent
-  ces champs. Ne fusionnez pas cette préversion tant que le contrat backend
-  généré n'inclut pas la nouvelle forme de requête.
-</Warning>
 
     <CodeGroup>
 
@@ -229,9 +217,8 @@ d'un compte Fastino et d'un terminal.
       -H "X-API-Key: $FASTINO_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "type": "config",
         "model_name": "my-gliner-model",
-        "model": "fastino/gliner2-base-v1",
+        "base_model": "fastino/gliner2-base-v1",
         "datasets": [{"name": "my-dataset"}],
         "training_type": "lora",
         "nr_epochs": 5,
@@ -250,9 +237,8 @@ d'un compte Fastino et d'un terminal.
             "Content-Type": "application/json",
         },
         json={
-            "type": "config",
             "model_name": "my-gliner-model",
-            "model": "fastino/gliner2-base-v1",
+            "base_model": "fastino/gliner2-base-v1",
             "datasets": [{"name": "my-dataset"}],
             "training_type": "lora",
             "nr_epochs": 5,

@@ -4900,7 +4900,7 @@
                 "type": "array"
               }
             ],
-            "description": "The situation every question is evaluated against: a string, a JSON object of labeled fields, or a JSON array. An array may mix strings with text parts and up to 4 image_url parts (https or a data URL). Images are billed as input tokens. Send an empty value when the question carries all the context.",
+            "description": "The situation every question is evaluated against: a string, a JSON object of labeled fields, or a JSON array. Send an empty value when the question carries all the context.",
             "title": "State"
           },
           "thinking": {
@@ -5012,7 +5012,7 @@
         "description": "Token counts the engine reports for one decision.",
         "properties": {
           "input_tokens": {
-            "description": "Input tokens across every internal pass for every question, including visual tokens from images. Can exceed 40,000 even when each rendered question prompt fits.",
+            "description": "Input tokens across every internal pass for every question. Can exceed 40,000 even when each rendered question prompt fits.",
             "minimum": 0.0,
             "title": "Input Tokens",
             "type": "integer"
@@ -5191,20 +5191,12 @@
       },
       "TrainingJobCreate": {
         "additionalProperties": false,
-        "description": "Preview request for a managed config training job. The model/type rename is not yet deployed to production.",
+        "description": "Request to create a training job.",
         "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "config"
-            ],
-            "title": "Type",
-            "description": "Training-job mode. Use config when Fastino runs the training loop."
-          },
-          "model": {
-            "description": "Base model to fine-tune. Use an ID from GET /v1/base-models?supports_training=true or a supported checkpoint UUID.",
+          "base_model": {
+            "description": "Trainable model ID from GET /v1/base-models?supports_training=true (e.g. 'fastino/gliner2-base-v1').",
             "minLength": 1,
-            "title": "Model",
+            "title": "Base Model",
             "type": "string"
           },
           "auto_data_sizing": {
@@ -5673,14 +5665,12 @@
           }
         },
         "required": [
-          "type",
           "model_name",
           "datasets",
-          "model"
+          "base_model"
         ],
         "title": "TrainingJobCreate",
-        "type": "object",
-        "x-fastino-preview": true
+        "type": "object"
       },
       "TrainingJobResponse": {
         "description": "Training job response model",
@@ -6453,8 +6443,8 @@
     }
   },
   "info": {
-    "description": "Preview contract for PR 433. The TrainingJobCreate model/type rename is not deployed to production; do not merge or generate production clients until Pioneer publishes the backend-generated contract.\n\nPublic Fastino training and inference operations documented at https://docs.fastino.ai.",
-    "title": "Fastino API — Training preview",
+    "description": "Public Fastino training and inference operations documented at https://docs.fastino.ai.",
+    "title": "Fastino Training and Inference API",
     "version": "2.0.0"
   },
   "openapi": "3.1.0",

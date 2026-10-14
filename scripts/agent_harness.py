@@ -1996,9 +1996,18 @@ def main() -> int:
             "cookbooks",
             "training-replay",
             "training-lifecycle",
+            "training-snippets",
         ),
     )
+    parser.add_argument("--live", action="store_true")
+    parser.add_argument("--write-census", action="store_true")
     args = parser.parse_args()
+    if args.command != "training-snippets" and (args.live or args.write_census):
+        print(
+            "agent docs harness failed: --live and --write-census are only valid for training-snippets",
+            file=sys.stderr,
+        )
+        return 1
     try:
         if args.command == "static":
             run_static()
@@ -2011,6 +2020,14 @@ def main() -> int:
         elif args.command == "training-replay":
             _run_training_replay(_require_api_key())
             print("Training idempotency replay passed")
+        elif args.command == "training-snippets":
+            sys.modules.setdefault("agent_harness", sys.modules[__name__])
+            import training_snippets as training_snippets_mod
+
+            training_snippets_mod.run_training_snippets(
+                live=args.live,
+                write_census=args.write_census,
+            )
         else:
             run_training_lifecycle()
     except (

@@ -4,13 +4,6 @@ sidebarTitle: "Evaluation & Train"
 description: "Evaluate classification quality, select multi-label thresholds, and fine-tune GLiNER 2.5 Decide for your domain."
 ---
 
-<Warning>
-  The managed example in this preview uses the planned `model` and `type`
-  fields. Current Pioneer deployments require `base_model` and reject those
-  fields. Do not merge this preview until the generated backend contract
-  includes the new request shape.
-</Warning>
-
 Evaluate the exact `classifications` schema your application will send to `fastino/GLiNER-2.5-Decide`. Change the labels or task settings only between evaluation runs so results remain comparable.
 
 ## Evaluate a Decide schema
@@ -64,7 +57,7 @@ The live base-model catalog currently advertises:
 }
 ```
 
-Check `GET /v1/base-models?supports_training=true` before creating a job because catalog availability can change. Use `fastino/GLiNER-2.5-Decide` as `model` and `lora` as `training_type`.
+Check `GET /v1/base-models?supports_training=true` before creating a job because catalog availability can change. Use `fastino/GLiNER-2.5-Decide` as `base_model` and `lora` as `training_type`.
 
 ### Prepare Decide classification data
 
@@ -90,9 +83,8 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "config",
     "model_name": "support-decide",
-    "model": "fastino/GLiNER-2.5-Decide",
+    "base_model": "fastino/GLiNER-2.5-Decide",
     "datasets": [{"name": "support-decide-training"}],
     "training_type": "lora",
     "validation_data_percentage": 0.2

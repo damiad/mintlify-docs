@@ -5,11 +5,6 @@ description: "调用 POST /v1/training/jobs，基于基础模型和数据集启�
 api: "POST /v1/training/jobs"
 ---
 
-<Warning>
-  此预览使用计划中的 `model` 和 `type` 请求字段。当前 Pioneer 部署仍要求
-  `base_model`，并会拒绝这些字段。在后端生成的契约包含这些字段之前，请勿合并此预览。
-</Warning>
-
 `POST /v1/training/jobs`
 
 创建一个异步 `config` 训练任务并返回其任务记录。在配置任务中，你提供数据集和配置，
@@ -25,15 +20,11 @@ Fastino 负责运行训练循环。若要逐步控制该循环，请按照
   您的 Fastino API 密钥。
 </ParamField>
 
-<ParamField body="type" type="string" required>
-  对于本页记录的请求体，请将其设为 `config`。
-</ParamField>
-
 <ParamField body="model_name" type="string" required>
   训练模型的显示名称。长度：1–100 个字符。
 </ParamField>
 
-<ParamField body="model" type="string" required>
+<ParamField body="base_model" type="string" required>
   来自 `GET /v1/base-models?supports_training=true` 的可训练模型 ID，或受支持的检查点 UUID。
 </ParamField>
 
@@ -182,9 +173,8 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "config",
     "model_name": "my-model-name",
-    "model": "fastino/gliner2-multi-v1",
+    "base_model": "fastino/gliner2-multi-v1",
     "datasets": [{"name": "my-ready-dataset"}],
     "training_type": "lora",
     "nr_epochs": 5,

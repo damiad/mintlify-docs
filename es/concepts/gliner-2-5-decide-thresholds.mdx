@@ -4,13 +4,6 @@ sidebarTitle: "Evaluación y entrenamiento"
 description: "Evalúa GLiNER 2.5 Decide, selecciona umbrales multietiqueta y ajusta el modelo con datos de clasificación representativos."
 ---
 
-<Warning>
-  El ejemplo gestionado de esta versión preliminar usa los campos previstos
-  `model` y `type`. Los despliegues actuales de Pioneer requieren `base_model`
-  y rechazan esos campos. No fusiones esta versión preliminar hasta que el
-  contrato de backend generado incluya la nueva forma de la solicitud.
-</Warning>
-
 Evalúa el esquema `classifications` exacto que tu aplicación enviará a `fastino/GLiNER-2.5-Decide`. Cambia las etiquetas o la configuración de la tarea únicamente entre ejecuciones de evaluación para que los resultados sigan siendo comparables.
 
 ## Evalúa un esquema de Decide
@@ -64,7 +57,7 @@ El catálogo activo de modelos base anuncia actualmente:
 }
 ```
 
-Consulta `GET /v1/base-models?supports_training=true` antes de crear un trabajo porque la disponibilidad del catálogo puede cambiar. Usa `fastino/GLiNER-2.5-Decide` como `model` y `lora` como `training_type`.
+Consulta `GET /v1/base-models?supports_training=true` antes de crear un trabajo porque la disponibilidad del catálogo puede cambiar. Usa `fastino/GLiNER-2.5-Decide` como `base_model` y `lora` como `training_type`.
 
 ### Prepara los datos de clasificación de Decide
 
@@ -90,9 +83,8 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "config",
     "model_name": "support-decide",
-    "model": "fastino/GLiNER-2.5-Decide",
+    "base_model": "fastino/GLiNER-2.5-Decide",
     "datasets": [{"name": "support-decide-training"}],
     "training_type": "lora",
     "validation_data_percentage": 0.2

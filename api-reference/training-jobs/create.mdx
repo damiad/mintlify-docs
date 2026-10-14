@@ -7,17 +7,14 @@ api: "POST /v1/training/jobs"
 
 `POST /v1/training/jobs`
 
-<Warning>
-  This preview shows the planned `model` and `type` request fields. Current
-  Pioneer deployments require `base_model` and reject those fields. Do not
-  merge this preview until the generated backend contract includes them.
-</Warning>
-
 Creates an asynchronous `config` training job and returns its job record. In a
 config job, you provide a dataset and configuration and Fastino runs the
 training loop. To control the loop step by step, follow the
 [custom training loop path](/training/quickstart#custom-training-loop), which
-creates an `interactive` job.
+creates an `interactive` job through the supported SDK client. This REST
+endpoint does not create interactive jobs. After creation, both job types use
+their canonical IDs with the documented `/v1/training/jobs/{job_id}` lifecycle
+operations.
 
 This endpoint is limited to 20 requests per minute per user.
 
@@ -27,15 +24,11 @@ This endpoint is limited to 20 requests per minute per user.
   Your Fastino API key.
 </ParamField>
 
-<ParamField body="type" type="string" required>
-  Set this to `config` for the request body documented on this page.
-</ParamField>
-
 <ParamField body="model_name" type="string" required>
   Display name for the trained model. Length: 1–100 characters.
 </ParamField>
 
-<ParamField body="model" type="string" required>
+<ParamField body="base_model" type="string" required>
   A trainable model ID from `GET /v1/base-models?supports_training=true`, or a supported checkpoint UUID.
 </ParamField>
 
@@ -184,9 +177,8 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "X-API-Key: $FASTINO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "config",
     "model_name": "my-model-name",
-    "model": "fastino/gliner2-multi-v1",
+    "base_model": "fastino/gliner2-multi-v1",
     "datasets": [{"name": "my-ready-dataset"}],
     "training_type": "lora",
     "nr_epochs": 5,

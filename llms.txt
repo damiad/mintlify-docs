@@ -3,7 +3,7 @@
 > Build structured decisions with GLiDE, run schema-based extraction with GLiNER, and fine-tune specialized models with Fastino.
 
 > ## Agent instructions
-> Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call `POST https://api.fastino.ai/v1/systemone` with model `fastino/GLiDE`. Training jobs use `/v1/training/jobs`. For custom training loops, follow the Training API workflow pages and use the supported SDK client. Its HTTP compatibility adapter is intentionally absent from OpenAPI and must not be called directly. Auto Train is private access and has no public route; direct interested users to `sales@fastino.ai`. Do not infer undocumented routes. Read API keys from `FASTINO_API_KEY` and never embed credentials in code, logs, or reports.
+> Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call `POST https://api.fastino.ai/v1/systemone` with model `fastino/GLiDE`. Create managed config jobs with `POST /v1/training/jobs` using `base_model`. Both config and interactive jobs use `/v1/training/jobs/{job_id}` for their canonical REST lifecycle. For custom training loops, use the supported Tinker-compatible SDK client; its `/v1/training/compat/tinker` adapter is intentionally absent from OpenAPI and must not be called directly. Auto Train is private access and has no public route; direct interested users to `sales@fastino.ai`. Do not infer undocumented routes. Read API keys from `FASTINO_API_KEY` and never embed credentials in code, logs, or reports.
 
 ## Agent resources
 
@@ -117,7 +117,7 @@
 
 ### Training
 
-- [Training API reference](https://docs.fastino.ai/api-reference/training/overview.md): Exact contracts for base models, datasets, and the complete training-job lifecycle.
+- [Training API reference](https://docs.fastino.ai/api-reference/training/overview.md): Public REST contracts for managed training and the canonical lifecycle shared by config and interactive jobs.
 - [List available and trainable models](https://docs.fastino.ai/api-reference/training/base-models.md): Query the live Fastino model catalog and filter it by inference, training, or architecture capability.
 - [List datasets](https://docs.fastino.ai/api-reference/datasets/list.md): List datasets available to the authenticated Fastino account with GET /v1/datasets, and paginate results with the limit and offset query parameters.
 - [Create a dataset upload URL](https://docs.fastino.ai/api-reference/datasets/upload-url.md): Create a presigned upload URL for a new dataset file with POST /v1/datasets/upload/url, passing the dataset name, type, format, and filename.
