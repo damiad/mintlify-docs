@@ -4903,6 +4903,12 @@
             "description": "The situation every question is evaluated against: a string, a JSON object of labeled fields, or a JSON array. Send an empty value when the question carries all the context.",
             "title": "State"
           },
+          "store": {
+            "default": true,
+            "description": "Whether Fastino keeps this request's input and output. `true` (the default) records them in your inference history. `false` keeps neither: no history entry, and the payload stays out of logs, error reports and traces, so it is never used for training or continuous adaptation, whatever your training opt-out says. Usage metadata (model, token counts, latency, status, cost) is still recorded for billing. The `X-Fastino-Data-Retention` response header reports the outcome.",
+            "title": "Store",
+            "type": "boolean"
+          },
           "thinking": {
             "anyOf": [
               {
@@ -8148,7 +8154,7 @@
     },
     "/v1/systemone": {
       "post": {
-        "description": "Answer a batch of questions about one state.",
+        "description": "Answer a batch of questions about one state.\n\nSend `store: false` to keep neither the input nor the output; usage metadata is still\nrecorded for billing. See the `store` field.",
         "operationId": "decide_v1_systemone_post",
         "requestBody": {
           "content": {
