@@ -60,11 +60,6 @@
 - [Cookbook: Classify text into your own labels](https://docs.fastino.ai/cookbooks/gliner-text-classification.md): Label text with several independent classification tasks in one GLiNER 2.5 Multi call.
 - [Cookbook: Extract relations between entities](https://docs.fastino.ai/cookbooks/gliner-relation-extraction.md): Find who works where, what is located where, and who acquired whom, as head and tail pairs, with GLiNER 2.5 Multi.
 
-### Inference API
-
-- [Inference API: run Fastino models](https://docs.fastino.ai/inference.md): Learn how to run inference with Fastino models through the GLiDE and OpenAI-compatible APIs.
-- [Fastino API authentication: generate and use API keys](https://docs.fastino.ai/authentication.md): Authenticate Fastino API requests with the X-API-Key header or a Bearer token, then create, rotate, and revoke API keys in the Fastino dashboard settings.
-
 ### Training API
 
 - [Training API](https://docs.fastino.ai/training.md): Choose managed training, application-directed training, or a private autonomous training agent.
@@ -76,6 +71,11 @@
 - [Train with verifiable rewards](https://docs.fastino.ai/training/verifiable-rewards.md): Turn a deterministic grader into a learning signal for one interactive Fastino job.
 - [Checkpoints and recovery](https://docs.fastino.ai/training/checkpoints.md): Save interactive-job state and application progress, then recover without replaying completed work.
 - [Auto Train](https://docs.fastino.ai/training/auto.md): Delegate data preparation, training, evaluation, and model selection to Fastino's autonomous training agent.
+
+### Inference API
+
+- [Inference API: run Fastino models](https://docs.fastino.ai/inference.md): Learn how to run inference with Fastino models through the GLiDE and OpenAI-compatible APIs.
+- [Fastino API authentication: generate and use API keys](https://docs.fastino.ai/authentication.md): Authenticate Fastino API requests with the X-API-Key header or a Bearer token, then create, rotate, and revoke API keys in the Fastino dashboard settings.
 
 ### Troubleshooting
 

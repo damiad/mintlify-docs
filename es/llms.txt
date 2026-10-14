@@ -53,11 +53,6 @@
 - [Receta: Clasifica texto con tus propias etiquetas](https://docs.fastino.ai/es/cookbooks/gliner-text-classification.md): Etiqueta texto con varias tareas de clasificación independientes en una sola llamada a GLiNER 2.5 Multi.
 - [Receta: Extrae relaciones entre entidades](https://docs.fastino.ai/es/cookbooks/gliner-relation-extraction.md): Averigua quién trabaja dónde, qué se encuentra dónde y quién adquirió a quién, como pares de cabeza y cola, con GLiNER 2.5 Multi.
 
-### API de inferencia
-
-- [API de inferencia: ejecuta modelos de Fastino](https://docs.fastino.ai/es/inference.md): Aprende a ejecutar inferencia con modelos de Fastino mediante las API de GLiDE y compatibles con OpenAI.
-- [Autenticación de la API de Fastino: generar y usar claves](https://docs.fastino.ai/es/authentication.md): Autentica solicitudes a la API de Fastino con el encabezado X-API-Key o un token Bearer, y aprende a crear, rotar y revocar tus claves de API.
-
 ### API de entrenamiento
 
 - [API de entrenamiento](https://docs.fastino.ai/es/training.md): Elige entre entrenamiento gestionado, entrenamiento dirigido por la aplicación o un agente de entrenamiento autónomo privado.
@@ -69,6 +64,11 @@
 - [Entrenar con recompensas verificables](https://docs.fastino.ai/es/training/verifiable-rewards.md): Convierte un evaluador determinista en una señal de aprendizaje para un trabajo interactivo de Fastino.
 - [Checkpoints y recuperación](https://docs.fastino.ai/es/training/checkpoints.md): Guarda el estado del trabajo interactivo y el progreso de la aplicación y recupéralos sin repetir el trabajo completado.
 - [Auto Train](https://docs.fastino.ai/es/training/auto.md): Delega la preparación de datos, el entrenamiento, la evaluación y la selección de modelos en el agente de entrenamiento autónomo de Fastino.
+
+### API de inferencia
+
+- [API de inferencia: ejecuta modelos de Fastino](https://docs.fastino.ai/es/inference.md): Aprende a ejecutar inferencia con modelos de Fastino mediante las API de GLiDE y compatibles con OpenAI.
+- [Autenticación de la API de Fastino: generar y usar claves](https://docs.fastino.ai/es/authentication.md): Autentica solicitudes a la API de Fastino con el encabezado X-API-Key o un token Bearer, y aprende a crear, rotar y revocar tus claves de API.
 
 ### Solución de problemas
 

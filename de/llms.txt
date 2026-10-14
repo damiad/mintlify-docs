@@ -53,11 +53,6 @@
 - [Rezept: Text mit eigenen Labels klassifizieren](https://docs.fastino.ai/de/cookbooks/gliner-text-classification.md): Versehen Sie Text mit mehreren unabhängigen Klassifikationsaufgaben in einem einzigen Aufruf von GLiNER 2.5 Multi.
 - [Rezept: Relationen zwischen Entitäten extrahieren](https://docs.fastino.ai/de/cookbooks/gliner-relation-extraction.md): Finden Sie mit GLiNER 2.5 Multi heraus, wer wo arbeitet, was sich wo befindet und wer wen übernommen hat – als Paare aus Head und Tail.
 
-### Inferenz-API
-
-- [Inferenz-API: Fastino-Modelle ausführen](https://docs.fastino.ai/de/inference.md): Erfahren Sie, wie Sie Inferenz mit Fastino-Modellen über die GLiDE- und OpenAI-kompatiblen APIs ausführen.
-- [Fastino-API-Authentifizierung mit API-Schlüsseln](https://docs.fastino.ai/de/authentication.md): Authentifizieren Sie Fastino-API-Anfragen mit dem X-API-Key-Header oder einem Bearer-Token und erstellen, rotieren oder widerrufen Sie Ihre API-Schlüssel.
-
 ### Trainings-API
 
 - [Training API](https://docs.fastino.ai/de/training.md): Wählen Sie verwaltetes Training, anwendungsgesteuertes Training oder einen privaten autonomen Trainingsagenten.
@@ -69,6 +64,11 @@
 - [Mit verifizierbaren Rewards trainieren](https://docs.fastino.ai/de/training/verifiable-rewards.md): Wandeln Sie einen deterministischen Grader in ein Lernsignal für einen interaktiven Fastino-Job um.
 - [Checkpoints und Wiederherstellung](https://docs.fastino.ai/de/training/checkpoints.md): Speichern Sie den Status eines interaktiven Jobs und den Anwendungsfortschritt und stellen Sie ihn wieder her, ohne abgeschlossene Arbeit zu wiederholen.
 - [Auto Train](https://docs.fastino.ai/de/training/auto.md): Delegieren Sie Datenvorbereitung, Training, Evaluierung und Modellauswahl an Fastinos autonomen Trainingsagenten.
+
+### Inferenz-API
+
+- [Inferenz-API: Fastino-Modelle ausführen](https://docs.fastino.ai/de/inference.md): Erfahren Sie, wie Sie Inferenz mit Fastino-Modellen über die GLiDE- und OpenAI-kompatiblen APIs ausführen.
+- [Fastino-API-Authentifizierung mit API-Schlüsseln](https://docs.fastino.ai/de/authentication.md): Authentifizieren Sie Fastino-API-Anfragen mit dem X-API-Key-Header oder einem Bearer-Token und erstellen, rotieren oder widerrufen Sie Ihre API-Schlüssel.
 
 ### Fehlerbehebung
 
