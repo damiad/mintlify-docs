@@ -1,13 +1,20 @@
 ---
 title: "训练 API 参考"
 sidebarTitle: "概览"
-description: "查看训练 API 契约的字段级细节。构建端到端训练流程时，先阅读训练生命周期指南：选择模型、创建任务、轮询状态并处理产物，并准备和上传 JSONL 数据集。"
+description: "用于创建 config 任务以及管理 config 和 interactive 任务的公共 REST 契约。"
 ---
 
 使用这些契约查看字段级细节。构建端到端训练流程时，请从生命周期指南开始。
 
-本参考发布面向客户的 `/v1/training/jobs` 契约。受支持的 SDK 客户端所使用的
-HTTP 兼容适配器不会出现在 OpenAPI 中。Auto Train 仍为私有访问。
+公共 REST API 包括：
+
+- 基础模型发现和数据集管理
+- 使用 `POST /v1/training/jobs` 创建托管式 `config` 任务
+- 在 `/v1/training/jobs` 下管理 `config` 和 `interactive` 任务的规范生命周期
+
+自定义循环的模型操作使用受支持的 Tinker 兼容 SDK 客户端。
+其 `/v1/training/compat/tinker` 适配器不会出现在 OpenAPI 中，也不应被直接调用。
+Auto Train 仍为私有访问且没有公共 API 契约。
 
 <CardGroup cols={2}>
   <Card title="训练生命周期" icon="route" href="/cn/training">

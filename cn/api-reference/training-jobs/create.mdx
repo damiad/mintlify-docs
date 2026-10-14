@@ -10,7 +10,9 @@ api: "POST /v1/training/jobs"
 创建一个异步 `config` 训练任务并返回其任务记录。在配置任务中，你提供数据集和配置，
 Fastino 负责运行训练循环。若要逐步控制该循环，请按照
 [自定义训练循环路径](/cn/training/quickstart#custom-training-loop)操作。该路径会创建
-`interactive` 任务。
+`interactive` 任务。自定义循环通过受支持的 SDK 客户端创建任务；此 REST 端点
+不会创建 `interactive` 任务。创建后，两种任务类型都使用其规范 ID 调用已记录的
+`/v1/training/jobs/{job_id}` 生命周期操作。
 
 此端点限制为每个用户每分钟 20 次请求。
 

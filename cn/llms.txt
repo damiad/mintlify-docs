@@ -110,7 +110,7 @@
 
 ### 训练
 
-- [训练 API 参考](https://docs.fastino.ai/cn/api-reference/training/overview.md): 查看训练 API 契约的字段级细节。构建端到端训练流程时，先阅读训练生命周期指南：选择模型、创建任务、轮询状态并处理产物，并准备和上传 JSONL 数据集。
+- [训练 API 参考](https://docs.fastino.ai/cn/api-reference/training/overview.md): 用于创建 config 任务以及管理 config 和 interactive 任务的公共 REST 契约。
 - [列出可用和可训练的模型](https://docs.fastino.ai/cn/api-reference/training/base-models.md): 使用 GET /v1/base-models 端点查询实时的 Fastino 模型目录，并按推理、训练或架构能力进行筛选。
 - [列出数据集](https://docs.fastino.ai/cn/api-reference/datasets/list.md): 使用 GET /v1/datasets 列出当前认证的 Fastino 账户可用的数据集，并通过 limit 和 offset 查询参数分页。
 - [创建数据集上传 URL](https://docs.fastino.ai/cn/api-reference/datasets/upload-url.md): 调用 POST /v1/datasets/upload/url 为新的数据集文件创建预签名上传 URL，需提供数据集名称、类型、格式和文件名。

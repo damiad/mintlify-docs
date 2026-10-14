@@ -11,7 +11,10 @@ Crea un trabajo de entrenamiento asíncrono `config` y devuelve su registro. En
 un trabajo de configuración, proporcionas un dataset y una configuración, y
 Fastino ejecuta el bucle. Para controlar el bucle paso a paso, sigue la
 [ruta del bucle de entrenamiento personalizado](/es/training/quickstart#custom-training-loop),
-que crea un trabajo `interactive`.
+que crea un trabajo `interactive` mediante el cliente SDK compatible. Este
+endpoint REST no crea trabajos interactive. Después de la creación, ambos tipos
+de trabajo usan sus IDs canónicos con las operaciones documentadas del ciclo de
+vida en `/v1/training/jobs/{job_id}`.
 
 Este endpoint está limitado a 20 solicitudes por minuto por usuario.
 

@@ -12,7 +12,10 @@ zurück. Bei einem Config-Job stellen Sie einen Datensatz und eine Konfiguration
 bereit, und Fastino führt den Trainingsloop aus. Um den Loop Schritt für Schritt
 zu steuern, folgen Sie dem
 [Pfad für einen eigenen Trainingsablauf](/de/training/quickstart#custom-training-loop).
-Dieser Pfad erstellt einen `interactive`-Job.
+Dieser Pfad erstellt einen `interactive`-Job über den unterstützten SDK-Client.
+Dieser REST-Endpunkt erstellt keine Interactive-Jobs. Nach der Erstellung
+verwenden beide Jobtypen ihre kanonischen IDs mit den dokumentierten
+Lebenszyklusoperationen unter `/v1/training/jobs/{job_id}`.
 
 Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
 

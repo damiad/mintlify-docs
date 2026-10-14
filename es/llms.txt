@@ -110,7 +110,7 @@
 
 ### Entrenamiento
 
-- [Referencia de la API de entrenamiento](https://docs.fastino.ai/es/api-reference/training/overview.md): Contratos exactos para modelos base, datasets y el ciclo completo de trabajos de entrenamiento.
+- [Referencia de la API de entrenamiento](https://docs.fastino.ai/es/api-reference/training/overview.md): Contratos REST públicos para crear trabajos config y gestionar trabajos config e interactive.
 - [Listar modelos disponibles y entrenables](https://docs.fastino.ai/es/api-reference/training/base-models.md): Consulta el catálogo de modelos de Fastino en vivo con GET /v1/base-models y fíltralo por capacidad de inferencia, entrenamiento o arquitectura.
 - [Listar datasets](https://docs.fastino.ai/es/api-reference/datasets/list.md): Lista los datasets disponibles para tu cuenta autenticada de Fastino con GET /v1/datasets y pagina los resultados con los parámetros limit y offset.
 - [Crear una URL de subida de dataset](https://docs.fastino.ai/es/api-reference/datasets/upload-url.md): Crea una URL de subida prefirmada para un nuevo archivo de dataset con POST /v1/datasets/upload/url, indicando nombre, tipo, formato y archivo.

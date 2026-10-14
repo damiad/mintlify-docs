@@ -12,7 +12,10 @@ Dans un job de configuration, vous fournissez un dataset et une configuration,
 et Fastino exécute la boucle d'entraînement. Pour contrôler la boucle étape par
 étape, suivez le
 [parcours de la boucle personnalisée](/fr/training/quickstart#custom-training-loop),
-qui crée un job `interactive`.
+qui crée un job `interactive` avec le client SDK pris en charge. Cet endpoint
+REST ne crée pas de jobs interactive. Après leur création, les deux types de
+jobs utilisent leurs ID canoniques avec les opérations de cycle de vie
+documentées sous `/v1/training/jobs/{job_id}`.
 
 Cet endpoint est limité à 20 requêtes par minute et par utilisateur.
 

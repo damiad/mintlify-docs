@@ -255,6 +255,12 @@ d'un compte Fastino et d'un terminal.
     Une fois que le job atteint le statut `complete`, déployez l'artefact sélectionné avant d'utiliser
     l'ID du job comme `model` dans `/v1/chat/completions`.
 
+    Cet endpoint crée des jobs `config` gérés. Les boucles d'entraînement
+    personnalisées créent des jobs `interactive` avec le client SDK compatible
+    Tinker pris en charge. Les deux types de jobs utilisent
+    `/v1/training/jobs/{id}` comme ressource REST canonique de leur cycle de vie.
+    L'adaptateur de compatibilité du SDK ne fait pas partie du contrat OpenAPI public.
+
     Les statuts persistés du job progressent de `requested` → `running` →
     `complete`, ou se terminent par `errored` ou `stopped`. Le statut normalisé
     utilisé pour l'interrogation vaut `failed` en cas d'échec terminal.

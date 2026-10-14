@@ -1,14 +1,22 @@
 ---
 title: "Référence de l’API d’entraînement"
 sidebarTitle: "Vue d’ensemble"
-description: "Contrats exacts pour les modèles de base, les jeux de données et le cycle complet des tâches d’entraînement."
+description: "Contrats REST publics pour créer des jobs config et gérer les jobs config et interactive."
 ---
 
 Utilisez ces contrats pour les détails des champs. Commencez par les guides de cycle de vie pour un workflow complet.
 
-Cette référence publie le contrat `/v1/training/jobs` destiné aux clients.
-L'adaptateur HTTP de compatibilité utilisé par les clients SDK pris en charge
-est absent d'OpenAPI. Auto Train reste en accès privé.
+L'API REST publique comprend :
+
+- La découverte des modèles de base et la gestion des jeux de données
+- La création de jobs `config` gérés avec `POST /v1/training/jobs`
+- Les opérations du cycle de vie canonique sous `/v1/training/jobs` pour les
+  jobs `config` et `interactive`
+
+Les opérations de modèle des boucles personnalisées utilisent le client SDK
+compatible Tinker pris en charge. Son adaptateur `/v1/training/compat/tinker`
+est absent d'OpenAPI et ne doit pas être appelé directement. Auto Train reste
+en accès privé et n'a pas de contrat d'API public.
 
 <CardGroup cols={2}>
   <Card title="Cycle d’entraînement" icon="route" href="/fr/training">
