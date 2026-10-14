@@ -134,6 +134,7 @@
                     "expanded": true,
                     "pages": [
                       "concepts/gliner",
+                      "concepts/gliner-agent-skill",
                       "inference/chat-completions",
                       {
                         "group": "Cookbooks",
@@ -149,22 +150,34 @@
                 ]
               },
               {
+                "group": "Training API",
+                "icon": "database-zap",
+                "expanded": true,
+                "pages": [
+                  "training",
+                  "training/quickstart",
+                  "training/migrate-from-tinker",
+                  "concepts/datasets",
+                  "guides/fine-tune-gliner",
+                  {
+                    "group": "Training workflows",
+                    "expanded": false,
+                    "pages": [
+                      "training/training-loop",
+                      "training/verifiable-rewards",
+                      "training/checkpoints"
+                    ]
+                  },
+                  "training/auto"
+                ]
+              },
+              {
                 "group": "Inference API",
                 "icon": "sparkle",
                 "expanded": true,
                 "pages": [
                   "inference",
                   "authentication"
-                ]
-              },
-              {
-                "group": "Training API",
-                "icon": "database-zap",
-                "expanded": true,
-                "pages": [
-                  "training",
-                  "concepts/gliner-agent-skill",
-                  "concepts/datasets"
                 ]
               },
               {
@@ -297,28 +310,19 @@
                       "api-reference/training-jobs/list",
                       "api-reference/training-jobs/get",
                       "api-reference/training-jobs/update-project",
+                      "api-reference/training-jobs/delete",
                       "api-reference/training-jobs/update-model-name",
                       "api-reference/training-jobs/logs",
                       "api-reference/training-jobs/billing",
+                      "api-reference/training-jobs/checkpoints",
+                      "api-reference/training-jobs/download-checkpoint",
+                      "api-reference/training-jobs/deploy-checkpoint",
                       "api-reference/training-jobs/deployments",
+                      "api-reference/training-jobs/download",
+                      "api-reference/training-jobs/push-to-hub",
                       "api-reference/training-jobs/stop",
                       "api-reference/training-jobs/terminate",
-                      "api-reference/training-jobs/sync",
-                      "api-reference/training-jobs/push-to-hub",
-                      "api-reference/training-jobs/checkpoints",
-                      "api-reference/training-jobs/deploy-checkpoint",
-                      "api-reference/training-jobs/download",
-                      "api-reference/training-jobs/delete"
-                    ]
-                  },
-                  {
-                    "group": "Training Runs",
-                    "expanded": false,
-                    "pages": [
-                      "api-reference/training-runs/list",
-                      "api-reference/training-runs/get",
-                      "api-reference/training-runs/list-checkpoints",
-                      "api-reference/training-runs/download-checkpoint"
+                      "api-reference/training-jobs/sync"
                     ]
                   }
                 ]
@@ -413,6 +417,7 @@
                     "expanded": true,
                     "pages": [
                       "cn/concepts/gliner",
+                      "cn/concepts/gliner-agent-skill",
                       "cn/inference/chat-completions",
                       {
                         "group": "实战示例",
@@ -428,22 +433,34 @@
                 ]
               },
               {
+                "group": "训练 API",
+                "icon": "database-zap",
+                "expanded": true,
+                "pages": [
+                  "cn/training",
+                  "cn/training/quickstart",
+                  "cn/training/migrate-from-tinker",
+                  "cn/concepts/datasets",
+                  "cn/guides/fine-tune-gliner",
+                  {
+                    "group": "训练工作流",
+                    "expanded": false,
+                    "pages": [
+                      "cn/training/training-loop",
+                      "cn/training/verifiable-rewards",
+                      "cn/training/checkpoints"
+                    ]
+                  },
+                  "cn/training/auto"
+                ]
+              },
+              {
                 "group": "推理 API",
                 "icon": "sparkle",
                 "expanded": true,
                 "pages": [
                   "cn/inference",
                   "cn/authentication"
-                ]
-              },
-              {
-                "group": "训练 API",
-                "icon": "database-zap",
-                "expanded": true,
-                "pages": [
-                  "cn/training",
-                  "cn/concepts/gliner-agent-skill",
-                  "cn/concepts/datasets"
                 ]
               },
               {
@@ -576,28 +593,19 @@
                       "cn/api-reference/training-jobs/list",
                       "cn/api-reference/training-jobs/get",
                       "cn/api-reference/training-jobs/update-project",
+                      "cn/api-reference/training-jobs/delete",
                       "cn/api-reference/training-jobs/update-model-name",
                       "cn/api-reference/training-jobs/logs",
                       "cn/api-reference/training-jobs/billing",
+                      "cn/api-reference/training-jobs/checkpoints",
+                      "cn/api-reference/training-jobs/download-checkpoint",
+                      "cn/api-reference/training-jobs/deploy-checkpoint",
                       "cn/api-reference/training-jobs/deployments",
+                      "cn/api-reference/training-jobs/download",
+                      "cn/api-reference/training-jobs/push-to-hub",
                       "cn/api-reference/training-jobs/stop",
                       "cn/api-reference/training-jobs/terminate",
-                      "cn/api-reference/training-jobs/sync",
-                      "cn/api-reference/training-jobs/push-to-hub",
-                      "cn/api-reference/training-jobs/checkpoints",
-                      "cn/api-reference/training-jobs/deploy-checkpoint",
-                      "cn/api-reference/training-jobs/download",
-                      "cn/api-reference/training-jobs/delete"
-                    ]
-                  },
-                  {
-                    "group": "训练运行",
-                    "expanded": false,
-                    "pages": [
-                      "cn/api-reference/training-runs/list",
-                      "cn/api-reference/training-runs/get",
-                      "cn/api-reference/training-runs/list-checkpoints",
-                      "cn/api-reference/training-runs/download-checkpoint"
+                      "cn/api-reference/training-jobs/sync"
                     ]
                   }
                 ]
@@ -692,6 +700,7 @@
                     "expanded": true,
                     "pages": [
                       "es/concepts/gliner",
+                      "es/concepts/gliner-agent-skill",
                       "es/inference/chat-completions",
                       {
                         "group": "Recetas",
@@ -707,22 +716,34 @@
                 ]
               },
               {
+                "group": "API de entrenamiento",
+                "icon": "database-zap",
+                "expanded": true,
+                "pages": [
+                  "es/training",
+                  "es/training/quickstart",
+                  "es/training/migrate-from-tinker",
+                  "es/concepts/datasets",
+                  "es/guides/fine-tune-gliner",
+                  {
+                    "group": "Flujos de entrenamiento",
+                    "expanded": false,
+                    "pages": [
+                      "es/training/training-loop",
+                      "es/training/verifiable-rewards",
+                      "es/training/checkpoints"
+                    ]
+                  },
+                  "es/training/auto"
+                ]
+              },
+              {
                 "group": "API de inferencia",
                 "icon": "sparkle",
                 "expanded": true,
                 "pages": [
                   "es/inference",
                   "es/authentication"
-                ]
-              },
-              {
-                "group": "API de entrenamiento",
-                "icon": "database-zap",
-                "expanded": true,
-                "pages": [
-                  "es/training",
-                  "es/concepts/gliner-agent-skill",
-                  "es/concepts/datasets"
                 ]
               },
               {
@@ -855,28 +876,19 @@
                       "es/api-reference/training-jobs/list",
                       "es/api-reference/training-jobs/get",
                       "es/api-reference/training-jobs/update-project",
+                      "es/api-reference/training-jobs/delete",
                       "es/api-reference/training-jobs/update-model-name",
                       "es/api-reference/training-jobs/logs",
                       "es/api-reference/training-jobs/billing",
+                      "es/api-reference/training-jobs/checkpoints",
+                      "es/api-reference/training-jobs/download-checkpoint",
+                      "es/api-reference/training-jobs/deploy-checkpoint",
                       "es/api-reference/training-jobs/deployments",
+                      "es/api-reference/training-jobs/download",
+                      "es/api-reference/training-jobs/push-to-hub",
                       "es/api-reference/training-jobs/stop",
                       "es/api-reference/training-jobs/terminate",
-                      "es/api-reference/training-jobs/sync",
-                      "es/api-reference/training-jobs/push-to-hub",
-                      "es/api-reference/training-jobs/checkpoints",
-                      "es/api-reference/training-jobs/deploy-checkpoint",
-                      "es/api-reference/training-jobs/download",
-                      "es/api-reference/training-jobs/delete"
-                    ]
-                  },
-                  {
-                    "group": "Ejecuciones de entrenamiento",
-                    "expanded": false,
-                    "pages": [
-                      "es/api-reference/training-runs/list",
-                      "es/api-reference/training-runs/get",
-                      "es/api-reference/training-runs/list-checkpoints",
-                      "es/api-reference/training-runs/download-checkpoint"
+                      "es/api-reference/training-jobs/sync"
                     ]
                   }
                 ]
@@ -971,6 +983,7 @@
                     "expanded": true,
                     "pages": [
                       "fr/concepts/gliner",
+                      "fr/concepts/gliner-agent-skill",
                       "fr/inference/chat-completions",
                       {
                         "group": "Recettes",
@@ -986,22 +999,34 @@
                 ]
               },
               {
+                "group": "API d'entraînement",
+                "icon": "database-zap",
+                "expanded": true,
+                "pages": [
+                  "fr/training",
+                  "fr/training/quickstart",
+                  "fr/training/migrate-from-tinker",
+                  "fr/concepts/datasets",
+                  "fr/guides/fine-tune-gliner",
+                  {
+                    "group": "Flux d'entraînement",
+                    "expanded": false,
+                    "pages": [
+                      "fr/training/training-loop",
+                      "fr/training/verifiable-rewards",
+                      "fr/training/checkpoints"
+                    ]
+                  },
+                  "fr/training/auto"
+                ]
+              },
+              {
                 "group": "API d'inférence",
                 "icon": "sparkle",
                 "expanded": true,
                 "pages": [
                   "fr/inference",
                   "fr/authentication"
-                ]
-              },
-              {
-                "group": "API d'entraînement",
-                "icon": "database-zap",
-                "expanded": true,
-                "pages": [
-                  "fr/training",
-                  "fr/concepts/gliner-agent-skill",
-                  "fr/concepts/datasets"
                 ]
               },
               {
@@ -1134,28 +1159,19 @@
                       "fr/api-reference/training-jobs/list",
                       "fr/api-reference/training-jobs/get",
                       "fr/api-reference/training-jobs/update-project",
+                      "fr/api-reference/training-jobs/delete",
                       "fr/api-reference/training-jobs/update-model-name",
                       "fr/api-reference/training-jobs/logs",
                       "fr/api-reference/training-jobs/billing",
+                      "fr/api-reference/training-jobs/checkpoints",
+                      "fr/api-reference/training-jobs/download-checkpoint",
+                      "fr/api-reference/training-jobs/deploy-checkpoint",
                       "fr/api-reference/training-jobs/deployments",
+                      "fr/api-reference/training-jobs/download",
+                      "fr/api-reference/training-jobs/push-to-hub",
                       "fr/api-reference/training-jobs/stop",
                       "fr/api-reference/training-jobs/terminate",
-                      "fr/api-reference/training-jobs/sync",
-                      "fr/api-reference/training-jobs/push-to-hub",
-                      "fr/api-reference/training-jobs/checkpoints",
-                      "fr/api-reference/training-jobs/deploy-checkpoint",
-                      "fr/api-reference/training-jobs/download",
-                      "fr/api-reference/training-jobs/delete"
-                    ]
-                  },
-                  {
-                    "group": "Exécutions d’entraînement",
-                    "expanded": false,
-                    "pages": [
-                      "fr/api-reference/training-runs/list",
-                      "fr/api-reference/training-runs/get",
-                      "fr/api-reference/training-runs/list-checkpoints",
-                      "fr/api-reference/training-runs/download-checkpoint"
+                      "fr/api-reference/training-jobs/sync"
                     ]
                   }
                 ]
@@ -1250,6 +1266,7 @@
                     "expanded": true,
                     "pages": [
                       "de/concepts/gliner",
+                      "de/concepts/gliner-agent-skill",
                       "de/inference/chat-completions",
                       {
                         "group": "Rezepte",
@@ -1265,22 +1282,34 @@
                 ]
               },
               {
+                "group": "Trainings-API",
+                "icon": "database-zap",
+                "expanded": true,
+                "pages": [
+                  "de/training",
+                  "de/training/quickstart",
+                  "de/training/migrate-from-tinker",
+                  "de/concepts/datasets",
+                  "de/guides/fine-tune-gliner",
+                  {
+                    "group": "Trainingsabläufe",
+                    "expanded": false,
+                    "pages": [
+                      "de/training/training-loop",
+                      "de/training/verifiable-rewards",
+                      "de/training/checkpoints"
+                    ]
+                  },
+                  "de/training/auto"
+                ]
+              },
+              {
                 "group": "Inferenz-API",
                 "icon": "sparkle",
                 "expanded": true,
                 "pages": [
                   "de/inference",
                   "de/authentication"
-                ]
-              },
-              {
-                "group": "Trainings-API",
-                "icon": "database-zap",
-                "expanded": true,
-                "pages": [
-                  "de/training",
-                  "de/concepts/gliner-agent-skill",
-                  "de/concepts/datasets"
                 ]
               },
               {
@@ -1413,28 +1442,19 @@
                       "de/api-reference/training-jobs/list",
                       "de/api-reference/training-jobs/get",
                       "de/api-reference/training-jobs/update-project",
+                      "de/api-reference/training-jobs/delete",
                       "de/api-reference/training-jobs/update-model-name",
                       "de/api-reference/training-jobs/logs",
                       "de/api-reference/training-jobs/billing",
+                      "de/api-reference/training-jobs/checkpoints",
+                      "de/api-reference/training-jobs/download-checkpoint",
+                      "de/api-reference/training-jobs/deploy-checkpoint",
                       "de/api-reference/training-jobs/deployments",
+                      "de/api-reference/training-jobs/download",
+                      "de/api-reference/training-jobs/push-to-hub",
                       "de/api-reference/training-jobs/stop",
                       "de/api-reference/training-jobs/terminate",
-                      "de/api-reference/training-jobs/sync",
-                      "de/api-reference/training-jobs/push-to-hub",
-                      "de/api-reference/training-jobs/checkpoints",
-                      "de/api-reference/training-jobs/deploy-checkpoint",
-                      "de/api-reference/training-jobs/download",
-                      "de/api-reference/training-jobs/delete"
-                    ]
-                  },
-                  {
-                    "group": "Trainingsläufe",
-                    "expanded": false,
-                    "pages": [
-                      "de/api-reference/training-runs/list",
-                      "de/api-reference/training-runs/get",
-                      "de/api-reference/training-runs/list-checkpoints",
-                      "de/api-reference/training-runs/download-checkpoint"
+                      "de/api-reference/training-jobs/sync"
                     ]
                   }
                 ]
@@ -1479,6 +1499,81 @@
       "source": "/",
       "destination": "/introduction",
       "permanent": false
+    },
+    {
+      "source": "/rl-api/how-it-works",
+      "destination": "/training/training-loop",
+      "permanent": true
+    },
+    {
+      "source": "/cookbooks/rl-verifiable-rewards",
+      "destination": "/training/verifiable-rewards",
+      "permanent": true
+    },
+    {
+      "source": "/cookbooks/rl-checkpoint-resume",
+      "destination": "/training/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/cn/rl-api/how-it-works",
+      "destination": "/cn/training/training-loop",
+      "permanent": true
+    },
+    {
+      "source": "/cn/cookbooks/rl-verifiable-rewards",
+      "destination": "/cn/training/verifiable-rewards",
+      "permanent": true
+    },
+    {
+      "source": "/cn/cookbooks/rl-checkpoint-resume",
+      "destination": "/cn/training/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/es/rl-api/how-it-works",
+      "destination": "/es/training/training-loop",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbooks/rl-verifiable-rewards",
+      "destination": "/es/training/verifiable-rewards",
+      "permanent": true
+    },
+    {
+      "source": "/es/cookbooks/rl-checkpoint-resume",
+      "destination": "/es/training/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/fr/rl-api/how-it-works",
+      "destination": "/fr/training/training-loop",
+      "permanent": true
+    },
+    {
+      "source": "/fr/cookbooks/rl-verifiable-rewards",
+      "destination": "/fr/training/verifiable-rewards",
+      "permanent": true
+    },
+    {
+      "source": "/fr/cookbooks/rl-checkpoint-resume",
+      "destination": "/fr/training/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/de/rl-api/how-it-works",
+      "destination": "/de/training/training-loop",
+      "permanent": true
+    },
+    {
+      "source": "/de/cookbooks/rl-verifiable-rewards",
+      "destination": "/de/training/verifiable-rewards",
+      "permanent": true
+    },
+    {
+      "source": "/de/cookbooks/rl-checkpoint-resume",
+      "destination": "/de/training/checkpoints",
+      "permanent": true
     },
     {
       "source": "/guides/fine-tune-llm",
@@ -1944,10 +2039,110 @@
       "source": "/fr/concepts/inference",
       "destination": "/fr/inference",
       "permanent": true
+    },
+    {
+      "source": "/api-reference/training-runs/list",
+      "destination": "/api-reference/training-jobs/list",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/training-runs/get",
+      "destination": "/api-reference/training-jobs/get",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/training-runs/list-checkpoints",
+      "destination": "/api-reference/training-jobs/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/api-reference/training-runs/download-checkpoint",
+      "destination": "/api-reference/training-jobs/download-checkpoint",
+      "permanent": true
+    },
+    {
+      "source": "/cn/api-reference/training-runs/list",
+      "destination": "/cn/api-reference/training-jobs/list",
+      "permanent": true
+    },
+    {
+      "source": "/cn/api-reference/training-runs/get",
+      "destination": "/cn/api-reference/training-jobs/get",
+      "permanent": true
+    },
+    {
+      "source": "/cn/api-reference/training-runs/list-checkpoints",
+      "destination": "/cn/api-reference/training-jobs/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/cn/api-reference/training-runs/download-checkpoint",
+      "destination": "/cn/api-reference/training-jobs/download-checkpoint",
+      "permanent": true
+    },
+    {
+      "source": "/es/api-reference/training-runs/list",
+      "destination": "/es/api-reference/training-jobs/list",
+      "permanent": true
+    },
+    {
+      "source": "/es/api-reference/training-runs/get",
+      "destination": "/es/api-reference/training-jobs/get",
+      "permanent": true
+    },
+    {
+      "source": "/es/api-reference/training-runs/list-checkpoints",
+      "destination": "/es/api-reference/training-jobs/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/es/api-reference/training-runs/download-checkpoint",
+      "destination": "/es/api-reference/training-jobs/download-checkpoint",
+      "permanent": true
+    },
+    {
+      "source": "/fr/api-reference/training-runs/list",
+      "destination": "/fr/api-reference/training-jobs/list",
+      "permanent": true
+    },
+    {
+      "source": "/fr/api-reference/training-runs/get",
+      "destination": "/fr/api-reference/training-jobs/get",
+      "permanent": true
+    },
+    {
+      "source": "/fr/api-reference/training-runs/list-checkpoints",
+      "destination": "/fr/api-reference/training-jobs/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/fr/api-reference/training-runs/download-checkpoint",
+      "destination": "/fr/api-reference/training-jobs/download-checkpoint",
+      "permanent": true
+    },
+    {
+      "source": "/de/api-reference/training-runs/list",
+      "destination": "/de/api-reference/training-jobs/list",
+      "permanent": true
+    },
+    {
+      "source": "/de/api-reference/training-runs/get",
+      "destination": "/de/api-reference/training-jobs/get",
+      "permanent": true
+    },
+    {
+      "source": "/de/api-reference/training-runs/list-checkpoints",
+      "destination": "/de/api-reference/training-jobs/checkpoints",
+      "permanent": true
+    },
+    {
+      "source": "/de/api-reference/training-runs/download-checkpoint",
+      "destination": "/de/api-reference/training-jobs/download-checkpoint",
+      "permanent": true
     }
   ],
   "markdown": {
     "schema": false,
-    "instructions": "Use https://docs.fastino.ai/llms.txt to discover and navigate pages. Use https://docs.fastino.ai/llms-full.txt when you need the complete documentation corpus. Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call POST https://api.fastino.ai/v1/systemone with model fastino/GLiDE. Do not infer undocumented routes. Read API keys from FASTINO_API_KEY and never embed credentials in code, logs, or reports."
+    "instructions": "Use https://docs.fastino.ai/llms.txt to discover and navigate pages. Use https://docs.fastino.ai/llms-full.txt when you need the complete documentation corpus. Use https://docs.fastino.ai/openapi.json as the source of truth for customer-facing routes. For GLiDE decision inference, call POST https://api.fastino.ai/v1/systemone with model fastino/GLiDE. Create managed config jobs with POST /v1/training/jobs using base_model. Both config and interactive jobs use /v1/training/jobs/{job_id} for their canonical REST lifecycle. For custom training loops, use the supported Tinker-compatible SDK client; its /v1/training/compat/tinker adapter is intentionally absent from OpenAPI and must not be called directly. Auto Train is private access and has no public route; direct interested users to sales@fastino.ai. Do not infer undocumented routes. Read API keys from FASTINO_API_KEY and never embed credentials in code, logs, or reports."
   }
 }

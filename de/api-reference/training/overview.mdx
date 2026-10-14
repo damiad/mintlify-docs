@@ -1,14 +1,29 @@
 ---
 title: "Trainings-API-Referenz"
 sidebarTitle: "Übersicht"
-description: "Exakte Verträge für Basismodelle, Datensätze und den vollständigen Trainingsjob-Lebenszyklus."
+description: "Öffentliche REST-Verträge zum Erstellen von Config-Jobs und Verwalten von Config- und Interactive-Jobs."
 ---
 
 Verwende diese Verträge für Felddetails. Beginne für einen vollständigen Trainingsablauf mit den Lebenszyklus-Anleitungen.
 
+Die öffentliche REST-API umfasst:
+
+- Suche nach Basismodellen und Verwaltung von Datensätzen
+- Erstellung verwalteter `config`-Jobs mit `POST /v1/training/jobs`
+- Kanonische Lebenszyklusoperationen unter `/v1/training/jobs` für `config`-
+  und `interactive`-Jobs
+
+Modelloperationen für eigene Trainingsabläufe verwenden den unterstützten
+Tinker-kompatiblen SDK-Client. Sein Adapter `/v1/training/compat/tinker` fehlt
+absichtlich in OpenAPI und darf nicht direkt aufgerufen werden. Auto Train
+bleibt privat zugänglich und hat keinen öffentlichen API-Vertrag.
+
 <CardGroup cols={2}>
   <Card title="Trainingslebenszyklus" icon="route" href="/de/training">
     Modell auswählen, Job erstellen, Status abfragen und das Artefakt verwenden.
+  </Card>
+  <Card title="Schnellstart" icon="play" href="/de/training/quickstart">
+    Verwaltetes Training oder einen eigenen Trainingsablauf starten.
   </Card>
   <Card title="Datensatz hochladen" icon="upload" href="/de/concepts/datasets">
     JSONL vorbereiten, hochladen, verarbeiten und eine bereite Version bestätigen.

@@ -1,14 +1,29 @@
 ---
 title: "Training API reference"
 sidebarTitle: "Overview"
-description: "Exact contracts for base models, datasets, and the complete training-job lifecycle."
+description: "Public REST contracts for managed training and the canonical lifecycle shared by config and interactive jobs."
 ---
 
 Use these contracts for field-level details. Start with the lifecycle guides when building an end-to-end training workflow.
 
+The public REST surface covers:
+
+- Base-model discovery and dataset management
+- Managed `config` job creation with `POST /v1/training/jobs`
+- Canonical lifecycle operations under `/v1/training/jobs` for both `config`
+  and `interactive` jobs
+
+Custom-loop model operations use the supported Tinker-compatible SDK client.
+Its `/v1/training/compat/tinker` adapter is intentionally absent from OpenAPI
+and must not be called directly. Auto Train remains private access and has no
+public API contract.
+
 <CardGroup cols={2}>
   <Card title="Training lifecycle" icon="route" href="/training">
     Choose a model, create a job, poll it, and work with the resulting artifact.
+  </Card>
+  <Card title="Quickstart" icon="play" href="/training/quickstart">
+    Start managed training or a custom training loop.
   </Card>
   <Card title="Upload Dataset" icon="upload" href="/concepts/datasets">
     Prepare JSONL, upload it, process it, and confirm a ready version.

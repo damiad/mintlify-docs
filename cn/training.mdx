@@ -1,61 +1,48 @@
 ---
-title: "训练任务 API"
+title: "训练 API"
 sidebarTitle: "概览"
-description: "训练任务 API 管理微调任务的完整生命周期，涵盖 /v1/training/jobs 端点、X-API-Key 身份验证和任务状态。"
+description: "选择托管训练、应用主导的训练，或私有自治训练智能体。"
 ---
 
-训练任务 API 管理微调任务的完整生命周期。所有端点都使用 `/v1/training/jobs` 路由族，并要求在 `X-API-Key` 头中提供 API 密钥。
+每个 Fastino 训练工作负载都是一个任务。先选择由谁控制训练循环，然后使用
+`/v1/training/jobs` 检查该任务。
 
-所有训练操作都使用与推理相同的 [API 身份验证](/cn/authentication)。
-
-**API 基础 URL：** `https://api.fastino.ai`
-
-```bash
-export FASTINO_API_KEY="fast_sk_..."
-```
-
-在每个训练请求中发送该密钥：
-
-```http
-X-API-Key: $FASTINO_API_KEY
-```
-
-在创建任务之前，请立即调用 `GET /v1/base-models?supports_training=true`。它是可训练模型 ID 的实时权威来源。
-提交任务之前，请先[准备并上传训练数据集](/cn/concepts/datasets)，并等待其处理后的版本变为就绪。
-
-<Warning>
-  旧版 `/felix/training-jobs` 路由族已停用。新的集成和迁移后的集成请使用 `/v1/training/jobs`。
-</Warning>
-
-## 训练工作流
-
-<CardGroup cols={2}>
-  <Card title="选择基础模型" icon="boxes-stacked" href="/cn/api-reference/training/base-models">
-    列出当前可用于训练的模型。
+<CardGroup cols={3}>
+  <Card title="托管训练" icon="sliders" href="/cn/training/quickstart#managed-training">
+    提供数据集和配置。Fastino 运行训练循环。
   </Card>
-  <Card title="上传数据集" icon="upload" href="/cn/concepts/datasets">
-    获取上传 URL、上传 JSONL 并处理数据。
+  <Card title="自定义训练循环" icon="code" href="/cn/training/quickstart#custom-training-loop">
+    使用受支持的 SDK 客户端，由你的应用控制每次更新。
   </Card>
-  <Card title="创建任务" icon="play" href="/cn/api-reference/training-jobs/create">
-    提交数据集和训练配置。
-  </Card>
-  <Card title="监控和管理" icon="chart-line" href="/cn/api-reference/training-jobs/get">
-    轮询状态、查看日志和计费，然后处理产物。
+  <Card title="Auto Train" icon="sparkles" href="/cn/training/auto">
+    将训练生命周期委托给 Fastino 的自治训练智能体。
   </Card>
 </CardGroup>
 
-## 状态生命周期
 
-训练任务响应包含：
+## 选择任务类型
 
-- `status`：持久化的任务状态。
-- `normalized_status`：用于客户端轮询的稳定状态。
-- `is_terminal_status`：是否可以停止轮询。
-- `error_message`：可用时的失败信息。
-- `is_deployable`：训练完成的工件是否通过部署校验。
-- `deployability_reason`：工件不可部署的原因。
+每个任务都有一个 `type`：
 
-在轮询客户端中优先使用 `normalized_status` 和 `is_terminal_status`。
+| 类型 | 谁控制循环？ | 如何启动 |
+| --- | --- | --- |
+| `config` | Fastino | 将数据集和配置发送到 `POST /v1/training/jobs`。 |
+| `interactive` | 你的应用 | 通过受支持的 SDK 客户端创建训练客户端。 |
+
+两种类型共享同一套任务标识。规范读取操作使用
+`GET /v1/training/jobs`、`GET /v1/training/jobs/{job_id}` 和
+`GET /v1/training/jobs/{job_id}/checkpoints`。
+
+对于自定义循环，SDK 客户端使用 Fastino 的 HTTP 兼容适配器。该适配器既不是 SDK，
+也不是第二套训练服务。其操作不会出现在 OpenAPI 和 API 参考中。请勿自行构造适配器请求。
+
+<Note>
+  自定义训练循环需要团队访问权限。没有访问权限时，任务列表仅包含配置任务，交互式任务 ID 会返回 `404`。
+</Note>
+
+## 配置任务生命周期
+
+以下持久化状态描述托管式配置任务。交互式任务的行为由调用方控制；不要根据此表推断其生命周期。
 
 | 持久化状态 | 说明 |
 | --- | --- |
@@ -63,41 +50,42 @@ X-API-Key: $FASTINO_API_KEY
 | `running` | 训练正在进行中。 |
 | `complete` | 训练已成功完成。工件准备可能仍在继续。 |
 | `normalizing` | Fastino 正在准备训练好的工件。 |
-| `artifact_ready` | 训练工件已就绪。 |
-| `deployed` | 工件已完成部署。 |
-| `paused` | 任务或其流水线已暂停。 |
+| `artifact_ready` | 训练好的工件已就绪。 |
+| `deployed` | 工件已部署。 |
+| `paused` | 托管式任务已暂停。 |
 | `errored` | 训练、调度或工件准备失败。 |
 | `stopped` | 任务已停止，同时保留现有检查点。 |
-| `terminated` | 任务已终止。除非请求删除，否则会保留检查点。 |
+| `terminated` | 任务已终止。除非 `delete_checkpoints` 为 `true`，否则会保留检查点。 |
 
-## 端点
+`normalized_status` 提供稳定的轮询值，包括以 `failed` 表示最终失败状态。
+`status` 则保留持久化值，例如 `errored`。
 
-| 方法 | 端点 | 用途 |
+## 操作支持情况
+
+| 操作 | `config` | `interactive` |
 | --- | --- | --- |
-| `POST` | [`/v1/training/jobs`](/cn/api-reference/training-jobs/create) | 创建训练任务 |
-| `GET` | [`/v1/training/jobs`](/cn/api-reference/training-jobs/list) | 列出训练任务 |
-| `GET` | [`/v1/training/jobs/{job_id}`](/cn/api-reference/training-jobs/get) | 获取状态、配置和指标 |
-| `PATCH` | [`/v1/training/jobs/{job_id}`](/cn/api-reference/training-jobs/update-project) | 分配或取消分配项目 |
-| `PATCH` | [`/v1/training/jobs/{job_id}/model-name`](/cn/api-reference/training-jobs/update-model-name) | 重命名训练后的模型 |
-| `GET` | [`/v1/training/jobs/{job_id}/logs`](/cn/api-reference/training-jobs/logs) | 获取训练日志快照 |
-| `GET` | [`/v1/training/jobs/{job_id}/billing`](/cn/api-reference/training-jobs/billing) | 获取计费结果 |
-| `GET` | [`/v1/training/jobs/{job_id}/deployments`](/cn/api-reference/training-jobs/deployments) | 列出从该任务创建的部署 |
-| `POST` | [`/v1/training/jobs/{job_id}/stop`](/cn/api-reference/training-jobs/stop) | 停止任务并保留检查点 |
-| `POST` | [`/v1/training/jobs/{job_id}/terminate`](/cn/api-reference/training-jobs/terminate) | 终止任务；默认保留检查点 |
-| `POST` | [`/v1/training/jobs/{job_id}/sync`](/cn/api-reference/training-jobs/sync) | 从训练提供方刷新状态 |
-| `POST` | [`/v1/training/jobs/{job_id}/push-to-hub`](/cn/api-reference/training-jobs/push-to-hub) | 将已完成的工件推送到 Hugging Face Hub |
-| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/cn/api-reference/training-jobs/checkpoints) | 列出检查点 |
-| `POST` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`](/cn/api-reference/training-jobs/deploy-checkpoint) | 部署检查点 |
-| `GET` | [`/v1/training/jobs/{job_id}/download`](/cn/api-reference/training-jobs/download) | 获取临时的权重下载 URL |
-| `DELETE` | [`/v1/training/jobs/{job_id}`](/cn/api-reference/training-jobs/delete) | 删除任务及其检查点 |
+| [列出任务](/cn/api-reference/training-jobs/list) | 支持 | 获得访问权限后支持 |
+| [获取任务](/cn/api-reference/training-jobs/get) | 支持 | 获得访问权限后支持 |
+| [列出检查点](/cn/api-reference/training-jobs/checkpoints) | 支持 | 获得访问权限后支持 |
+| [下载交互式检查点](/cn/api-reference/training-jobs/download-checkpoint) | — | 获得访问权限后支持 |
+| [通过原生 REST 创建](/cn/api-reference/training-jobs/create) | 支持 | 使用 SDK |
+| 更新或删除任务 | 支持 | — |
+| [停止](/cn/api-reference/training-jobs/stop)、[终止](/cn/api-reference/training-jobs/terminate)或[同步](/cn/api-reference/training-jobs/sync) | 支持 | — |
+| [日志](/cn/api-reference/training-jobs/logs)和[计费](/cn/api-reference/training-jobs/billing) | 支持 | — |
+| 部署和检查点部署 | 支持 | — |
+| [下载最终模型](/cn/api-reference/training-jobs/download) | 支持 | — |
+| 重命名或推送到 Hugging Face Hub | 支持 | — |
 
-## 训练运行
+## 后续步骤
 
-交互式训练任务是您通过兼容 Tinker 的 SDK 自行逐步驱动的训练运行；任务 ID 即 SDK 的运行 ID。将 SDK 的 `base_url` 设置为 `https://api.fastino.ai/v1/training/compat/tinker`，并通过 SDK 的凭据命令传入您的 Fastino API 密钥：`TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`。使用以下路由列出您的运行和检查点，并下载检查点权重。
-
-| 方法 | 端点 | 用途 |
-| --- | --- | --- |
-| `GET` | [`/v1/training/jobs`](/cn/api-reference/training-runs/list) | 列出训练运行 |
-| `GET` | [`/v1/training/jobs/{job_id}`](/cn/api-reference/training-runs/get) | 获取运行及其最新检查点 |
-| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/cn/api-reference/training-runs/list-checkpoints) | 列出运行的检查点 |
-| `GET` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`](/cn/api-reference/training-runs/download-checkpoint) | 获取临时的检查点下载 URL |
+<CardGroup cols={3}>
+  <Card title="快速入门" icon="play" href="/cn/training/quickstart">
+    运行托管训练或启动自定义训练循环。
+  </Card>
+  <Card title="从 Tinker 迁移" icon="arrow-right-arrow-left" href="/cn/training/migrate-from-tinker">
+    将现有的兼容工作负载迁移到 Fastino。
+  </Card>
+  <Card title="微调 GLiNER" icon="tags" href="/cn/guides/fine-tune-gliner">
+    准备实体数据并训练 GLiNER 模型。
+  </Card>
+</CardGroup>

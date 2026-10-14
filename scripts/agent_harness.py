@@ -19,9 +19,12 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import NoReturn
 
-from agent_diagnostics import DiagnosticsFailure
-from agent_diagnostics import run_diagnostics as run_agent_diagnostics
-from check_api_docs import EXPECTED_OPERATIONS, local_docs_findings
+from check_api_docs import (
+    EXPECTED_OPERATIONS,
+    SDK_BASE_PATHS,
+    _path_matches_route,
+    local_docs_findings,
+)
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import SchemaError
 from referencing import Registry, Resource
@@ -56,6 +59,13 @@ REQUIRED_DISCOVERY_LINKS = {
     "GLiNER inference": "/inference/chat-completions.md",
     "datasets": "/concepts/datasets.md",
     "training": "/training.md",
+    "training quickstart": "/training/quickstart.md",
+    "Tinker migration": "/training/migrate-from-tinker.md",
+    "training loop": "/training/training-loop.md",
+    "verifiable rewards": "/training/verifiable-rewards.md",
+    "checkpoint recovery": "/training/checkpoints.md",
+    "Auto Train": "/training/auto.md",
+    "GLiNER fine-tuning": "/guides/fine-tune-gliner.md",
     "inference reference": "/api-reference/inference/overview.md",
     "GLiDE contract": "/api-reference/inference/systemone.md",
     "GLiNER contract": "/api-reference/inference/chat-completions.md",
@@ -79,6 +89,13 @@ JOURNEY_PAGES = (
     "inference/systemone.mdx",
     "inference/chat-completions.mdx",
     "training.mdx",
+    "training/quickstart.mdx",
+    "training/migrate-from-tinker.mdx",
+    "training/training-loop.mdx",
+    "training/verifiable-rewards.mdx",
+    "training/checkpoints.mdx",
+    "training/auto.mdx",
+    "guides/fine-tune-gliner.mdx",
     "troubleshooting/errors.mdx",
     "troubleshooting/retries.mdx",
     "api-reference/inference/overview.mdx",
@@ -90,12 +107,38 @@ COOKBOOK_ENDPOINTS = {
     "/v1/systemone": "X-API-Key: $FASTINO_API_KEY",
     "/v1/chat/completions": "Authorization: Bearer $FASTINO_API_KEY",
 }
+TRAINING_NAVIGATION = [
+    "training",
+    "training/quickstart",
+    "training/migrate-from-tinker",
+    "concepts/datasets",
+    "guides/fine-tune-gliner",
+    {
+        "group": "Training workflows",
+        "expanded": False,
+        "pages": [
+            "training/training-loop",
+            "training/verifiable-rewards",
+            "training/checkpoints",
+        ],
+    },
+    "training/auto",
+]
+TRAINING_SIDEBAR_TITLES = {
+    "training": "Overview",
+    "training/quickstart": "Quickstart",
+    "training/migrate-from-tinker": "Migrate from Tinker",
+    "concepts/datasets": "Datasets",
+    "guides/fine-tune-gliner": "Fine-tune GLiNER",
+    "training/training-loop": "Training loop",
+    "training/verifiable-rewards": "Verifiable rewards",
+    "training/checkpoints": "Checkpoints and recovery",
+    "training/auto": "Auto Train",
+}
 
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\((?P<target>/[^)\s]+)\)")
 HREF_LINK = re.compile(r'href=["\'](?P<target>/[^"\']+)["\']')
 LLMS_URL = re.compile(r"https://docs\.fastino\.ai(?P<path>/[^)\s]+)")
-# SDK base URLs are documented prefixes, not operations (the Tinker SDK appends /api/v1/<op>).
-SDK_BASE_PATH_PREFIXES = ("/v1/training/compat/",)
 API_URL = re.compile(r"https://api\.fastino\.ai(?P<path>/v1/[^\"'`\s<\\]+)")
 METHOD_PATH = re.compile(r"\b(?P<method>GET|POST|PATCH|PUT|DELETE)\s+(?P<path>/v1/[^`\s\"'|,)]+)")
 CURL_BODY_START = re.compile(r"-d\s+'")
@@ -397,6 +440,102 @@ def _visible_navigation_pages(node: object) -> set[str]:
     return pages
 
 
+def _ordered_navigation_pages(node: object) -> list[str]:
+    if isinstance(node, str):
+        return [node]
+    if isinstance(node, list):
+        return [page for child in node for page in _ordered_navigation_pages(child)]
+    if not isinstance(node, dict):
+        return []
+    pages: list[str] = []
+    for key in ("languages", "tabs", "groups", "pages"):
+        children = node.get(key)
+        if isinstance(children, list):
+            for child in children:
+                pages.extend(_ordered_navigation_pages(child))
+    return pages
+
+
+def _training_navigation_findings(config: dict[str, object]) -> list[str]:
+    navigation = config.get("navigation")
+    languages = navigation.get("languages") if isinstance(navigation, dict) else None
+    if not isinstance(languages, list):
+        return ["TRAINING FLOW: docs.json has no navigation languages"]
+    english = next(
+        (
+            language
+            for language in languages
+            if isinstance(language, dict) and language.get("language") == "en"
+        ),
+        None,
+    )
+    if not isinstance(english, dict):
+        return ["TRAINING FLOW: English navigation is missing"]
+    tabs = english.get("tabs")
+    if not isinstance(tabs, list):
+        return ["TRAINING FLOW: English navigation has no tabs"]
+    documentation = next(
+        (
+            tab
+            for tab in tabs
+            if isinstance(tab, dict) and tab.get("tab") == "Documentation"
+        ),
+        None,
+    )
+    if not isinstance(documentation, dict):
+        return ["TRAINING FLOW: English Documentation tab is missing"]
+    groups = documentation.get("pages")
+    if not isinstance(groups, list):
+        return ["TRAINING FLOW: English Documentation tab has no groups"]
+    training = next(
+        (
+            group
+            for group in groups
+            if isinstance(group, dict) and group.get("group") == "Training API"
+        ),
+        None,
+    )
+    if not isinstance(training, dict):
+        return ["TRAINING FLOW: Training API group is missing"]
+    findings: list[str] = []
+    if training.get("pages") != TRAINING_NAVIGATION:
+        findings.append(
+            "TRAINING FLOW: expected exact Training API navigation "
+            f"{TRAINING_NAVIGATION}, found {training.get('pages')}"
+        )
+    stale_pages = [
+        page
+        for page in _ordered_navigation_pages(english)
+        if page == "rl-api" or page.startswith("rl-api/")
+    ]
+    if stale_pages:
+        findings.append(f"TRAINING FLOW: stale RL navigation pages: {stale_pages}")
+    for page, expected in TRAINING_SIDEBAR_TITLES.items():
+        text = (ROOT / f"{page}.mdx").read_text(encoding="utf-8")
+        sidebar = re.search(r'^sidebarTitle:\s*"(?P<title>[^"]+)"', text, re.MULTILINE)
+        title = re.search(r'^title:\s*"(?P<title>[^"]+)"', text, re.MULTILINE)
+        actual = sidebar.group("title") if sidebar else title.group("title") if title else None
+        if actual != expected:
+            findings.append(
+                f"TRAINING FLOW: expected {page} sidebar title {expected!r}, found {actual!r}"
+            )
+    return findings
+
+
+def _private_training_route_findings() -> list[str]:
+    findings: list[str] = []
+    for path in [*ROOT.rglob("*.mdx"), *ROOT.rglob("llms.txt")]:
+        relative = path.relative_to(ROOT)
+        text = path.read_text(encoding="utf-8")
+        if "/v1/training/auto" in text:
+            findings.append(f"TRAINING PRIVATE: {relative} exposes /v1/training/auto")
+        if "/v1/training/compat/tinker/" in text:
+            findings.append(
+                f"TRAINING PRIVATE: {relative} constructs a compatibility-adapter route"
+            )
+    return findings
+
+
 def _redirect_map(config: dict[str, object]) -> tuple[dict[str, str], list[str]]:
     redirects = config.get("redirects")
     result: dict[str, str] = {}
@@ -651,10 +790,11 @@ def _journey_findings(
                     f"{method.upper()} {path_text}"
                 )
         for match in API_URL.finditer(text):
-            if match.group("path").startswith(SDK_BASE_PATH_PREFIXES):
-                continue  # an SDK base URL: the SDK appends its own paths
-            if _operation_for_path(operations, "get", match.group("path")) is None and not any(
-                _operation_for_path(operations, method, match.group("path"))
+            path_text = match.group("path")
+            if path_text in SDK_BASE_PATHS or _path_matches_route(path_text, {}):
+                continue
+            if _operation_for_path(operations, "get", path_text) is None and not any(
+                _operation_for_path(operations, method, path_text)
                 for method in HTTP_METHODS
             ):
                 findings.append(
@@ -779,6 +919,8 @@ def run_static() -> None:
     config = json.loads((ROOT / "docs.json").read_text(encoding="utf-8"))
     findings = local_docs_findings(ROOT, document)
     findings.extend(_journey_discovery_findings())
+    findings.extend(_training_navigation_findings(config))
+    findings.extend(_private_training_route_findings())
     findings.extend(_local_link_findings())
     findings.extend(_redirect_findings(config))
     findings.extend(_locale_parity_findings(config, operations))
@@ -1850,25 +1992,27 @@ def main() -> int:
         choices=(
             "static",
             "published",
-            "diagnostics",
             "api",
             "cookbooks",
             "training-replay",
             "training-lifecycle",
+            "training-snippets",
         ),
     )
+    parser.add_argument("--live", action="store_true")
+    parser.add_argument("--write-census", action="store_true")
     args = parser.parse_args()
+    if args.command != "training-snippets" and (args.live or args.write_census):
+        print(
+            "agent docs harness failed: --live and --write-census are only valid for training-snippets",
+            file=sys.stderr,
+        )
+        return 1
     try:
         if args.command == "static":
             run_static()
         elif args.command == "published":
             run_published()
-        elif args.command == "diagnostics":
-            target_count = run_agent_diagnostics(
-                request=_request,
-                validate_openapi=_validate_openapi,
-            )
-            print(f"Agent discovery diagnostics passed: {target_count} public targets")
         elif args.command == "api":
             run_api(replay_training=False)
         elif args.command == "cookbooks":
@@ -1876,10 +2020,17 @@ def main() -> int:
         elif args.command == "training-replay":
             _run_training_replay(_require_api_key())
             print("Training idempotency replay passed")
+        elif args.command == "training-snippets":
+            sys.modules.setdefault("agent_harness", sys.modules[__name__])
+            import training_snippets as training_snippets_mod
+
+            training_snippets_mod.run_training_snippets(
+                live=args.live,
+                write_census=args.write_census,
+            )
         else:
             run_training_lifecycle()
     except (
-        DiagnosticsFailure,
         HarnessFailure,
         json.JSONDecodeError,
         OSError,

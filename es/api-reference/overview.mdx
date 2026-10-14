@@ -16,10 +16,6 @@ una cuenta de Fastino y una terminal.
     Después de iniciar sesión, ve a **Settings → API Keys** y genera una clave nueva. Cópiala
     en un lugar seguro, porque no podrás volver a verla después de cerrar el cuadro de diálogo.
 
-    <Warning>
-      Mantén tu clave de API fuera del control de versiones. Usa una variable de entorno o un gestor
-      de secretos en lugar de escribirla directamente en tus archivos de código fuente.
-    </Warning>
 
     Define tu clave como variable de entorno para que los ejemplos siguientes funcionen tal cual:
 
@@ -213,6 +209,7 @@ una cuenta de Fastino y una terminal.
   <Step title="Inicia un trabajo de entrenamiento (opcional)">
     Cuando quieras hacer ajuste fino con tus propios datos, inicia un trabajo de entrenamiento:
 
+
     <CodeGroup>
 
     ```bash curl
@@ -258,8 +255,15 @@ una cuenta de Fastino y una terminal.
     Cuando el trabajo llegue a `complete`, despliega el artefacto seleccionado antes de usar el ID del trabajo como
     `model` en `/v1/chat/completions`.
 
-    Los estados del trabajo avanzan de `requested` → `running` → `complete`, o terminan como `failed` o
-    `stopped`.
+    Este endpoint crea trabajos `config` gestionados. Los bucles de entrenamiento
+    personalizados crean trabajos `interactive` mediante el cliente SDK compatible
+    con Tinker. Ambos tipos de trabajo usan `/v1/training/jobs/{id}` como recurso
+    REST canónico de su ciclo de vida; el adaptador de compatibilidad del SDK no
+    forma parte del contrato OpenAPI público.
+
+    Los estados persistidos del trabajo avanzan de `requested` → `running` →
+    `complete`, o terminan como `errored` o `stopped`. El estado normalizado
+    para las consultas usa `failed` para un fallo terminal.
   </Step>
 </Steps>
 

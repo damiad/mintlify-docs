@@ -1,0 +1,57 @@
+---
+title: "Télécharger un checkpoint interactif"
+sidebarTitle: "Télécharger un checkpoint"
+description: "Obtenez une URL de téléchargement à durée limitée pour le checkpoint d'un job d'entraînement interactif."
+api: "GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download"
+---
+
+`GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`
+
+Renvoie une URL signée à durée limitée pour un checkpoint d'un job
+`interactive`. Pour l'artefact final de leur modèle, les jobs de configuration
+utilisent
+[`GET /v1/training/jobs/{job_id}/download`](/fr/api-reference/training-jobs/download).
+
+## Requête
+
+<ParamField header="X-API-Key" type="string" required>
+  Votre clé API Fastino.
+</ParamField>
+
+<ParamField path="job_id" type="string" required>
+  ID du job interactif renvoyé par le SDK pris en charge.
+</ParamField>
+
+<ParamField path="checkpoint_id" type="string" required>
+  Identifiant du checkpoint renvoyé par la liste des checkpoints, tel que
+  `weights/checkpoint-1` ou `sampler_weights/checkpoint-1`.
+</ParamField>
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.fastino.ai/v1/training/jobs/JOB_ID/checkpoints/CHECKPOINT_ID/download" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+</RequestExample>
+
+## Réponse
+
+La réponse contient l'URL signée d'une archive qui expire après 15 minutes.
+Traitez cette URL comme un identifiant secret : ne la consignez pas dans les
+logs, ne la partagez pas et ne la conservez pas.
+
+<ResponseExample>
+
+```json Response
+{
+  "url": "https://api.fastino.ai/v1/training/archives/SIGNED_TOKEN",
+  "expires_in_seconds": 900
+}
+```
+
+</ResponseExample>
+
+Cette opération nécessite l'accès à l'entraînement interactif ainsi que
+l'autorisation de téléchargement des poids pour l'équipe.

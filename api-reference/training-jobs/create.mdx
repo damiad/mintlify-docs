@@ -1,13 +1,22 @@
 ---
-title: "Create a training job"
-sidebarTitle: "Create a job"
-description: "Call POST /v1/training/jobs to start an asynchronous Fastino fine-tuning job from a base model and datasets, with LoRA or full training and an epoch limit."
+title: "Create a config training job"
+sidebarTitle: "Create a config job"
+description: "Call POST /v1/training/jobs to start an asynchronous Fastino-managed training job from a base model and datasets."
 api: "POST /v1/training/jobs"
 ---
 
 `POST /v1/training/jobs`
 
-Creates an asynchronous training job and returns its job record. This endpoint is limited to 20 requests per minute per user.
+Creates an asynchronous `config` training job and returns its job record. In a
+config job, you provide a dataset and configuration and Fastino runs the
+training loop. To control the loop step by step, follow the
+[custom training loop path](/training/quickstart#custom-training-loop), which
+creates an `interactive` job through the supported SDK client. This REST
+endpoint does not create interactive jobs. After creation, both job types use
+their canonical IDs with the documented `/v1/training/jobs/{job_id}` lifecycle
+operations.
+
+This endpoint is limited to 20 requests per minute per user.
 
 ## Request
 
@@ -32,7 +41,7 @@ Creates an asynchronous training job and returns its job record. This endpoint i
 </ParamField>
 
 <ParamField body="validation_data_percentage" type="number" default="0.2">
-  Fraction held out for validation, from `0` to `1`.
+  Fraction held out for validation, from `0` to `0.9`.
 </ParamField>
 
 <ParamField body="nr_epochs" type="integer" default="100">
@@ -189,6 +198,7 @@ Returns `200` with the full training-job record, including a UUID `id` and initi
 ```json Response
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "type": "config",
   "model_name": "my-model-name",
   "base_model": "fastino/gliner2-multi-v1",
   "status": "requested",

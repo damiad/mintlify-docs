@@ -1,16 +1,19 @@
 ---
 title: "Terminar un trabajo de entrenamiento"
 sidebarTitle: "Terminar trabajo"
-description: "Usa POST /v1/training/jobs/{job_id}/terminate para terminar un trabajo. Los checkpoints se conservan salvo que delete_checkpoints sea true."
+description: "Termina un trabajo de entrenamiento de configuración y conserva los checkpoints salvo que se solicite explícitamente eliminarlos."
 api: "POST /v1/training/jobs/{job_id}/terminate"
 ---
 
 `POST /v1/training/jobs/{job_id}/terminate`
 
-Detiene el trabajo del proveedor si está activo y marca el trabajo como terminado. De forma predeterminada, se conservan los checkpoints y artefactos existentes.
+Detiene un trabajo `config` activo y solicita la cancelación al proveedor. Los
+checkpoints y artefactos existentes se conservan de forma predeterminada.
 
 <Warning>
-  Establecer `delete_checkpoints` en `true` elimina permanentemente los checkpoints y artefactos del trabajo. Esta acción no se puede deshacer.
+  Establecer `delete_checkpoints` en `true` elimina de forma permanente los
+  checkpoints y artefactos del trabajo una vez confirmada la cancelación. Esta
+  acción no se puede deshacer.
 </Warning>
 
 ## Solicitud
@@ -23,8 +26,11 @@ Detiene el trabajo del proveedor si está activo y marca el trabajo como termina
   UUID del trabajo de entrenamiento.
 </ParamField>
 
+El cuerpo JSON es opcional.
+
 <ParamField body="delete_checkpoints" type="boolean" default="false">
-  Indica si se deben eliminar permanentemente todos los checkpoints y artefactos. Omite este campo o establécelo en `false` para conservarlos.
+  Elimina de forma permanente los checkpoints y artefactos una vez confirmada
+  la cancelación.
 </ParamField>
 
 <RequestExample>
@@ -42,15 +48,35 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/termin
 
 <ResponseExample>
 
-```json Response
+```json 200 — terminado
 {
   "success": true,
-  "message": "Training job terminated. Checkpoints preserved (pass delete_checkpoints=true to remove them).",
+  "message": "Training job terminated. Checkpoints preserved.",
   "job_id": "YOUR_TRAINING_JOB_ID",
-  "deleted_checkpoints": 0
+  "deleted_checkpoints": 0,
+  "status": "terminated"
+}
+```
+
+```json 202 — cancelación pendiente
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "deleted_checkpoints": 0,
+  "status": "stopping"
 }
 ```
 
 </ResponseExample>
 
-Un trabajo desconocido o un trabajo que no puede terminarse devuelve un error `4xx` específico de la solicitud.
+Después de un `202`, consulta `GET /v1/training/jobs/{job_id}`; no repitas la
+solicitud de terminación mientras la cancelación esté pendiente.
+
+| Estado | Significado |
+| --- | --- |
+| `200` | El trabajo está terminado. |
+| `202` | La cancelación del proveedor todavía se está confirmando. |
+| `409 training_job_already_finished` | El trabajo alcanzó un estado terminal antes de la terminación. |
+| `409 cancellation_unconfirmed` | La cancelación no se confirmó y se puede volver a intentar. |
+| `422` | La ruta o el cuerpo de la solicitud no son válidos. |

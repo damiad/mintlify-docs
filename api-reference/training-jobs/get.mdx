@@ -1,13 +1,15 @@
 ---
 title: "Get a training job"
 sidebarTitle: "Get job status"
-description: "Get a training job's status, configuration, metrics, and artifact readiness."
+description: "Get a config or interactive training job by its canonical Fastino job ID."
 api: "GET /v1/training/jobs/{job_id}"
 ---
 
 `GET /v1/training/jobs/{job_id}`
 
-Returns one training job visible to the caller's team.
+Returns one config or interactive training job visible to the caller's team.
+For an interactive job, this `job_id` is also the SDK training run ID returned by
+`training_client.get_info().model_data.model_id`.
 
 ## Request
 
@@ -16,7 +18,7 @@ Returns one training job visible to the caller's team.
 </ParamField>
 
 <ParamField path="job_id" type="string" required>
-  Training-job UUID.
+  Canonical Fastino training-job ID.
 </ParamField>
 
 <RequestExample>
@@ -30,8 +32,15 @@ curl https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID \
 
 ## Response
 
+### Config job
+
 <ResponseField name="id" type="string">
-  Training-job UUID.
+  Canonical Fastino job ID for a config job.
+</ResponseField>
+
+<ResponseField name="type" type="string">
+  `config` when Fastino runs the training loop or `interactive` when the caller
+  controls the loop through the supported SDK.
 </ResponseField>
 
 <ResponseField name="status" type="string">
@@ -74,13 +83,64 @@ curl https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID \
   Why the job is not deployable.
 </ResponseField>
 
-The record also returns the submitted training configuration, timestamps, dataset references, provider details, labels, and artifact metadata.
+Config-job records also return their submitted configuration, dataset
+references, progress, metrics, and artifact metadata.
+
+### Interactive job
+
+<ResponseField name="training_run_id" type="string">
+  Canonical Fastino job ID for an interactive job. This is also the compatible
+  SDK training-run ID.
+</ResponseField>
+
+<ResponseField name="base_model" type="string">
+  Base model used by the compatible SDK. Current native create requests also
+  use `base_model`; the preview contract plans to rename that request field to
+  `model`.
+</ResponseField>
+
+<ResponseField name="model_owner" type="string">
+  Team that owns the interactive job.
+</ResponseField>
+
+<ResponseField name="is_lora" type="boolean">
+  Whether the job trains a LoRA adapter.
+</ResponseField>
+
+<ResponseField name="corrupted" type="boolean">
+  Whether the training state is unusable for further steps.
+</ResponseField>
+
+<ResponseField name="lora_rank" type="integer | null">
+  LoRA rank, when applicable.
+</ResponseField>
+
+<ResponseField name="last_request_time" type="string">
+  ISO 8601 time of the most recent SDK request.
+</ResponseField>
+
+<ResponseField name="last_checkpoint" type="object | null">
+  Latest training-state checkpoint.
+</ResponseField>
+
+<ResponseField name="last_sampler_checkpoint" type="object | null">
+  Latest sampler-weights checkpoint. Checkpoint objects include
+  `checkpoint_id`, `checkpoint_type`, `time`, `tinker_path`, `size_bytes`,
+  `public`, `user_metadata`, and `expires_at`.
+</ResponseField>
+
+<ResponseField name="user_metadata" type="object | null">
+  String key-value metadata attached when the interactive job was created.
+</ResponseField>
+
+Do not assume config-only fields are populated on an interactive job.
 
 <ResponseExample>
 
 ```json Response
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "type": "config",
   "status": "running",
   "normalized_status": "running",
   "is_terminal_status": false,
@@ -98,5 +158,30 @@ The record also returns the submitted training configuration, timestamps, datase
 ```
 
 </ResponseExample>
+
+```json Interactive job
+{
+  "type": "interactive",
+  "training_run_id": "YOUR_SESSION_ID:train:0",
+  "base_model": "Qwen/Qwen3.6-35B-A3B",
+  "model_owner": "YOUR_TEAM_ID",
+  "is_lora": true,
+  "corrupted": false,
+  "lora_rank": 32,
+  "last_request_time": "2026-10-09T18:42:10Z",
+  "last_checkpoint": null,
+  "last_sampler_checkpoint": {
+    "checkpoint_id": "sampler_weights/step-100",
+    "checkpoint_type": "sampler",
+    "time": "2026-10-09T18:40:02Z",
+    "tinker_path": "tinker://YOUR_SESSION_ID:train:0/sampler_weights/step-100",
+    "size_bytes": 167772160,
+    "public": false,
+    "user_metadata": null,
+    "expires_at": null
+  },
+  "user_metadata": {"experiment": "baseline"}
+}
+```
 
 An unknown or inaccessible job returns `404`. An invalid path value returns `422`.

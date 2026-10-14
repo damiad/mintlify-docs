@@ -1,16 +1,16 @@
 ---
 title: "终止训练任务"
 sidebarTitle: "终止任务"
-description: "终止训练任务：如果提供方任务仍处于活动状态则将其停止。除非 delete_checkpoints 为 true，否则会保留检查点和工件。"
+description: "终止配置训练任务；除非明确请求删除，否则保留检查点。"
 api: "POST /v1/training/jobs/{job_id}/terminate"
 ---
 
 `POST /v1/training/jobs/{job_id}/terminate`
 
-如果提供方任务仍处于活动状态，则将其停止并将任务标记为已终止。默认情况下会保留现有检查点和工件。
+停止活动的 `config` 任务，并请求提供方取消。默认保留现有检查点和工件。
 
 <Warning>
-  将 `delete_checkpoints` 设置为 `true` 会永久删除任务的检查点和工件。此操作无法撤销。
+  将 `delete_checkpoints` 设为 `true` 会在确认取消后永久删除任务的检查点和工件。此操作无法撤销。
 </Warning>
 
 ## 请求
@@ -23,8 +23,10 @@ api: "POST /v1/training/jobs/{job_id}/terminate"
   训练任务 UUID。
 </ParamField>
 
+JSON 请求体为可选。
+
 <ParamField body="delete_checkpoints" type="boolean" default="false">
-  是否永久删除所有检查点和工件。省略此字段或将其设置为 `false` 可保留它们。
+  在确认取消后永久删除检查点和工件。
 </ParamField>
 
 <RequestExample>
@@ -42,15 +44,34 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/termin
 
 <ResponseExample>
 
-```json Response
+```json 200 — 已终止
 {
   "success": true,
-  "message": "Training job terminated. Checkpoints preserved (pass delete_checkpoints=true to remove them).",
+  "message": "Training job terminated. Checkpoints preserved.",
   "job_id": "YOUR_TRAINING_JOB_ID",
-  "deleted_checkpoints": 0
+  "deleted_checkpoints": 0,
+  "status": "terminated"
+}
+```
+
+```json 202 — 正在等待取消
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "deleted_checkpoints": 0,
+  "status": "stopping"
 }
 ```
 
 </ResponseExample>
 
-未知任务或无法终止的任务返回请求相关的 `4xx` 错误。
+收到 `202` 后，请轮询 `GET /v1/training/jobs/{job_id}`；在等待确认取消期间，请勿重复发送终止请求。
+
+| 状态 | 含义 |
+| --- | --- |
+| `200` | 任务已终止。 |
+| `202` | 仍在确认提供方取消操作。 |
+| `409 training_job_already_finished` | 任务在终止前已进入最终状态。 |
+| `409 cancellation_unconfirmed` | 未确认取消，可以重试。 |
+| `422` | 路径或请求体无效。 |

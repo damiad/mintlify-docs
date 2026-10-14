@@ -92,7 +92,7 @@ Le corps de la requête a échoué à la validation. Un champ requis est manquan
 
 **Comment corriger :** Consultez le `message` d'erreur pour connaître le champ précis en cause. Les causes courantes incluent :
 
-- Omission de `base_model` dans `POST /v1/training/jobs`
+- Omission de `model` ou de `type` dans `POST /v1/training/jobs`
 - Envoi de moins d'1 ou plus de 1 000 chaînes dans le tableau `inputs` pour les endpoints label-existing
 
 ```json

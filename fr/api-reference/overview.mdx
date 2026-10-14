@@ -16,10 +16,6 @@ d'un compte Fastino et d'un terminal.
     Une fois connecté, accédez à **Settings → API Keys** et générez une nouvelle clé. Copiez-la
     en lieu sûr, car vous ne pourrez plus l'afficher après avoir fermé la boîte de dialogue.
 
-    <Warning>
-      Ne placez jamais votre clé API sous contrôle de version. Utilisez une variable d'environnement
-      ou un gestionnaire de secrets plutôt que de l'écrire en dur dans vos fichiers sources.
-    </Warning>
 
     Définissez votre clé comme variable d'environnement pour que les exemples ci-dessous fonctionnent tels quels :
 
@@ -213,6 +209,7 @@ d'un compte Fastino et d'un terminal.
   <Step title="Lancer un job d'entraînement (facultatif)">
     Lorsque vous êtes prêt à effectuer un fine-tuning sur vos propres données, lancez un job d'entraînement :
 
+
     <CodeGroup>
 
     ```bash curl
@@ -258,8 +255,15 @@ d'un compte Fastino et d'un terminal.
     Une fois que le job atteint le statut `complete`, déployez l'artefact sélectionné avant d'utiliser
     l'ID du job comme `model` dans `/v1/chat/completions`.
 
-    Les statuts du job progressent de `requested` → `running` → `complete`, ou se terminent par
-    `failed` ou `stopped`.
+    Cet endpoint crée des jobs `config` gérés. Les boucles d'entraînement
+    personnalisées créent des jobs `interactive` avec le client SDK compatible
+    Tinker pris en charge. Les deux types de jobs utilisent
+    `/v1/training/jobs/{id}` comme ressource REST canonique de leur cycle de vie.
+    L'adaptateur de compatibilité du SDK ne fait pas partie du contrat OpenAPI public.
+
+    Les statuts persistés du job progressent de `requested` → `running` →
+    `complete`, ou se terminent par `errored` ou `stopped`. Le statut normalisé
+    utilisé pour l'interrogation vaut `failed` en cas d'échec terminal.
   </Step>
 </Steps>
 

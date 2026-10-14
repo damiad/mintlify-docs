@@ -1,62 +1,56 @@
 ---
-title: "Trainingsjobs-API"
+title: "Training API"
 sidebarTitle: "Übersicht"
-description: "Erstellen und verwalten Sie Fastino-Trainingsjobs von der Einreichung bis zur Auslieferung des Artefakts."
+description: "Wählen Sie verwaltetes Training, anwendungsgesteuertes Training oder einen privaten autonomen Trainingsagenten."
 ---
 
-Die Trainingsjobs-API verwaltet den gesamten Lebenszyklus eines Fine-Tuning-Jobs. Alle Endpunkte verwenden die Routenfamilie `/v1/training/jobs` und erfordern einen API-Schlüssel im Header `X-API-Key`.
+Jeder Fastino-Trainingsworkload ist ein Job. Wählen Sie, wer den Trainingsloop
+kontrolliert, und prüfen Sie den Job anschließend über `/v1/training/jobs`.
 
-Alle Trainingsvorgänge verwenden dieselbe [API-Authentifizierung](/de/authentication) wie die Inferenz.
-
-**API-Basis-URL:** `https://api.fastino.ai`
-
-```bash
-export FASTINO_API_KEY="fast_sk_..."
-```
-
-Senden Sie den Schlüssel bei jeder Trainingsanfrage mit:
-
-```http
-X-API-Key: $FASTINO_API_KEY
-```
-
-Rufen Sie `GET /v1/base-models?supports_training=true` unmittelbar vor dem Erstellen eines Jobs auf. Dies ist die verbindliche Quelle für aktuell trainierbare Modell-IDs.
-Bereiten Sie vor dem Absenden eines Jobs [einen Trainingsdatensatz vor und laden Sie ihn hoch](/de/concepts/datasets), und warten Sie, bis die verarbeitete Version bereit ist.
-
-<Warning>
-  Die veraltete Routenfamilie `/felix/training-jobs` ist außer Betrieb genommen. Verwenden Sie `/v1/training/jobs`
-  für neue und migrierte Integrationen.
-</Warning>
-
-## Trainingsablauf
-
-<CardGroup cols={2}>
-  <Card title="Basismodell auswählen" icon="boxes-stacked" href="/de/api-reference/training/base-models">
-    Aktuell für Training verfügbare Modelle auflisten.
+<CardGroup cols={3}>
+  <Card title="Verwaltetes Training" icon="sliders" href="/de/training/quickstart#managed-training">
+    Stellen Sie einen Datensatz und eine Konfiguration bereit. Fastino führt den
+    Trainingsloop aus.
   </Card>
-  <Card title="Datensatz hochladen" icon="upload" href="/de/concepts/datasets">
-    Upload-URL reservieren, JSONL hochladen und verarbeiten.
+  <Card title="Benutzerdefinierter Trainingsloop" icon="code" href="/de/training/quickstart#custom-training-loop">
+    Verwenden Sie einen unterstützten SDK-Client, während Ihre Anwendung jedes
+    Update steuert.
   </Card>
-  <Card title="Job erstellen" icon="play" href="/de/api-reference/training-jobs/create">
-    Datensätze und Trainingskonfiguration senden.
-  </Card>
-  <Card title="Überwachen und verwalten" icon="chart-line" href="/de/api-reference/training-jobs/get">
-    Status abfragen, Logs und Abrechnung prüfen und Artefakte verwalten.
+  <Card title="Auto Train" icon="sparkles" href="/de/training/auto">
+    Delegieren Sie den Trainingslebenszyklus an Fastinos autonomen
+    Trainingsagenten.
   </Card>
 </CardGroup>
 
-## Statuslebenszyklus
 
-Antworten von Trainingsjobs enthalten:
+## Jobtyp auswählen
 
-- `status`: gespeicherter Job-Status.
-- `normalized_status`: stabiler Status, der für das Polling im Client vorgesehen ist.
-- `is_terminal_status`: gibt an, ob das Polling beendet werden kann.
-- `error_message`: Fehlerinformationen, sofern verfügbar.
-- `is_deployable`: gibt an, ob das fertige Artefakt die Bereitstellungsprüfung besteht.
-- `deployability_reason`: Grund, warum das Artefakt nicht bereitstellbar ist.
+Jeder Job hat einen `type`:
 
-Bevorzugen Sie in Polling-Clients `normalized_status` und `is_terminal_status`.
+| Typ | Wer kontrolliert den Loop? | Start |
+| --- | --- | --- |
+| `config` | Fastino | Senden Sie einen Datensatz und eine Konfiguration an `POST /v1/training/jobs`. |
+| `interactive` | Ihre Anwendung | Erstellen Sie über einen unterstützten SDK-Client einen Trainingsclient. |
+
+Beide Typen verwenden dieselbe Job-Identität. Kanonische Lesezugriffe erfolgen
+über `GET /v1/training/jobs`, `GET /v1/training/jobs/{job_id}` und
+`GET /v1/training/jobs/{job_id}/checkpoints`.
+
+Bei benutzerdefinierten Loops verwendet der SDK-Client Fastinos
+HTTP-Kompatibilitätsadapter. Der Adapter ist weder ein SDK noch ein zweiter
+Trainingsdienst. Seine Operationen sind nicht in OpenAPI und der API-Referenz
+enthalten. Konstruieren Sie Adapter-Requests nicht selbst.
+
+<Note>
+  Benutzerdefinierte Trainingsloops erfordern Teamzugang. Ohne Zugang enthalten
+  Joblisten nur Config-Jobs, und IDs von Interactive-Jobs geben `404` zurück.
+</Note>
+
+## Lebenszyklus von Config-Jobs
+
+Die folgenden gespeicherten Status beschreiben verwaltete Config-Jobs.
+Interactive-Jobs werden vom Aufrufer gesteuert; leiten Sie deren Lebenszyklus
+nicht aus dieser Tabelle ab.
 
 | Gespeicherter Status | Beschreibung |
 | --- | --- |
@@ -66,39 +60,42 @@ Bevorzugen Sie in Polling-Clients `normalized_status` und `is_terminal_status`.
 | `normalizing` | Fastino bereitet das trainierte Artefakt vor. |
 | `artifact_ready` | Das trainierte Artefakt ist bereit. |
 | `deployed` | Das Artefakt wurde bereitgestellt. |
-| `paused` | Der Job oder seine Pipeline ist angehalten. |
+| `paused` | Der verwaltete Job ist angehalten. |
 | `errored` | Training, Zuweisung oder Artefaktvorbereitung ist fehlgeschlagen. |
-| `stopped` | Der Job wurde gestoppt, während vorhandene Checkpoints erhalten blieben. |
-| `terminated` | Der Job wurde terminiert. Checkpoints bleiben erhalten, sofern ihre Löschung nicht angefordert wurde. |
+| `stopped` | Der Job wurde gestoppt; vorhandene Checkpoints bleiben erhalten. |
+| `terminated` | Der Job wurde terminiert. Checkpoints bleiben erhalten, sofern `delete_checkpoints` nicht `true` ist. |
 
-## Endpunkte
+`normalized_status` liefert den stabilen Polling-Wert, einschließlich `failed`
+bei einem endgültigen Fehler. `status` bleibt der gespeicherte Wert,
+beispielsweise `errored`.
 
-| Methode | Endpunkt | Zweck |
+## Unterstützte Operationen
+
+| Operation | `config` | `interactive` |
 | --- | --- | --- |
-| `POST` | [`/v1/training/jobs`](/de/api-reference/training-jobs/create) | Trainingsjob erstellen |
-| `GET` | [`/v1/training/jobs`](/de/api-reference/training-jobs/list) | Trainingsjobs auflisten |
-| `GET` | [`/v1/training/jobs/{job_id}`](/de/api-reference/training-jobs/get) | Status, Konfiguration und Metriken abrufen |
-| `PATCH` | [`/v1/training/jobs/{job_id}`](/de/api-reference/training-jobs/update-project) | Projekt zuweisen oder Zuweisung aufheben |
-| `PATCH` | [`/v1/training/jobs/{job_id}/model-name`](/de/api-reference/training-jobs/update-model-name) | Trainiertes Modell umbenennen |
-| `GET` | [`/v1/training/jobs/{job_id}/logs`](/de/api-reference/training-jobs/logs) | Snapshot der Trainingslogs abrufen |
-| `GET` | [`/v1/training/jobs/{job_id}/billing`](/de/api-reference/training-jobs/billing) | Abrechnungsergebnis abrufen |
-| `GET` | [`/v1/training/jobs/{job_id}/deployments`](/de/api-reference/training-jobs/deployments) | Aus dem Job erstellte Deployments auflisten |
-| `POST` | [`/v1/training/jobs/{job_id}/stop`](/de/api-reference/training-jobs/stop) | Job stoppen und Checkpoints erhalten |
-| `POST` | [`/v1/training/jobs/{job_id}/terminate`](/de/api-reference/training-jobs/terminate) | Job terminieren; Checkpoints standardmäßig erhalten |
-| `POST` | [`/v1/training/jobs/{job_id}/sync`](/de/api-reference/training-jobs/sync) | Status vom Trainingsanbieter aktualisieren |
-| `POST` | [`/v1/training/jobs/{job_id}/push-to-hub`](/de/api-reference/training-jobs/push-to-hub) | Abgeschlossenes Artefakt an den Hugging Face Hub übertragen |
-| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/de/api-reference/training-jobs/checkpoints) | Checkpoints auflisten |
-| `POST` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy`](/de/api-reference/training-jobs/deploy-checkpoint) | Checkpoint bereitstellen |
-| `GET` | [`/v1/training/jobs/{job_id}/download`](/de/api-reference/training-jobs/download) | Temporäre Download-URL für Gewichte abrufen |
-| `DELETE` | [`/v1/training/jobs/{job_id}`](/de/api-reference/training-jobs/delete) | Job und seine Checkpoints löschen |
+| [Jobs auflisten](/de/api-reference/training-jobs/list) | Unterstützt | Mit Zugang unterstützt |
+| [Job abrufen](/de/api-reference/training-jobs/get) | Unterstützt | Mit Zugang unterstützt |
+| [Checkpoints auflisten](/de/api-reference/training-jobs/checkpoints) | Unterstützt | Mit Zugang unterstützt |
+| [Interaktiven Checkpoint herunterladen](/de/api-reference/training-jobs/download-checkpoint) | — | Mit Zugang unterstützt |
+| [Über natives REST erstellen](/de/api-reference/training-jobs/create) | Unterstützt | SDK verwenden |
+| Job aktualisieren oder löschen | Unterstützt | — |
+| [Stoppen](/de/api-reference/training-jobs/stop), [terminieren](/de/api-reference/training-jobs/terminate) oder [synchronisieren](/de/api-reference/training-jobs/sync) | Unterstützt | — |
+| [Logs](/de/api-reference/training-jobs/logs) und [Abrechnung](/de/api-reference/training-jobs/billing) | Unterstützt | — |
+| Bereitstellungen und Checkpoint-Bereitstellung | Unterstützt | — |
+| [Endgültiges Modell herunterladen](/de/api-reference/training-jobs/download) | Unterstützt | — |
+| Umbenennen oder an den Hugging Face Hub übertragen | Unterstützt | — |
 
-## Trainingsläufe
+## Nächste Schritte
 
-Interaktive Trainingsjobs sind Trainingsläufe, die Sie selbst Schritt für Schritt mit dem Tinker-kompatiblen SDK steuern; die Job-ID ist die Lauf-ID des SDK. Setzen Sie die `base_url` des SDK auf `https://api.fastino.ai/v1/training/compat/tinker` und übergeben Sie Ihren Fastino-API-Schlüssel über den Credential-Befehl des SDK: `TINKER_CREDENTIAL_CMD='printf %s "$FASTINO_API_KEY"'`. Verwenden Sie diese Routen, um Ihre Läufe und Checkpoints aufzulisten und Checkpoint-Gewichte herunterzuladen.
-
-| Methode | Endpunkt | Zweck |
-| --- | --- | --- |
-| `GET` | [`/v1/training/jobs`](/de/api-reference/training-runs/list) | Trainingsläufe auflisten |
-| `GET` | [`/v1/training/jobs/{job_id}`](/de/api-reference/training-runs/get) | Einen Lauf und seine neuesten Checkpoints abrufen |
-| `GET` | [`/v1/training/jobs/{job_id}/checkpoints`](/de/api-reference/training-runs/list-checkpoints) | Checkpoints eines Laufs auflisten |
-| `GET` | [`/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`](/de/api-reference/training-runs/download-checkpoint) | Temporäre Download-URL für einen Checkpoint abrufen |
+<CardGroup cols={3}>
+  <Card title="Schnellstart" icon="play" href="/de/training/quickstart">
+    Führen Sie verwaltetes Training aus oder starten Sie einen
+    benutzerdefinierten Trainingsloop.
+  </Card>
+  <Card title="Von Tinker migrieren" icon="arrow-right-arrow-left" href="/de/training/migrate-from-tinker">
+    Verlagern Sie einen vorhandenen kompatiblen Workload zu Fastino.
+  </Card>
+  <Card title="GLiNER feinabstimmen" icon="tags" href="/de/guides/fine-tune-gliner">
+    Bereiten Sie Entitätsdaten vor und trainieren Sie ein GLiNER-Modell.
+  </Card>
+</CardGroup>

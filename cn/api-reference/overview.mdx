@@ -13,9 +13,6 @@ noindex: true
 
     登录后，前往 **Settings → API Keys** 并生成新密钥。请将其复制并妥善保存，因为关闭对话框后将无法再次查看。
 
-    <Warning>
-      请勿将 API 密钥提交到版本控制中。请使用环境变量或密钥管理工具，而不是在源文件中硬编码。
-    </Warning>
 
     将密钥设置为环境变量，以便下面的示例可以直接运行：
 
@@ -205,6 +202,7 @@ noindex: true
   <Step title="启动训练任务（可选）">
     当你准备好使用自己的数据进行微调时，请启动训练任务：
 
+
     <CodeGroup>
 
     ```bash curl
@@ -248,7 +246,13 @@ noindex: true
 
     响应中包含任务 `id`。轮询 `GET /v1/training/jobs/{id}` 以检查其状态。任务达到 `complete` 后，请先部署所选工件，再将任务 ID 作为 `/v1/chat/completions` 中的 `model` 使用。
 
-    任务状态依次为 `requested` → `running` → `complete`，或以 `failed` 或 `stopped` 结束。
+    此端点创建托管式 `config` 任务。自定义训练循环通过受支持的 Tinker 兼容
+    SDK 客户端创建 `interactive` 任务。两种任务类型都使用
+    `/v1/training/jobs/{id}` 作为其规范 REST 生命周期资源；SDK 兼容适配器
+    不属于公共 OpenAPI 契约。
+
+    持久化任务状态依次为 `requested` → `running` → `complete`，或以
+    `errored` 或 `stopped` 结束。规范化轮询状态以 `failed` 表示最终失败状态。
   </Step>
 </Steps>
 

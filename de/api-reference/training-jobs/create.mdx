@@ -1,13 +1,23 @@
 ---
-title: "Trainingsjob erstellen"
-sidebarTitle: "Job erstellen"
-description: "Starten Sie mit POST /v1/training/jobs einen asynchronen Fastino-Fine-Tuning-Job aus Basismodell und Datensätzen, mit lora- oder full-Training."
+title: "Config-Trainingsjob erstellen"
+sidebarTitle: "Config-Job erstellen"
+description: "Rufen Sie POST /v1/training/jobs auf, um einen asynchronen, von Fastino verwalteten Trainingsjob aus einem Basismodell und Datensätzen zu starten."
 api: "POST /v1/training/jobs"
 ---
 
 `POST /v1/training/jobs`
 
-Erstellt einen asynchronen Trainingsjob und gibt dessen Job-Datensatz zurück. Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
+Erstellt einen asynchronen `config`-Trainingsjob und gibt dessen Job-Datensatz
+zurück. Bei einem Config-Job stellen Sie einen Datensatz und eine Konfiguration
+bereit, und Fastino führt den Trainingsloop aus. Um den Loop Schritt für Schritt
+zu steuern, folgen Sie dem
+[Pfad für einen eigenen Trainingsablauf](/de/training/quickstart#custom-training-loop).
+Dieser Pfad erstellt einen `interactive`-Job über den unterstützten SDK-Client.
+Dieser REST-Endpunkt erstellt keine Interactive-Jobs. Nach der Erstellung
+verwenden beide Jobtypen ihre kanonischen IDs mit den dokumentierten
+Lebenszyklusoperationen unter `/v1/training/jobs/{job_id}`.
+
+Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
 
 ## Request
 
@@ -32,7 +42,7 @@ Erstellt einen asynchronen Trainingsjob und gibt dessen Job-Datensatz zurück. D
 </ParamField>
 
 <ParamField body="validation_data_percentage" type="number" default="0.2">
-  Für die Validierung zurückgehaltener Anteil, von `0` bis `1`.
+  Für die Validierung zurückgehaltener Anteil, von `0` bis `0.9`.
 </ParamField>
 
 <ParamField body="nr_epochs" type="integer" default="100">
@@ -189,6 +199,7 @@ Gibt `200` mit dem vollständigen Trainings-Job-Datensatz zurück, einschließli
 ```json Response
 {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "type": "config",
   "model_name": "my-model-name",
   "base_model": "fastino/gliner2-multi-v1",
   "status": "requested",

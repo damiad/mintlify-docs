@@ -39,6 +39,7 @@ TRAINING_OPERATIONS = {
     ("GET", "/v1/training/jobs/{job_id}/billing"),
     ("GET", "/v1/training/jobs/{job_id}/checkpoints"),
     ("POST", "/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/deploy"),
+    ("GET", "/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download"),
     ("GET", "/v1/training/jobs/{job_id}/deployments"),
     ("GET", "/v1/training/jobs/{job_id}/download"),
     ("GET", "/v1/training/jobs/{job_id}/logs"),
@@ -48,15 +49,7 @@ TRAINING_OPERATIONS = {
     ("POST", "/v1/training/jobs/{job_id}/sync"),
     ("POST", "/v1/training/jobs/{job_id}/terminate"),
 }
-TRAINING_RUN_OPERATIONS = {
-    ("GET", "/v1/training/jobs"),
-    ("GET", "/v1/training/jobs/{job_id}"),
-    ("GET", "/v1/training/jobs/{job_id}/checkpoints"),
-    ("GET", "/v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download"),
-}
-EXPECTED_OPERATIONS = INFERENCE_OPERATIONS | TRAINING_OPERATIONS | TRAINING_RUN_OPERATIONS
-# SDK base URLs are documented prefixes, not routes: the SDK appends its own paths.
-SDK_BASE_PATHS = {"/v1/training/compat/tinker"}
+EXPECTED_OPERATIONS = INFERENCE_OPERATIONS | TRAINING_OPERATIONS
 LOCALES = {"cn", "de", "es", "fr"}
 EXPECTED_SKILLS = {
     "fastino-datasets",
@@ -72,6 +65,7 @@ ACTIVE_LEGACY_INFERENCE = (
 FASTINO_URL = re.compile(r"https://api\.fastino\.ai([^\s\"'`<\\]+)")
 METHOD_PATH = re.compile(r"\b(GET|POST|PATCH|PUT|DELETE)\s+(/[A-Za-z0-9_{}\-./:*?=&%]+)")
 LLMS_PAGE_URL = re.compile(r"https://docs\.fastino\.ai/([^\s)]+)\.md")
+SDK_BASE_PATHS = {"/v1/training/compat/tinker"}
 API_BINDING = re.compile(
     r'^api:\s*"(GET|POST|PATCH|PUT|DELETE) ([^"]+)"\s*$',
     re.MULTILINE,
@@ -342,7 +336,7 @@ def _path_matches_route(
     method: str | None = None,
 ) -> bool:
     path = url_path.split("?", maxsplit=1)[0].rstrip(".,)")
-    if "$" in path or path in {"", "/v1"} or path.rstrip("/") in SDK_BASE_PATHS:
+    if "$" in path or path in {"", "/v1"} | SDK_BASE_PATHS:
         return True
     concrete_path = re.sub(r"(\{[^}]+\}|YOUR_[A-Z_]+|[A-Z_]{2,}|:[a-z_]+)", "VALUE", path)
     candidates = patterns.get(method, []) if method is not None else [
@@ -352,8 +346,9 @@ def _path_matches_route(
         escaped_prefix = f"^{re.escape(path[:-1])}"
         return any(pattern.pattern.startswith(escaped_prefix) for pattern in candidates)
     return any(
-        pattern.fullmatch(concrete_path) or pattern.fullmatch(path)
+        pattern.fullmatch(candidate)
         for pattern in candidates
+        for candidate in {path, concrete_path}
     )
 
 

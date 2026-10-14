@@ -57,6 +57,23 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/stop \
 }
 ```
 
+```json 202 — cancellation pending
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "status": "stopping"
+}
+```
+
 </ResponseExample>
 
-An unknown job or a job that cannot be stopped returns a request-specific `4xx` error.
+Poll `GET /v1/training/jobs/{job_id}` after a `202`; do not repeat the stop
+request while cancellation is pending.
+
+| Status | Meaning |
+| --- | --- |
+| `200` | The job is stopped and existing checkpoints remain available. |
+| `202` | Provider cancellation is still being confirmed. |
+| `409 training_job_already_finished` | The job reached a terminal state before the stop. |
+| `422` | The path or request body is invalid. |

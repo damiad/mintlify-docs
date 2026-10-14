@@ -1,16 +1,19 @@
 ---
 title: "Trainingsjob terminieren"
 sidebarTitle: "Job terminieren"
-description: "Terminieren Sie mit POST /v1/training/jobs/{job_id}/terminate einen Trainingsjob. Checkpoints bleiben erhalten, sofern delete_checkpoints nicht true ist."
+description: "Terminieren Sie einen Config-Trainingsjob; Checkpoints bleiben erhalten, sofern ihre Löschung nicht ausdrücklich angefordert wird."
 api: "POST /v1/training/jobs/{job_id}/terminate"
 ---
 
 `POST /v1/training/jobs/{job_id}/terminate`
 
-Stoppt den Anbieter-Job, falls er aktiv ist, und markiert den Job als terminiert. Vorhandene Checkpoints und Artefakte bleiben standardmäßig erhalten.
+Stoppt einen aktiven `config`-Job und fordert den Abbruch beim Anbieter an.
+Vorhandene Checkpoints und Artefakte bleiben standardmäßig erhalten.
 
 <Warning>
-  Wenn `delete_checkpoints` auf `true` gesetzt wird, werden die Checkpoints und Artefakte des Jobs dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.
+  Wenn Sie `delete_checkpoints` auf `true` setzen, werden die Checkpoints und
+  Artefakte des Jobs dauerhaft gelöscht, nachdem der Abbruch bestätigt wurde.
+  Dies kann nicht rückgängig gemacht werden.
 </Warning>
 
 ## Request
@@ -23,8 +26,11 @@ Stoppt den Anbieter-Job, falls er aktiv ist, und markiert den Job als terminiert
   UUID des Trainingsjobs.
 </ParamField>
 
+Der JSON-Body ist optional.
+
 <ParamField body="delete_checkpoints" type="boolean" default="false">
-  Gibt an, ob alle Checkpoints und Artefakte dauerhaft gelöscht werden. Lassen Sie das Feld weg oder setzen Sie es auf `false`, um sie zu erhalten.
+  Löscht Checkpoints und Artefakte dauerhaft, nachdem der Abbruch bestätigt
+  wurde.
 </ParamField>
 
 <RequestExample>
@@ -42,15 +48,36 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/termin
 
 <ResponseExample>
 
-```json Response
+```json 200 — terminiert
 {
   "success": true,
-  "message": "Training job terminated. Checkpoints preserved (pass delete_checkpoints=true to remove them).",
+  "message": "Training job terminated. Checkpoints preserved.",
   "job_id": "YOUR_TRAINING_JOB_ID",
-  "deleted_checkpoints": 0
+  "deleted_checkpoints": 0,
+  "status": "terminated"
+}
+```
+
+```json 202 — Abbruch ausstehend
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "deleted_checkpoints": 0,
+  "status": "stopping"
 }
 ```
 
 </ResponseExample>
 
-Ein unbekannter Job oder ein Job, der nicht terminiert werden kann, gibt einen anfragespezifischen `4xx`-Fehler zurück.
+Fragen Sie nach einer `202`-Antwort
+`GET /v1/training/jobs/{job_id}` ab. Wiederholen Sie den
+Terminierungsrequest nicht, solange der Abbruch aussteht.
+
+| Status | Bedeutung |
+| --- | --- |
+| `200` | Der Job ist terminiert. |
+| `202` | Die Bestätigung des Anbieterabbruchs steht noch aus. |
+| `409 training_job_already_finished` | Der Job hat vor der Terminierung einen Endzustand erreicht. |
+| `409 cancellation_unconfirmed` | Der Abbruch wurde nicht bestätigt und kann erneut versucht werden. |
+| `422` | Der Pfad oder Request-Body ist ungültig. |

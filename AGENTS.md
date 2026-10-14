@@ -12,8 +12,14 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
 
 - Start with the documentation index at [https://docs.fastino.ai/llms.txt](https://docs.fastino.ai/llms.txt).
 - Read [https://docs.fastino.ai/openapi.json](https://docs.fastino.ai/openapi.json) for customer-facing routes, authentication, request schemas, and response schemas.
-- Use only operations present in that OpenAPI specification.
+- Use only customer-authored HTTP operations present in that OpenAPI specification.
 - Use [https://docs.fastino.ai/concepts/models](https://docs.fastino.ai/concepts/models) for documented model IDs and `GET /v1/base-models` for current availability.
+- For reinforcement learning and custom post-training, follow the
+  [Training API](https://docs.fastino.ai/training) custom-loop guidance and use
+  the documented Python client. The client's HTTP compatibility adapter stays
+  out of OpenAPI and is not a customer-authored REST API.
+- Custom training loops require team access. Verify capabilities before
+  planning or running a workload.
 
 ## API conventions
 
@@ -34,5 +40,28 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
   [GLiNER Inference](https://docs.fastino.ai/inference/chat-completions). Use
   `POST /v1/chat/completions` with `model`, `messages`, and `schema`.
 - Follow the [Training API](https://docs.fastino.ai/training) for training-job operations.
+- Use `/v1/training/jobs` for canonical job operations. A supported SDK client
+  uses the hidden HTTP compatibility adapter for custom-loop model operations.
+  Auto Train is private access and has no public route. Direct interested
+  users to `sales@fastino.ai`.
+- For custom loops, start with the
+  [Training quickstart](https://docs.fastino.ai/training/quickstart#custom-training-loop).
+  Use the focused guides for migration, verifiable rewards, and recovery.
+- Treat every workload as a job under `GET /v1/training/jobs`. Config jobs let
+  Fastino run the loop; interactive jobs let the application direct each step.
+- Query `ServiceClient.get_server_capabilities()` before selecting a model for
+  a custom loop.
+- Do not construct compatibility-adapter HTTP routes directly. Configure the
+  supported client with
+  `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` and
+  `TINKER_CREDENTIAL_CMD` that prints the normal `fast_sk_...` credential.
+- Never wrap a Fastino key with `tml-`; `tml-` credentials are rejected.
+- The SDK training run ID is the interactive Fastino job ID. Use that same ID
+  with documented canonical job reads.
 - Do not invent routes, model IDs, request fields, or response fields.
-- If an operation is absent from the public OpenAPI specification, treat it as unsupported for customer integrations.
+- Use [Migrate from Tinker](https://docs.fastino.ai/training/migrate-from-tinker#supported-client-behavior)
+  for client support boundaries. The pinned `tinker==0.33.1` package defines
+  method signatures, but Fastino's documented unsupported list takes
+  precedence. Use [Training loop](https://docs.fastino.ai/training/training-loop)
+  and [Checkpoints and recovery](https://docs.fastino.ai/training/checkpoints)
+  for operation and recovery behavior.

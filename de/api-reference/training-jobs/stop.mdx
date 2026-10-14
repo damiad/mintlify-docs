@@ -57,6 +57,24 @@ curl -X POST https://api.fastino.ai/v1/training/jobs/YOUR_TRAINING_JOB_ID/stop \
 }
 ```
 
+```json 202 — Abbruch ausstehend
+{
+  "success": true,
+  "message": "Training job cancellation is still being confirmed.",
+  "job_id": "YOUR_TRAINING_JOB_ID",
+  "status": "stopping"
+}
+```
+
 </ResponseExample>
 
-Ein unbekannter Job oder ein Job, der nicht gestoppt werden kann, gibt einen anfragespezifischen `4xx`-Fehler zurück.
+Fragen Sie nach einer `202`-Antwort
+`GET /v1/training/jobs/{job_id}` ab. Wiederholen Sie den Stopp-Request nicht,
+solange der Abbruch aussteht.
+
+| Status | Bedeutung |
+| --- | --- |
+| `200` | Der Job ist gestoppt und vorhandene Checkpoints bleiben verfügbar. |
+| `202` | Die Bestätigung des Anbieterabbruchs steht noch aus. |
+| `409 training_job_already_finished` | Der Job hat vor dem Stopp einen Endzustand erreicht. |
+| `422` | Der Pfad oder Request-Body ist ungültig. |

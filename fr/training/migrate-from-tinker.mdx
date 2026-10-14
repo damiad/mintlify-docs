@@ -1,0 +1,169 @@
+---
+title: "Migrer depuis Tinker"
+description: "Migrez un workload compatible utilisant le SDK Tinker vers les jobs d'entraînement interactifs Fastino."
+---
+
+Fastino prend en charge un sous-ensemble défini du SDK `tinker` comme interface
+client pour les jobs d'entraînement interactifs. Un client d'entraînement migré
+est un job Fastino dans `/v1/training/jobs` ; son ID de modèle SDK et son ID de
+job Fastino canonique sont identiques.
+
+Considérez votre programme existant comme le test d'acceptation. Modifiez la
+connexion, vérifiez chaque opération et exécutez un petit test de fumée avant de
+rétablir les tailles de workload de production.
+
+## 1. Épingler le paquet testé
+
+<CodeGroup>
+
+```bash uv
+uv add "tinker==0.33.1"
+```
+
+```bash pip
+pip install "tinker==0.33.1"
+```
+
+</CodeGroup>
+
+## 2. Remplacer le point de terminaison et l'authentification
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_API_KEY="fast_sk_..."
+export TINKER_BASE_URL="https://api.fastino.ai/v1/training/compat/tinker"
+export TINKER_CREDENTIAL_CMD='printf "%s\n" "$FASTINO_API_KEY"'
+```
+
+```powershell Windows
+$env:FASTINO_API_KEY = "fast_sk_..."
+$env:TINKER_BASE_URL = "https://api.fastino.ai/v1/training/compat/tinker"
+$env:TINKER_CREDENTIAL_CMD = 'powershell -NoProfile -Command "[Console]::Out.WriteLine($env:FASTINO_API_KEY)"'
+```
+
+</CodeGroup>
+
+Le SDK ajoute `/api/v1/{operation}` à `TINKER_BASE_URL`.
+`TINKER_CREDENTIAL_CMD` est exécuté à chaque demande de token et doit afficher
+un identifiant non vide. Utilisez une clé Fastino `fast_sk_` normale ; les
+identifiants `tml-` sont rejetés. Ne définissez pas `TINKER_API_KEY`.
+
+## 3. Vérifier le workload
+
+1. Interrogez `ServiceClient.get_server_capabilities()` et choisissez un modèle
+   de base disponible. Conservez le nom de paramètre SDK `base_model`.
+2. Comparez chaque méthode de votre code avec le
+   [comportement du client pris en charge](#supported-client-behavior).
+3. Supprimez les dépendances à la récupération par lots des futures, à
+   l'exportation de poids externes ou aux URL de poids externes.
+4. Conservez dans votre application le rendu des prompts, la logique de
+   récompense, la mise en lots, l'évaluation et les critères d'arrêt.
+
+Les capacités constituent la source de vérité pour la prise en charge propre à
+l'environnement. Ne conservez pas les hypothèses relatives au modèle, au rang,
+au contexte, à la fonction de perte ou aux limites de requête provenant d'un
+autre déploiement.
+
+## 4. Exécuter un test de fumée
+
+Utilisez les plus petits datums valides et les paramètres d'optimisation de
+votre workload existant pour un test peu coûteux qui :
+
+- Crée un client avec `create_lora_training_client(base_model=...)`
+- Lit `training_client.get_info().model_data.model_id`
+- Enregistre les poids d'échantillonneur et effectue un échantillonnage
+- Exécute une opération avant/arrière prise en charge et une étape d'optimisation
+- Enregistre et recharge un checkpoint d'état
+- Récupère le même ID depuis `GET /v1/training/jobs/{job_id}`
+
+Utilisez le SDK pour les opérations interactives. L'adaptateur est
+volontairement absent de l'OpenAPI et de la référence API de Fastino ; ne
+construisez donc pas d'appels HTTP vers l'adaptateur.
+
+<span id="supported-client-behavior" />
+
+## Comportement du client pris en charge
+
+L'adaptateur HTTP de Fastino traduit les appels pris en charge de
+`tinker==0.33.1` en opérations sur un job Fastino interactif.
+
+### Entraînement et échantillonnage
+
+| Méthode ou opération du SDK | Comportement Fastino |
+| --- | --- |
+| `create_lora_training_client` | Crée un job interactif |
+| `copy_weights` | Démarre un job interactif à partir d'un checkpoint |
+| `TrainingClient.get_info` | Renvoie le job interactif |
+| `forward` | Exécute une opération avant uniquement |
+| `forward_backward` | Exécute une opération avant et arrière |
+| Opération avant/arrière personnalisée | Exécute une opération à fonction de perte personnalisée prise en charge |
+| `optim_step` | Applique une mise à jour de l'optimiseur |
+| `save_state` | Enregistre l'état d'entraînement |
+| `save_weights_for_sampler` | Enregistre les poids de l'échantillonneur |
+| Charger l'état d'entraînement | Restaure un checkpoint d'état |
+| Créer ou obtenir un client d'échantillonnage | Résout les poids de l'échantillonneur |
+| `SamplingClient.sample` | Échantillonne via le checkpoint sélectionné |
+
+Conservez le paramètre SDK `base_model` inchangé. Interrogez
+`ServiceClient.get_server_capabilities()` avant de sélectionner un modèle, un
+rang, une fonction de perte ou une opération facultative.
+
+### Futures et administration
+
+| Méthode ou opération du SDK | Comportement Fastino |
+| --- | --- |
+| Résultat/obtention d'une future | Récupère un résultat asynchrone |
+| Annulation d'une future | Demande l'annulation d'une future |
+| Lister ou obtenir des exécutions d'entraînement avec `RestClient` | Lit les jobs Fastino canoniques |
+| Lister les checkpoints | Lit les checkpoints qui appartiennent au job |
+| Télécharger l'archive d'un checkpoint | Télécharge un checkpoint interactif |
+| Supprimer un checkpoint | Supprime un checkpoint via le SDK |
+| Publier ou dépublier un checkpoint | Modifie la publication du checkpoint via le SDK |
+| Définir ou effacer le TTL d'un checkpoint | Modifie la rétention du checkpoint via le SDK |
+| Utilisation du stockage des checkpoints | Lit le stockage actuel des checkpoints via le SDK |
+| Utilisation facturée | Lit les événements d'utilisation horaires via le SDK |
+
+Ces méthodes d'administration sont des opérations SDK prises en charge, et non
+des routes publiques de l'API d'entraînement. L'adaptateur gère aussi
+automatiquement l'échange de tokens à l'aide de la clé affichée par
+`TINKER_CREDENTIAL_CMD`. Ne construisez pas de requêtes vers l'adaptateur.
+
+### Appels non pris en charge
+
+Fastino ne prend pas en charge :
+
+- La récupération par lots des futures via `retrieve_futures`
+- `save_weights_external`
+- `external_weights_urls`
+
+Ne déduisez pas la prise en charge d'une méthode uniquement parce qu'elle
+existe dans le paquet installé. La réponse de capacités active fait foi pour le
+comportement propre à l'environnement.
+
+## Résoudre les problèmes de connexion
+
+| Symptôme | Vérification |
+| --- | --- |
+| Échec de l'authentification | Vérifiez que `TINKER_CREDENTIAL_CMD` affiche une seule clé `fast_sk_` actuelle sans sortie supplémentaire |
+| Le client ne parvient pas à se connecter | Vérifiez que `TINKER_BASE_URL` correspond exactement à `https://api.fastino.ai/v1/training/compat/tinker` |
+| Un modèle ou une opération est rejeté | Interrogez de nouveau les capacités et comparez l'appel avec le tableau de prise en charge |
+| La recherche du job canonique échoue | Vérifiez que l'ID provient de `get_info().model_data.model_id` et que la même équipe Fastino est authentifiée |
+
+## Checklist de migration
+
+- [ ] Épingler `tinker==0.33.1`.
+- [ ] Définir l'URL de base de l'adaptateur Fastino.
+- [ ] Fournir une clé `fast_sk_` via `TINKER_CREDENTIAL_CMD`.
+- [ ] Confirmer que l'entraînement interactif est activé pour l'équipe Fastino.
+- [ ] Vérifier chaque méthode SDK par rapport au comportement du client pris en charge.
+- [ ] Sélectionner le modèle et les fonctionnalités facultatives à partir des capacités.
+- [ ] Effectuer un échantillonnage et une mise à jour d'entraînement.
+- [ ] Enregistrer et recharger un checkpoint d'état.
+- [ ] Vérifier l'ID de modèle SDK via le point de terminaison canonique du job.
+- [ ] Augmenter la taille du workload uniquement après la réussite du test de fumée.
+
+<Card title="Construire la boucle d'entraînement" icon="diagram-project" href="/fr/training/training-loop">
+  Reliez l'échantillonnage, les récompenses, les mises à jour et les
+  checkpoints dans un même job.
+</Card>

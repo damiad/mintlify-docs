@@ -986,7 +986,7 @@
             "title": "Tier"
           },
           "training_types": {
-            "description": "Training types this model can actually be fine-tuned with, sorted and de-duplicated (e.g. ``[\"lora\"]``, ``[\"lora\", \"full\"]``). Empty when the model is not trainable. Derived from the SFT routes in the same training provider registry that decides which (model, training_type) requests ``POST /training-jobs`` accepts under its default ``training_algorithm=sft``, restricted to the public ``full``/``lora`` vocabulary, so a value listed here is a route the training gate will not reject: a model listing only ``[\"lora\"]`` rejects a ``full`` training request with HTTP 400.",
+            "description": "Training types this model can actually be fine-tuned with, sorted and de-duplicated (e.g. ``[\"lora\"]``, ``[\"lora\", \"full\"]``). Empty when the model is not trainable. Derived from the SFT routes in the same training provider registry that decides which (model, training_type) requests ``POST /v1/training/jobs`` accepts under its default ``training_algorithm=sft``, restricted to the public ``full``/``lora`` vocabulary, so a value listed here is a route the training gate will not reject: a model listing only ``[\"lora\"]`` rejects a ``full`` training request with HTTP 400.",
             "items": {
               "enum": [
                 "full",
@@ -5193,6 +5193,12 @@
         "additionalProperties": false,
         "description": "Request to create a training job.",
         "properties": {
+          "base_model": {
+            "description": "Trainable model ID from GET /v1/base-models?supports_training=true (e.g. 'fastino/gliner2-base-v1').",
+            "minLength": 1,
+            "title": "Base Model",
+            "type": "string"
+          },
           "auto_data_sizing": {
             "anyOf": [
               {
@@ -5204,12 +5210,6 @@
             ],
             "description": "GLiNER only. Opt-in: when true, downsample each training dataset to min(max_samples_per_dataset, max(min_samples_per_dataset, samples_per_label * num_labels)). When omitted or false, the full provided dataset is used (no silent downsampling). Defaults to false in the Modal container.",
             "title": "Auto Data Sizing"
-          },
-          "base_model": {
-            "description": "Trainable model ID from GET /v1/base-models?supports_training=true (e.g. 'fastino/gliner2-base-v1').",
-            "minLength": 1,
-            "title": "Base Model",
-            "type": "string"
           },
           "batch_size": {
             "default": 4,
@@ -6751,7 +6751,26 @@
                 }
               }
             },
-            "description": "Chat completion. Returns ``application/json`` (``ChatCompletionResponse``) by default, or ``text/event-stream`` of ``ChatCompletionStreamChunk`` events terminated by ``data: [DONE]`` when ``stream=true``."
+            "description": "Chat completion. Returns ``application/json`` (``ChatCompletionResponse``) by default, or ``text/event-stream`` of ``ChatCompletionStreamChunk`` events terminated by ``data: [DONE]`` when ``stream=true``.",
+            "headers": {
+              "X-Fastino-Data-Retention": {
+                "description": "Retention the server applied to this call: `zero` under team Zero Data Retention, `not-stored` when the request opted out of inference history, `stored` otherwise. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "enum": [
+                    "zero",
+                    "not-stored",
+                    "stored"
+                  ],
+                  "type": "string"
+                }
+              },
+              "X-Fastino-Served-Model": {
+                "description": "Canonical id of the model that served this call after resolution: the fine-tuned model id when a fine-tune served it, otherwise the base model id. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -7167,7 +7186,26 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Fastino-Data-Retention": {
+                "description": "Retention the server applied to this call: `zero` under team Zero Data Retention, `not-stored` when the request opted out of inference history, `stored` otherwise. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "enum": [
+                    "zero",
+                    "not-stored",
+                    "stored"
+                  ],
+                  "type": "string"
+                }
+              },
+              "X-Fastino-Served-Model": {
+                "description": "Canonical id of the model that served this call after resolution: the fine-tuned model id when a fine-tune served it, otherwise the base model id. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -7696,7 +7734,26 @@
                 }
               }
             },
-            "description": "Non-streaming Anthropic Messages response. When the request sets ``stream=true`` the server emits an Anthropic-shaped SSE event stream over ``text/event-stream`` instead; that stream shape is documented in the Anthropic Messages API reference."
+            "description": "Non-streaming Anthropic Messages response. When the request sets ``stream=true`` the server emits an Anthropic-shaped SSE event stream over ``text/event-stream`` instead; that stream shape is documented in the Anthropic Messages API reference.",
+            "headers": {
+              "X-Fastino-Data-Retention": {
+                "description": "Retention the server applied to this call: `zero` under team Zero Data Retention, `not-stored` when the request opted out of inference history, `stored` otherwise. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "enum": [
+                    "zero",
+                    "not-stored",
+                    "stored"
+                  ],
+                  "type": "string"
+                }
+              },
+              "X-Fastino-Served-Model": {
+                "description": "Canonical id of the model that served this call after resolution: the fine-tuned model id when a fine-tune served it, otherwise the base model id. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -7967,7 +8024,26 @@
                 "schema": {}
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Fastino-Data-Retention": {
+                "description": "Retention the server applied to this call: `zero` under team Zero Data Retention, `not-stored` when the request opted out of inference history, `stored` otherwise. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "enum": [
+                    "zero",
+                    "not-stored",
+                    "stored"
+                  ],
+                  "type": "string"
+                }
+              },
+              "X-Fastino-Served-Model": {
+                "description": "Canonical id of the model that served this call after resolution: the fine-tuned model id when a fine-tune served it, otherwise the base model id. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "422": {
             "content": {
@@ -8093,7 +8169,26 @@
                 }
               }
             },
-            "description": "Successful Response"
+            "description": "Successful Response",
+            "headers": {
+              "X-Fastino-Data-Retention": {
+                "description": "Retention the server applied to this call: `zero` under team Zero Data Retention, `not-stored` when the request opted out of inference history, `stored` otherwise. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "enum": [
+                    "zero",
+                    "not-stored",
+                    "stored"
+                  ],
+                  "type": "string"
+                }
+              },
+              "X-Fastino-Served-Model": {
+                "description": "Canonical id of the model that served this call after resolution: the fine-tuned model id when a fine-tune served it, otherwise the base model id. Absent on error responses and on streams that fail before provider dispatch; a stream that fails after dispatch keeps it and reports the error in-band.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "400": {
             "content": {

@@ -1,0 +1,502 @@
+[
+  {
+    "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "coverage": "none",
+    "kind": "empty-page",
+    "language": "",
+    "ordinal": 0,
+    "page": "training.mdx",
+    "risk": "none",
+    "rule": "no-fences"
+  },
+  {
+    "body_sha256": "fe5ce45eb82aa44a7d3a4618cbae105a3651cc42433692f36e1e229a4b50533d",
+    "coverage": "static",
+    "kind": "bash-env",
+    "language": "bash",
+    "ordinal": 0,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "bash-n-env"
+  },
+  {
+    "body_sha256": "abc5bfb16ab4e7b1696ccb476f86af7119d278c40bbff9f5eb114aa3a208bef4",
+    "coverage": "static",
+    "kind": "powershell-env",
+    "language": "powershell",
+    "ordinal": 1,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "powershell-shape-env"
+  },
+  {
+    "body_sha256": "e7a7f5ffb5d7a23dde59039851ad9e13ef5349413d49b6c1cf069cff23f6de0c",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 2,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "b38e708d2451481e116c0fa50033cc849264affca0d2f15cb801bd496356192b",
+    "coverage": "static",
+    "kind": "bash-mutating",
+    "language": "bash",
+    "ordinal": 3,
+    "page": "training/quickstart.mdx",
+    "risk": "mutating",
+    "rule": "http-post-create"
+  },
+  {
+    "body_sha256": "c287679a50d8266d0ec436b6698ab4cfd4688b4daa94b33046125ff09dba24a6",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 4,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "ccdfa47c267acd29580450f2319941291d49cfb2b3b484312c7c4cbfa264ffdd",
+    "coverage": "static",
+    "kind": "bash-install",
+    "language": "bash",
+    "ordinal": 5,
+    "page": "training/quickstart.mdx",
+    "risk": "custom-loop",
+    "rule": "bash-n-install"
+  },
+  {
+    "body_sha256": "3ff5592d9fc60ea05bfc2fccc1950dffacd3026ee96f6d46b75d9ef625fcda64",
+    "coverage": "static",
+    "kind": "bash-install",
+    "language": "bash",
+    "ordinal": 6,
+    "page": "training/quickstart.mdx",
+    "risk": "custom-loop",
+    "rule": "bash-n-install"
+  },
+  {
+    "body_sha256": "3cb402e95bf7336e02477fa89a4b456876596a76154d5e99aea19b4f2742657a",
+    "coverage": "static",
+    "kind": "powershell-install",
+    "language": "powershell",
+    "ordinal": 7,
+    "page": "training/quickstart.mdx",
+    "risk": "custom-loop",
+    "rule": "powershell-shape-install"
+  },
+  {
+    "body_sha256": "bbde3df327ac67baf28da06d876f4c3bc638c96cde39fa9508ddd955cea58af0",
+    "coverage": "static",
+    "kind": "bash-env",
+    "language": "bash",
+    "ordinal": 8,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "bash-n-env"
+  },
+  {
+    "body_sha256": "b5c2be452de27b676bf16af268694cfc6062154c9684854ddadb20861ca5a5d0",
+    "coverage": "static",
+    "kind": "powershell-env",
+    "language": "powershell",
+    "ordinal": 9,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "powershell-shape-env"
+  },
+  {
+    "body_sha256": "786d2c42b3a786ca133ed22c6caa9744f6851182fec124ebb4f86780e89fa908",
+    "coverage": "static",
+    "kind": "bash-env",
+    "language": "bash",
+    "ordinal": 10,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "bash-n-env"
+  },
+  {
+    "body_sha256": "e1bb92cd91de67bde007372fa981de4e5baa93a5a8fc139c4b060854fbca8977",
+    "coverage": "static",
+    "kind": "powershell-env",
+    "language": "powershell",
+    "ordinal": 11,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "powershell-shape-env"
+  },
+  {
+    "body_sha256": "78711ee4d4a401792e40797a74da6369bfbc4fee1f3badab1a609e5d9751bab3",
+    "coverage": "static",
+    "kind": "python-tinker",
+    "language": "python",
+    "ordinal": 12,
+    "page": "training/quickstart.mdx",
+    "risk": "custom-loop",
+    "rule": "python-tinker-compile"
+  },
+  {
+    "body_sha256": "1dbf290131afb98991c4335fd6204e47f3c7f44b7f47f479b1740c85b17721fd",
+    "coverage": "static",
+    "kind": "bash-run-script",
+    "language": "bash",
+    "ordinal": 13,
+    "page": "training/quickstart.mdx",
+    "risk": "custom-loop",
+    "rule": "bash-n-run"
+  },
+  {
+    "body_sha256": "5569479ac9176298988a8d826690481e276b3e27f2a41035453585e9ef3d7230",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 14,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "75a087e7c5ee88c16b948be3f22fffa95b2671a10b512c95615217ae6566ed54",
+    "coverage": "live",
+    "kind": "powershell-safe-get",
+    "language": "powershell",
+    "ordinal": 15,
+    "page": "training/quickstart.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "79b7be7d82ee13dc9ce9574b1f91f82f0eee5aef2a9cff2ec491c341bc793e90",
+    "coverage": "static",
+    "kind": "bash-install",
+    "language": "bash",
+    "ordinal": 0,
+    "page": "training/migrate-from-tinker.mdx",
+    "risk": "custom-loop",
+    "rule": "bash-n-install"
+  },
+  {
+    "body_sha256": "cdbbde76fafb53515714486b386ae7305321c206c1347c59855b5b6a1a3a2c4a",
+    "coverage": "static",
+    "kind": "bash-install",
+    "language": "bash",
+    "ordinal": 1,
+    "page": "training/migrate-from-tinker.mdx",
+    "risk": "custom-loop",
+    "rule": "bash-n-install"
+  },
+  {
+    "body_sha256": "e15ed7d88a57e0058726a932a22872660539ce33444b2a58cefdbec8aa403fc5",
+    "coverage": "static",
+    "kind": "bash-env",
+    "language": "bash",
+    "ordinal": 2,
+    "page": "training/migrate-from-tinker.mdx",
+    "risk": "none",
+    "rule": "bash-n-env"
+  },
+  {
+    "body_sha256": "fefbcc06343c2a65592bbb58a57b077297ed1694c077990ffe4c611cd616a344",
+    "coverage": "static",
+    "kind": "powershell-env",
+    "language": "powershell",
+    "ordinal": 3,
+    "page": "training/migrate-from-tinker.mdx",
+    "risk": "none",
+    "rule": "powershell-shape-env"
+  },
+  {
+    "body_sha256": "2be103f19351ec6f1f186570a1925d556883b82f8d5a1f36b240516c44106537",
+    "coverage": "static",
+    "kind": "jsonl-dataset",
+    "language": "jsonl",
+    "ordinal": 0,
+    "page": "concepts/datasets.mdx",
+    "risk": "none",
+    "rule": "jsonl-parse"
+  },
+  {
+    "body_sha256": "872716ef3907ba0aac1b07055c78e7146bc306d0d1fb693a9044413de658328f",
+    "coverage": "static",
+    "kind": "jsonl-dataset",
+    "language": "jsonl",
+    "ordinal": 1,
+    "page": "concepts/datasets.mdx",
+    "risk": "none",
+    "rule": "jsonl-parse"
+  },
+  {
+    "body_sha256": "70daf2cfb217b3ecc8e99ce1b76d1ecb561d9b526fa920ea8947554548f34b43",
+    "coverage": "static",
+    "kind": "jsonl-dataset",
+    "language": "jsonl",
+    "ordinal": 2,
+    "page": "concepts/datasets.mdx",
+    "risk": "none",
+    "rule": "jsonl-parse"
+  },
+  {
+    "body_sha256": "c0da4d4e8f7ee2cb7065fe8279a132a0d0c312ec585cfd784d1f5c3ce1ffc9d5",
+    "coverage": "static",
+    "kind": "bash-mutating",
+    "language": "bash",
+    "ordinal": 3,
+    "page": "concepts/datasets.mdx",
+    "risk": "mutating",
+    "rule": "http-post-upload"
+  },
+  {
+    "body_sha256": "cc45f7f4c6d6ffc79c4a34ea9e25cd4a50b3f37143357261b11c4f36e06823aa",
+    "coverage": "static",
+    "kind": "bash-mutating",
+    "language": "bash",
+    "ordinal": 4,
+    "page": "concepts/datasets.mdx",
+    "risk": "mutating",
+    "rule": "http-put-upload"
+  },
+  {
+    "body_sha256": "1a273b12c464f12e463b75771e100d2726795a8e5ad390960c5e6d24f1876793",
+    "coverage": "static",
+    "kind": "bash-mutating",
+    "language": "bash",
+    "ordinal": 5,
+    "page": "concepts/datasets.mdx",
+    "risk": "mutating",
+    "rule": "http-post-process"
+  },
+  {
+    "body_sha256": "6a8df897a35dcb2b39e08b4071ebc2ef04451d05c8751f1f2f586f4d39db8281",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 6,
+    "page": "concepts/datasets.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "a3c447d60a9687ff648f73efb11622cb23ed5fcd03c2eacd953ac0dcb2689a3b",
+    "coverage": "static",
+    "kind": "json-request",
+    "language": "json",
+    "ordinal": 7,
+    "page": "concepts/datasets.mdx",
+    "risk": "mutating",
+    "rule": "json-config-create"
+  },
+  {
+    "body_sha256": "c9aa766ac45d43b2b40ac27f5498933b90d5b4dfc9198ef64a57a29df3964ebe",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 0,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "daa886680ab71757c911dafdf8798c941f4bd21c3183907e96fe1f8f7d296070",
+    "coverage": "static",
+    "kind": "bash-mutating",
+    "language": "bash",
+    "ordinal": 1,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "mutating",
+    "rule": "http-post-create"
+  },
+  {
+    "body_sha256": "594ce02607366ab0b419abd4af2d47c5e7f6f73bcb4dc3e33f51ca005f5c78ee",
+    "coverage": "static",
+    "kind": "bash-env",
+    "language": "bash",
+    "ordinal": 2,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "none",
+    "rule": "bash-n-env"
+  },
+  {
+    "body_sha256": "62c85718c095a42bb437b0cdec599656a8c5651a1b7f597682ee3e82280acedf",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 3,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "5297af37008fe42d88e11b7af6676b51e82d1cd8029ea9638dd2cabb1fde6cf6",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 4,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "d4af741f53791792eeb5a3d5c70b791bb161dd87fee3cbac258e07668ef1ba39",
+    "coverage": "live",
+    "kind": "bash-safe-get",
+    "language": "bash",
+    "ordinal": 5,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "none",
+    "rule": "http-get-safe"
+  },
+  {
+    "body_sha256": "8d357df1df2d329f5b6ca2f81a67eeeb5cb3cf94f772ee76b2e77374bc8f7be3",
+    "coverage": "static",
+    "kind": "bash-mutating",
+    "language": "bash",
+    "ordinal": 6,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "mutating",
+    "rule": "http-post-deploy"
+  },
+  {
+    "body_sha256": "c810bf149776dc329586c9459d4ff35b63ae93eaa24a12707356102165a3ca9e",
+    "coverage": "static",
+    "kind": "bash-mutating",
+    "language": "bash",
+    "ordinal": 7,
+    "page": "guides/fine-tune-gliner.mdx",
+    "risk": "mutating",
+    "rule": "http-post-inference"
+  },
+  {
+    "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "coverage": "none",
+    "kind": "empty-page",
+    "language": "",
+    "ordinal": 0,
+    "page": "training/training-loop.mdx",
+    "risk": "none",
+    "rule": "no-fences"
+  },
+  {
+    "body_sha256": "bcf323bf7fda98524b74a98e2a9c567e2b467f47f770a9b461660b38cba7f30e",
+    "coverage": "static",
+    "kind": "text-diagram",
+    "language": "text",
+    "ordinal": 0,
+    "page": "training/verifiable-rewards.mdx",
+    "risk": "none",
+    "rule": "text-accept"
+  },
+  {
+    "body_sha256": "a47d3de85d9c53a01def7e58ff9ebb067f7281f26cd4d75e415e12794ee9c840",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 1,
+    "page": "training/verifiable-rewards.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "905c7d837854d7167b111fcc0a6eeb8472a6f7a2e057bea33a351b7adffa2d3c",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 2,
+    "page": "training/verifiable-rewards.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "3ee3df43d647b157967456a5339416341bcef0a4b5a20e8217237aec4116a6cd",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 3,
+    "page": "training/verifiable-rewards.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "6731930c3fa03feb1fb41a7ee292f6fb52b3eb825c47f17d92a3c621f57c022c",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 4,
+    "page": "training/verifiable-rewards.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "57972e83611f7d13d8c9fd2619cda84ea4ce9bb5c23fde1ad3aa545302280c2d",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 5,
+    "page": "training/verifiable-rewards.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "c172bb6edbc5fc43a7c43c5622959fe148508f744e302309dbb828fadf08ac5b",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 6,
+    "page": "training/verifiable-rewards.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "d4ba8c69a222a690a283016565864f18757ea10b791009d522acb79872dede1c",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 0,
+    "page": "training/checkpoints.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "b644bf09d3f91481293130a10151c3c5628324c2aa020c62c23b17221636cbe0",
+    "coverage": "static",
+    "kind": "python-checkpoint-parser",
+    "language": "python",
+    "ordinal": 1,
+    "page": "training/checkpoints.mdx",
+    "risk": "none",
+    "rule": "python-checkpoint-exec"
+  },
+  {
+    "body_sha256": "9a030fe3690d3ec9a7e659b41f33281fa83ae75f899eac7ac89b92ecdd257f38",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 2,
+    "page": "training/checkpoints.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "682e9e591e77b3ea053a9e8cd040fd940fdab055503ab1c7759acb51506b9212",
+    "coverage": "static",
+    "kind": "python-incomplete",
+    "language": "python",
+    "ordinal": 3,
+    "page": "training/checkpoints.mdx",
+    "risk": "incomplete",
+    "rule": "python-incomplete-fragment"
+  },
+  {
+    "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "coverage": "none",
+    "kind": "empty-page",
+    "language": "",
+    "ordinal": 0,
+    "page": "training/auto.mdx",
+    "risk": "none",
+    "rule": "no-fences"
+  }
+]

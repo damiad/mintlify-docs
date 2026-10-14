@@ -1,0 +1,99 @@
+---
+title: "Build a custom training loop"
+sidebarTitle: "Training loop"
+description: "Connect sampling, rewards, updates, and checkpoints inside one interactive Fastino job."
+---
+
+Your application decides what to sample, how to score it, and when to update.
+Fastino executes the interactive model operations. A `TrainingClient`
+represents one interactive Fastino job throughout the loop.
+
+## The control loop
+
+<Steps>
+  <Step title="Create the interactive job">
+    Choose a `base_model` and other options from the capability response, then
+    call `create_lora_training_client(...)`. Read the canonical job ID from
+    `training_client.get_info().model_data.model_id`.
+  </Step>
+  <Step title="Checkpoint weights for sampling">
+    Call `save_weights_for_sampler(name)`, then create a sampling client from
+    the returned checkpoint path. This ties the rollout policy to an explicit
+    artifact of the same job.
+  </Step>
+  <Step title="Collect rollout groups">
+    Sample several candidate responses for each prompt. Your application owns
+    prompt construction, response rendering, and grouping.
+  </Step>
+  <Step title="Compute rewards and advantages">
+    Score each response, then transform rewards into the advantages required by
+    your selected, capability-supported training operation.
+  </Step>
+  <Step title="Build training datums">
+    Combine model inputs, sampled response tokens, sampling metadata, and
+    token-level training signals in the SDK's expected shape.
+  </Step>
+  <Step title="Update the same job">
+    Submit supported forward/backward work, then an optimizer step, through the
+    existing `TrainingClient`.
+  </Step>
+  <Step title="Save a recovery boundary">
+    Save a state checkpoint and persist its identifier with the application
+    step and dataset cursor before beginning the next iteration.
+  </Step>
+</Steps>
+
+## Object model
+
+| Object | Role |
+| --- | --- |
+| `ServiceClient` | Queries capabilities and creates SDK clients |
+| `TrainingClient` | Represents one interactive Fastino job and submits its model operations |
+| `SamplingClient` | Samples from a resolved checkpoint |
+| `RestClient` | Lists or gets canonical jobs and uses supported SDK methods to administer checkpoints |
+| Future | Tracks one operation submitted to the job |
+
+The SDK model ID is the canonical Fastino job ID. Futures and sampling clients
+do not create independent runs.
+
+To turn deterministic grading into group-relative advantages, follow
+[Train with verifiable rewards](/training/verifiable-rewards).
+
+## Build aligned datums
+
+For an importance-sampling-style loop, the prompt is context and the sampled
+completion is the action. Keep token arrays aligned with the SDK and renderer
+used by the selected model:
+
+- Model input containing prompt and completion tokens
+- Target tokens aligned to the model input
+- Sampling log probabilities aligned to generated tokens
+- Advantages applied to completion positions
+
+<Warning>
+  Prompt rendering, tokenization, datum construction, and reward execution are
+  client-owned. Validate their shapes against `tinker==0.33.1` and the live
+  capability response before a larger workload.
+</Warning>
+
+## Keep dependent work ordered
+
+Resolve a forward/backward future before treating that stage as complete, and
+resolve the optimizer future before checkpointing the updated state. Do not let
+independent controllers mutate the same job without application-level
+coordination.
+
+The SDK performs these interactive operations. Do not reproduce them as direct
+HTTP calls.
+
+Track each future returned by a supported call. Resolve or cancel futures
+individually. Batch retrieval through `retrieve_futures` is not supported.
+
+## Recover the loop
+
+Persist the canonical job ID, the application step, the dataset cursor, and
+the relevant future or checkpoint identifiers. A restarted controller can then
+determine which work completed without replaying an update.
+
+For the recovery sequence and checkpoint kinds, follow
+[Checkpoints and recovery](/training/checkpoints).

@@ -3,7 +3,7 @@
 > Créez des décisions structurées avec GLiDE, effectuez une extraction basée sur des schémas avec GLiNER et affinez des modèles spécialisés avec Fastino.
 
 > ## Instructions pour les agents
-> Utilisez https://docs.fastino.ai/openapi.json comme source de vérité pour les routes publiques. N'inférez pas de routes non documentées. Lisez les clés API depuis `FASTINO_API_KEY` et n'intégrez jamais d'identifiants dans le code, les journaux ou les rapports.
+> Utilisez https://docs.fastino.ai/openapi.json comme source de vérité pour les routes publiques. Les tâches d'entraînement utilisent `/v1/training/jobs`. Pour les boucles d'entraînement personnalisées, suivez les pages de l'API d'entraînement et utilisez le client SDK compatible ; son adaptateur HTTP est absent d'OpenAPI et ne doit pas être appelé directement. Auto Train est en accès privé et n'a pas de route publique ; orientez les utilisateurs vers `sales@fastino.ai`. N'inférez pas de routes non documentées. Lisez les clés API depuis `FASTINO_API_KEY` et n'intégrez jamais d'identifiants dans le code, les journaux ou les rapports.
 
 ## Ressources pour les agents
 
@@ -18,7 +18,7 @@
 - [Introduction](https://docs.fastino.ai/fr/introduction.md): Fastino propose GLiDE pour classifier, router et noter avec des probabilités calibrées, et GLiNER pour l'extraction au niveau des segments.
 - [Démarrage rapide](https://docs.fastino.ai/fr/quickstart.md): Exécutez une inférence sur Fastino. Ce guide vous présente le moyen le plus rapide d'obtenir une intégration Fastino fonctionnelle.
 - [Skill d'agent Fastino GLiDE](https://docs.fastino.ai/fr/concepts/glide-agent-skill.md): Installez le skill GLiDE hébergé par Fastino pour Cursor, Claude Code et Codex.
-- [Recettes](https://docs.fastino.ai/fr/cookbooks/overview.md): Requêtes et réponses complètes et testées pour les tâches GLiDE et GLiNER 2.5 Multi les plus courantes.
+- [Recettes](https://docs.fastino.ai/fr/cookbooks/overview.md): Recettes fonctionnelles pour GLiDE et GLiNER 2.5 Multi.
 - [Exemples de cas d'usage](https://docs.fastino.ai/fr/example-use-cases.md): Découvrez des façons concrètes d'utiliser GLiDE dans les systèmes d'IA, les opérations, la sécurité, la recherche et les workflows produit.
 
 ### Modèles de décision
@@ -47,21 +47,28 @@
 ### Entités et classification
 
 - [GLiNER2.5](https://docs.fastino.ai/fr/concepts/gliner.md): Découvrez quand et comment utiliser GLiNER2.5 Multi pour l'extraction d'informations multilingue pilotée par schéma.
+- [Skill d'agent GLiNER](https://docs.fastino.ai/fr/concepts/gliner-agent-skill.md): Installez le skill GLiNER hébergé par Fastino pour Cursor, Claude Code et Codex.
 - [Inférence GLiNER avec /v1/chat/completions](https://docs.fastino.ai/fr/inference/chat-completions.md): Utilisez POST /v1/chat/completions pour l'extraction, la classification, les enregistrements et les relations GLiNER, et non pour les décisions GLiDE.
 - [Recette : Extraire des entités d'un texte multilingue](https://docs.fastino.ai/fr/cookbooks/gliner-entity-extraction.md): Extrayez les personnes, organisations, lieux et dates d'un texte dans n'importe quelle langue prise en charge avec GLiNER 2.5 Multi.
 - [Recette : Classer un texte selon vos propres libellés](https://docs.fastino.ai/fr/cookbooks/gliner-text-classification.md): Étiquetez un texte avec plusieurs tâches de classification indépendantes en un seul appel GLiNER 2.5 Multi.
 - [Recette : Extraire les relations entre entités](https://docs.fastino.ai/fr/cookbooks/gliner-relation-extraction.md): Identifiez qui travaille où, ce qui se trouve où et qui a racheté qui, sous forme de paires tête-queue, avec GLiNER 2.5 Multi.
 
+### API d'entraînement
+
+- [API d'entraînement](https://docs.fastino.ai/fr/training.md): Choisissez l'entraînement géré, l'entraînement piloté par l'application ou un agent d'entraînement autonome privé.
+- [Démarrage rapide de l'API d'entraînement](https://docs.fastino.ai/fr/training/quickstart.md): Lancez un job d'entraînement géré ou une boucle d'entraînement contrôlée par l'application, puis vérifiez son ID de job canonique.
+- [Migrer depuis Tinker](https://docs.fastino.ai/fr/training/migrate-from-tinker.md): Migrez un workload compatible utilisant le SDK Tinker vers les jobs d'entraînement interactifs Fastino.
+- [Préparer et importer des datasets d'entraînement](https://docs.fastino.ai/fr/concepts/datasets.md): Formatez, importez, validez et inspectez des datasets NER, de classification ou de décodeur avant de lancer un job d'entraînement Fastino.
+- [Fine-tuner GLiNER](https://docs.fastino.ai/fr/guides/fine-tune-gliner.md): Préparez un dataset GLiNER, créez un job de configuration géré et surveillez-le jusqu'aux checkpoints et à son achèvement.
+- [Construire une boucle d'entraînement personnalisée](https://docs.fastino.ai/fr/training/training-loop.md): Reliez l'échantillonnage, les récompenses, les mises à jour et les checkpoints au sein d'un même job interactif Fastino.
+- [S'entraîner avec des récompenses vérifiables](https://docs.fastino.ai/fr/training/verifiable-rewards.md): Transformez un évaluateur déterministe en signal d'apprentissage pour un job interactif Fastino.
+- [Checkpoints et récupération](https://docs.fastino.ai/fr/training/checkpoints.md): Enregistrez l'état d'un job interactif et la progression de l'application, puis récupérez-les sans rejouer le travail terminé.
+- [Auto Train](https://docs.fastino.ai/fr/training/auto.md): Déléguez la préparation des données, l'entraînement, l'évaluation et la sélection du modèle à l'agent d'entraînement autonome de Fastino.
+
 ### API d'inférence
 
 - [API d'inférence : exécuter les modèles Fastino](https://docs.fastino.ai/fr/inference.md): Découvrez comment exécuter des inférences avec les modèles Fastino via les API GLiDE et compatibles OpenAI.
 - [Authentification de l'API Fastino : gérer les clés API](https://docs.fastino.ai/fr/authentication.md): Authentifiez les requêtes à l'API Fastino avec l'en-tête X-API-Key ou un jeton Bearer, puis créez, renouvelez et révoquez vos clés API.
-
-### API d'entraînement
-
-- [API des jobs d'entraînement](https://docs.fastino.ai/fr/training.md): Créez et gérez les jobs d'entraînement Fastino, de la soumission jusqu'à la livraison des artefacts.
-- [Skill d'agent pour l'entraînement](https://docs.fastino.ai/fr/concepts/gliner-agent-skill.md): Installez le skill GLiNER hébergé par Fastino pour Cursor, Claude Code et Codex.
-- [Préparer et importer des datasets d'entraînement](https://docs.fastino.ai/fr/concepts/datasets.md): Formatez, importez, validez et inspectez des datasets NER, de classification ou de décodeur avant de lancer un job d'entraînement Fastino.
 
 ### Dépannage
 
@@ -103,30 +110,27 @@
 
 ### Entraînement
 
-- [Référence de l’API d’entraînement](https://docs.fastino.ai/fr/api-reference/training/overview.md): Contrats exacts pour les modèles de base, les jeux de données et le cycle complet des tâches d’entraînement.
+- [Référence de l’API d’entraînement](https://docs.fastino.ai/fr/api-reference/training/overview.md): Contrats REST publics pour créer des jobs config et gérer les jobs config et interactive.
 - [Lister les modèles disponibles et entraînables](https://docs.fastino.ai/fr/api-reference/training/base-models.md): Cette page documente `GET /v1/base-models`. La spécification OpenAPI est la source canonique pour les paramètres, les réponses et l'authentification.
 - [Lister les datasets](https://docs.fastino.ai/fr/api-reference/datasets/list.md): Listez les datasets de votre compte Fastino authentifié avec GET /v1/datasets et paginez les résultats avec les paramètres de requête limit et offset.
 - [Créer une URL d'import de dataset](https://docs.fastino.ai/fr/api-reference/datasets/upload-url.md): Créez une URL d'import présignée pour un nouveau fichier de dataset avec POST /v1/datasets/upload/url, en indiquant nom, type, format et fichier.
 - [Traiter un dataset importé](https://docs.fastino.ai/fr/api-reference/datasets/process-upload.md): Enregistrez et traitez un dataset une fois l'import du fichier terminé en appelant POST /v1/datasets/upload/process avec le dataset_id de l'import.
 - [Lister les versions d'un dataset](https://docs.fastino.ai/fr/api-reference/datasets/versions.md): Listez les versions traitées et les métadonnées d'un dataset avec GET /v1/datasets/{name}, en transmettant son nom comme paramètre de chemin.
 - [Supprimer un dataset](https://docs.fastino.ai/fr/api-reference/datasets/delete.md): Supprimez un dataset et toutes ses versions stockées avec DELETE /v1/datasets/{name}. Transmettez le nom du dataset dans le paramètre de chemin name.
-- [Créer un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/create.md): Appelez POST /v1/training/jobs pour lancer un job de fine-tuning Fastino asynchrone à partir d'un modèle de base et de datasets, en mode lora ou full.
-- [Lister les jobs d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/list.md): Appelez GET /v1/training/jobs pour lister les jobs d'entraînement de votre compte, filtrer par statut ou ID de projet et paginer avec limit et offset.
-- [Obtenir un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/get.md): Obtenez le statut, la configuration, les métriques et la disponibilité de l'artefact d'un job d'entraînement.
+- [Créer un job d'entraînement de configuration](https://docs.fastino.ai/fr/api-reference/training-jobs/create.md): Appelez POST /v1/training/jobs pour démarrer un job d'entraînement asynchrone géré par Fastino à partir d'un modèle de base et de datasets.
+- [Lister les jobs d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/list.md): Appelez GET /v1/training/jobs pour lister les jobs de configuration et interactifs visibles par votre compte.
+- [Obtenir un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/get.md): Obtenez un job d'entraînement de configuration ou interactif à partir de son ID de job Fastino canonique.
 - [Mettre à jour le projet d'un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/update-project.md): Appelez PATCH /v1/training/jobs/{job_id} pour affecter un job d'entraînement Fastino à un projet, ou envoyez null pour le désaffecter du projet.
+- [Supprimer un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/delete.md): Appelez DELETE /v1/training/jobs/{job_id} pour supprimer définitivement un job, ses checkpoints et artefacts. Un job actif est d'abord arrêté.
 - [Renommer un modèle entraîné](https://docs.fastino.ai/fr/api-reference/training-jobs/update-model-name.md): Appelez PATCH /v1/training/jobs/{job_id}/model-name pour renommer un modèle entraîné. Les noms comptent 1 à 64 lettres, chiffres, tirets ou underscores.
 - [Obtenir les logs d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/logs.md): Récupérez un instantané des logs de sortie d'un job d'entraînement Fastino.
 - [Obtenir la facturation d'un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/billing.md): Appelez GET /v1/training/jobs/{job_id}/billing pour savoir si un job d'entraînement Fastino a été facturé, avec le montant en USD et les minutes GPU.
-- [Lister les déploiements d'une tâche d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/deployments.md): Appelez GET /v1/training/jobs/{job_id}/deployments pour lister les déploiements créés à partir d'une tâche d'entraînement ou qui lui sont associés.
-- [Arrêter un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/stop.md): Arrêtez un job d'entraînement Fastino en cours en conservant les checkpoints existants.
-- [Terminer un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/terminate.md): Appelez POST /v1/training/jobs/{job_id}/terminate pour terminer un job. Les checkpoints sont conservés sauf si delete_checkpoints vaut true.
-- [Synchroniser une tâche d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/sync.md): Actualisez le statut d'une tâche d'entraînement depuis son fournisseur en appelant POST /v1/training/jobs/{job_id}/sync avec l'ID de la tâche d'entraînement.
-- [Publier un modèle entraîné sur Hugging Face Hub](https://docs.fastino.ai/fr/api-reference/training-jobs/push-to-hub.md): Publiez un artefact d'entraînement terminé sur Hugging Face Hub avec POST /v1/training/jobs/{job_id}/push-to-hub, en indiquant le repo_id cible et le hf_token.
 - [Lister les checkpoints d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/checkpoints.md): Appelez GET /v1/training/jobs/{job_id}/checkpoints pour lister les checkpoints d'un job avec epoch, step, perte, précision et indicateurs de déploiement.
+- [Télécharger un checkpoint interactif](https://docs.fastino.ai/fr/api-reference/training-jobs/download-checkpoint.md): Obtenez une URL de téléchargement à durée limitée pour le checkpoint d'un job d'entraînement interactif.
 - [Déployer un checkpoint d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/deploy-checkpoint.md): Déployez un checkpoint déployable d'un job Fastino sur l'endpoint d'inférence multi-modèle hébergé, avec l'ID de checkpoint de l'endpoint de liste.
+- [Lister les déploiements d'une tâche d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/deployments.md): Appelez GET /v1/training/jobs/{job_id}/deployments pour lister les déploiements créés à partir d'une tâche d'entraînement ou qui lui sont associés.
 - [Télécharger les poids entraînés](https://docs.fastino.ai/fr/api-reference/training-jobs/download.md): Appelez GET /v1/training/jobs/{job_id}/download pour obtenir une URL présignée temporaire d'un artefact, avec son expiration et un nom de fichier suggéré.
-- [Supprimer un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/delete.md): Appelez DELETE /v1/training/jobs/{job_id} pour supprimer définitivement un job, ses checkpoints et artefacts. Un job actif est d'abord arrêté.
-- [Lister les exécutions d’entraînement](https://docs.fastino.ai/fr/api-reference/training-runs/list.md): Appelez GET /v1/training/jobs pour lister les exécutions d’entraînement créées avec le SDK compatible Tinker, avec une pagination limit et offset.
-- [Obtenir une exécution d’entraînement](https://docs.fastino.ai/fr/api-reference/training-runs/get.md): Appelez GET /v1/training/jobs/{job_id} pour obtenir une exécution d’entraînement avec son modèle de base, son rang LoRA et ses derniers checkpoints.
-- [Lister les checkpoints d’une exécution](https://docs.fastino.ai/fr/api-reference/training-runs/list-checkpoints.md): Appelez GET /v1/training/jobs/{job_id}/checkpoints pour lister les checkpoints d’état d’entraînement et d’échantillonnage d’une exécution.
-- [Télécharger un checkpoint](https://docs.fastino.ai/fr/api-reference/training-runs/download-checkpoint.md): Obtenez une URL signée vers une archive tar d’un checkpoint de votre équipe. L’URL ne nécessite pas de clé d’API et expire au bout de 15 minutes.
+- [Publier un modèle entraîné sur Hugging Face Hub](https://docs.fastino.ai/fr/api-reference/training-jobs/push-to-hub.md): Publiez un artefact d'entraînement terminé sur Hugging Face Hub avec POST /v1/training/jobs/{job_id}/push-to-hub, en indiquant le repo_id cible et le hf_token.
+- [Arrêter un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/stop.md): Arrêtez un job d'entraînement Fastino en cours en conservant les checkpoints existants.
+- [Terminer un job d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/terminate.md): Terminez un job d'entraînement de configuration en conservant ses checkpoints, sauf si leur suppression est explicitement demandée.
+- [Synchroniser une tâche d'entraînement](https://docs.fastino.ai/fr/api-reference/training-jobs/sync.md): Actualisez le statut d'une tâche d'entraînement depuis son fournisseur en appelant POST /v1/training/jobs/{job_id}/sync avec l'ID de la tâche d'entraînement.

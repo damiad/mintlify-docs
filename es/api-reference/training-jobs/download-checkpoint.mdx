@@ -1,0 +1,56 @@
+---
+title: "Descargar un checkpoint interactivo"
+sidebarTitle: "Descargar checkpoint"
+description: "Obtén una URL de descarga de corta duración para el checkpoint de un trabajo de entrenamiento interactivo."
+api: "GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download"
+---
+
+`GET /v1/training/jobs/{job_id}/checkpoints/{checkpoint_id}/download`
+
+Devuelve una URL firmada de corta duración para un checkpoint de un trabajo
+`interactive`. Los trabajos de configuración usan
+[`GET /v1/training/jobs/{job_id}/download`](/es/api-reference/training-jobs/download)
+para el artefacto de su modelo final.
+
+## Solicitud
+
+<ParamField header="X-API-Key" type="string" required>
+  Tu clave de API de Fastino.
+</ParamField>
+
+<ParamField path="job_id" type="string" required>
+  ID del trabajo interactivo devuelto por el SDK compatible.
+</ParamField>
+
+<ParamField path="checkpoint_id" type="string" required>
+  Identificador de checkpoint devuelto por la lista de checkpoints, como
+  `weights/checkpoint-1` o `sampler_weights/checkpoint-1`.
+</ParamField>
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.fastino.ai/v1/training/jobs/JOB_ID/checkpoints/CHECKPOINT_ID/download" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+</RequestExample>
+
+## Respuesta
+
+La respuesta contiene la URL firmada de un archivo que caduca a los 15 minutos.
+Trata la URL como una credencial: no la registres, compartas ni conserves.
+
+<ResponseExample>
+
+```json Response
+{
+  "url": "https://api.fastino.ai/v1/training/archives/SIGNED_TOKEN",
+  "expires_in_seconds": 900
+}
+```
+
+</ResponseExample>
+
+Esta operación requiere acceso al entrenamiento interactivo y que el equipo
+tenga derecho a descargar los pesos.

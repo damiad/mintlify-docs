@@ -16,10 +16,6 @@ lediglich ein Fastino-Konto und ein Terminal.
     Sobald Sie angemeldet sind, gehen Sie zu **Settings → API Keys** und generieren Sie einen neuen Schlüssel. Kopieren Sie ihn
     an einen sicheren Ort, denn nach dem Schließen des Dialogs können Sie ihn nicht mehr einsehen.
 
-    <Warning>
-      Halten Sie Ihren API-Schlüssel aus der Versionsverwaltung heraus. Verwenden Sie eine Umgebungsvariable oder einen
-      Secrets-Manager, anstatt ihn fest in Ihren Quelldateien zu hinterlegen.
-    </Warning>
 
     Legen Sie Ihren Schlüssel als Umgebungsvariable fest, damit die folgenden Beispiele unverändert funktionieren:
 
@@ -213,6 +209,7 @@ lediglich ein Fastino-Konto und ein Terminal.
   <Step title="Einen Trainingsjob starten (optional)">
     Wenn Sie bereit sind, ein Modell mit Ihren eigenen Daten feinabzustimmen, starten Sie einen Trainingsjob:
 
+
     <CodeGroup>
 
     ```bash curl
@@ -258,8 +255,15 @@ lediglich ein Fastino-Konto und ein Terminal.
     Sobald der Job `complete` erreicht, stellen Sie das ausgewählte Artefakt bereit, bevor Sie die Job-ID als
     `model` in `/v1/chat/completions` verwenden.
 
-    Der Job-Status durchläuft `requested` → `running` → `complete` oder endet als `failed` oder
-    `stopped`.
+    Dieser Endpunkt erstellt verwaltete `config`-Jobs. Eigene Trainingsabläufe
+    erstellen `interactive`-Jobs über den unterstützten Tinker-kompatiblen
+    SDK-Client. Beide Jobtypen verwenden `/v1/training/jobs/{id}` als ihre
+    kanonische REST-Lebenszyklusressource. Der SDK-Kompatibilitätsadapter gehört
+    nicht zum öffentlichen OpenAPI-Vertrag.
+
+    Der gespeicherte Job-Status durchläuft `requested` → `running` → `complete`
+    oder endet als `errored` oder `stopped`. Der normalisierte Polling-Status
+    verwendet `failed` für einen endgültigen Fehler.
   </Step>
 </Steps>
 
