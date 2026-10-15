@@ -4,15 +4,14 @@ sidebarTitle: "检查点存储用量"
 description: "通过 GET /v1/training/usage 返回团队范围的交互式检查点存储量及其月度价格。它不报告计算用量或总账单。"
 api: "GET /v1/training/usage"
 ---
-
 `GET /v1/training/usage`
 
-Returns the team's live interactive-job checkpoint storage, per project and
-user, with its estimated monthly cost. Deleted and expired checkpoints don't
-count.
+返回每个项目和团队的实时交互式作业检查点存储
+用户及其估计的每月费用。已删除和过期的检查点不会
+计数。
 
 <ParamField query="project_id" type="string">
-  Only this project's storage.
+  仅此项目的存储。
 </ParamField>
 
 <RequestExample>
@@ -28,7 +27,7 @@ curl "https://api.fastino.ai/v1/training/usage" \
 
 ```json Response
 {
-  "effective_rate_usd_per_gigabyte_month": 0.1,
+  "effective_rate_usd_per_gigabyte_month": 0.05,
   "data": [
     {
       "project_id": "PROJECT_ID",
@@ -38,7 +37,7 @@ curl "https://api.fastino.ai/v1/training/usage" \
       "checkpoint_count": 3,
       "size_bytes": 805306368,
       "size_gigabytes": 0.75,
-      "estimated_monthly_cost_usd": 0.075
+      "estimated_monthly_cost_usd": 0.0375
     }
   ]
 }

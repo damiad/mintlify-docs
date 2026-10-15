@@ -83,4 +83,9 @@ curl -fL \
 
 Für dieses Beispiel wird `jq` benötigt.
 
-Ein unbekannter Job oder ein Job ohne herunterladbares Artefakt gibt einen anfragespezifischen `4xx`-Fehler zurück.
+| Status | Bedeutung |
+| --- | --- |
+| `400` | Das Training ist nicht abgeschlossen oder das Modellartefakt ist noch nicht bereit. Warten Sie und versuchen Sie es erneut. |
+| `401` | Eine verzögerte Abrechnungsprüfung erfordert eine Zahlungsmethode. Fügen Sie sie in den Abrechnungseinstellungen hinzu. |
+| `403` | Gewichtsdownloads sind für das Team nicht aktiviert. Kontaktieren Sie `sales@fastino.ai`. |
+| `404` | Der Job ist unbekannt oder nicht zugänglich. |
