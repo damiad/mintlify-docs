@@ -5,17 +5,18 @@ description: "Connect sampling, rewards, updates, and checkpoints inside one int
 ---
 
 Your application decides what to sample, how to score it, and when to update.
-Fastino executes the interactive model operations. A `TrainingClient`
-represents one interactive Fastino job throughout the loop.
+Fastino executes the interactive model operations. A native client addresses
+the job by `job_id`. A Tinker `TrainingClient` represents the same job.
 
 ## The control loop
 
 <Steps>
   <Step title="Create the interactive job">
-    Choose an enabled `base_model` from the capability response, then call
-    `create_lora_training_client(...)` with documented settings. Capabilities
-    do not report ranks, losses, or operation limits. Read the canonical job ID
-    from `training_client.get_info().model_id`.
+    A native client calls
+    [`POST /v1/training/jobs/create-model`](/api-reference/training-jobs/interactive/create-model)
+    with `base_model`, or with `from_checkpoint` and `load_optimizer`. A Tinker
+    client calls `create_lora_training_client(...)`. Native clients send no
+    `seq_id` and no heartbeat.
   </Step>
   <Step title="Checkpoint weights for sampling">
     Call `save_weights_for_sampler(name, ttl_seconds=24 * 60 * 60)`, then create a sampling client from
@@ -52,8 +53,8 @@ represents one interactive Fastino job throughout the loop.
 | `ServiceClient` | Queries capabilities and creates SDK clients |
 | `TrainingClient` | Represents one interactive Fastino job and submits its model operations |
 | `SamplingClient` | Samples from a resolved checkpoint |
-| `RestClient` | Lists or gets canonical jobs and uses supported SDK methods to administer checkpoints |
-| Future | Tracks one operation submitted to the job |
+| `RestClient` | Lists or gets interactive runs and uses supported SDK methods to administer their checkpoints; use `/v1/training/jobs` to read both job types |
+| Future | Tracks one queued call submitted to the job |
 
 The SDK model ID is the canonical Fastino job ID. Futures and sampling clients
 do not create independent runs.
@@ -74,7 +75,7 @@ used by the selected model:
 
 <Warning>
   Prompt rendering, tokenization, datum construction, and reward execution are
-  client-owned. Validate their shapes against `tinker==0.33.1` and the
+  client-owned. Validate their shapes against the [tested SDK](/training/migrate-from-tinker) and the
   documented operation contract before a larger workload. The capability
   response only lists enabled models and advertised context lengths.
 </Warning>
@@ -86,11 +87,17 @@ resolve the optimizer future before checkpointing the updated state. Do not let
 independent controllers mutate the same job without application-level
 coordination.
 
-The SDK performs these interactive operations. Do not reproduce them as direct
-HTTP calls.
+Native JSON clients call
+[`forward-backward`](/api-reference/training-jobs/interactive/forward-backward)
+and [`optim-step`](/api-reference/training-jobs/interactive/optim-step). Each
+queueing response contains a `future_id`. Poll
+[`get-future`](/api-reference/training-jobs/interactive/get-future) until
+the status is `completed`, `failed`, or `cancelled`; one `wait=true` request can
+return before completion.
 
-Track each future returned by a supported call. Resolve or cancel futures
-individually. Batch retrieval through `retrieve_futures` is not supported.
+Tinker clients track each future returned by a supported call and resolve
+futures individually. Only sample futures can be cancelled on either
+interface. Batch retrieval through `retrieve_futures` is not supported.
 
 ## Recover the loop
 
@@ -101,6 +108,7 @@ determine which work completed without replaying an update.
 For the recovery sequence and checkpoint kinds, follow
 [Checkpoints and recovery](/training/checkpoints).
 
-One `TrainingClient` updates one job during its lifetime. Creating a client from
-a saved state starts a new interactive job seeded from the source checkpoint;
-persist both job IDs as application-owned lineage.
+One controller updates one job during its lifetime. A native client can create
+from a checkpoint, and a Tinker client can create from saved state. Both paths
+start a new interactive job seeded from the source checkpoint, so persist both
+job IDs as application-owned lineage.

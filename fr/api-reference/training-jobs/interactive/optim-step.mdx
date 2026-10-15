@@ -1,0 +1,12 @@
+---
+title: "Mettre en file une étape d'optimisation"
+sidebarTitle: "Étape d'optimisation"
+description: "Mettez en file une étape d'optimisation avec l'API d'entraînement interactive native."
+api: "POST /v1/training/jobs/{job_id}/optim-step"
+---
+
+`POST /v1/training/jobs/{job_id}/optim-step`
+
+Met en file une étape d'optimisation sur les gradients accumulés et renvoie un `future_id`. Le corps est facultatif. Interrogez [Obtenir une future](/fr/api-reference/training-jobs/interactive/get-future) jusqu'à un état terminal.
+
+Consultez [la boucle d'entraînement personnalisée](/fr/training/training-loop) pour le cycle de vie complet.

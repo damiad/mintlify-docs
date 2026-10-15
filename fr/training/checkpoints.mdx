@@ -84,7 +84,10 @@ Arrêtez-vous pour obtenir une décision explicite si ces champs sont
 incompatibles. Ne combinez pas silencieusement un checkpoint avec une
 expérience différente.
 
-Utilisez ensuite le flux de chargement d'état pris en charge par le SDK :
+Les clients natifs créent un nouveau job avec `from_checkpoint` ou envoient un
+nom d'état ou le chemin `tinker://` du même job à
+[`load-weights`](/fr/api-reference/training-jobs/interactive/load-weights).
+Les clients Tinker utilisent le flux de chargement d'état pris en charge :
 
 ```python
 training_client = (
@@ -99,7 +102,7 @@ Cette fabrique crée un nouveau job interactive, puis charge les poids et l'éta
 de l'optimiseur du checkpoint source. L'ID repris diffère normalement de l'ID
 source. Enregistrez `source_job_id`, `state_path` et `resumed_job_id` comme
 lignée gérée par l'application. Ne refusez pas la reprise parce que les ID
-diffèrent et ne construisez pas la requête vers l'adaptateur.
+diffèrent. Ne construisez pas de routes enfants privées de compatibilité.
 
 ## 4. Rendre la limite récupérable
 
@@ -136,14 +139,17 @@ automatiquement. Les checkpoints actifs comptent dans le stockage. Pour un
 nettoyage automatique, utilisez une valeur comprise entre `3_600` et
 `315_360_000` secondes, bornes incluses.
 
-L'API d'entraînement publique permet de lister les checkpoints. Elle permet de
-télécharger un checkpoint interactif lorsque l'équipe dispose de l'autorisation
-de télécharger les poids. Le SDK prend aussi en charge des méthodes
-de suppression, de publication, de rétention et d'utilisation du stockage des
-checkpoints. Ce sont des opérations SDK, et non des routes publiques de l'API
-d'entraînement. Ne construisez pas
-de requêtes vers l'adaptateur et ne supposez pas une durée de rétention non
-documentée.
+L'API d'entraînement publique enregistre l'état d'entraînement via
+[`save-weights`](/fr/api-reference/training-jobs/interactive/save-weights) et
+les poids d'échantillonnage via
+[`save-weights-for-sampler`](/fr/api-reference/training-jobs/interactive/save-sampler-weights).
+Les routes directes de chargement et d'échantillonnage acceptent un nom de
+checkpoint ou le chemin `tinker://` du même job. L'échantillonnage reste
+disponible après l'arrêt du job. Les routes partagées de liste et de
+téléchargement couvrent les checkpoints interactifs. Le téléchargement exige
+toujours l'autorisation de téléchargement des poids. Tinker fournit des méthodes
+SDK équivalentes. Ne construisez pas de routes enfants privées de compatibilité
+et ne supposez pas une durée de rétention non documentée.
 
 ## 6. Vérifier la poursuite
 
@@ -158,7 +164,7 @@ Avant d'augmenter la taille du workload repris :
 5. Enregistrez un nouveau checkpoint d'état sous un nouveau nom.
 6. Conservez l'enregistrement de boucle suivant.
 
-Utilisez le SDK pour toutes les opérations interactives sur le modèle.
+Utilisez les routes JSON natives ou le SDK Tinker pris en charge pour les opérations interactives sur le modèle.
 
 ## Diagnostiquer les erreurs de récupération
 

@@ -1,0 +1,12 @@
+---
+title: "Optimizer-Schritt einreihen"
+sidebarTitle: "Optimizer-Schritt"
+description: "Reihen Sie einen Optimizer-Schritt über die native interaktive Training API ein."
+api: "POST /v1/training/jobs/{job_id}/optim-step"
+---
+
+`POST /v1/training/jobs/{job_id}/optim-step`
+
+Stellt einen Optimizer-Schritt für die akkumulierten Gradienten in die Warteschlange und gibt eine `future_id` zurück. Der Anfragetext ist optional. Fragen Sie [Future abrufen](/de/api-reference/training-jobs/interactive/get-future) bis zu einem terminalen Status ab.
+
+Den gesamten Lebenszyklus beschreibt [die benutzerdefinierte Trainingsschleife](/de/training/training-loop).

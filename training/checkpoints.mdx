@@ -5,7 +5,8 @@ description: "Save interactive-job state and application progress, then recover 
 
 A state checkpoint protects server-side training state. A complete recovery
 record also protects the user-owned state that tells your controller what to do
-next.
+next. Native JSON clients use the public checkpoint operations. Tinker clients
+use the matching SDK methods.
 
 ## What to save
 
@@ -82,7 +83,10 @@ Compare the record with the source checkpoint and requested continuation:
 Stop for an explicit decision if these fields conflict. Do not silently combine
 a checkpoint with a different experiment.
 
-Then use the SDK's supported state-load flow:
+Native clients create a new job with `from_checkpoint`, or send a state name or
+the same job's `tinker://` path to
+[`load-weights`](/api-reference/training-jobs/interactive/load-weights).
+Tinker clients use the supported state-load flow:
 
 ```python
 training_client = (
@@ -97,7 +101,7 @@ This factory creates a new interactive job, then loads the source checkpoint's
 weights and optimizer state into it. The resumed job ID normally differs from
 the source job ID. Record `source_job_id`, `state_path`, and `resumed_job_id` as
 application-owned lineage. Do not reject a continuation because the two job IDs
-differ. Do not construct the adapter request directly.
+differ. Do not construct private compatibility child routes.
 
 ## 4. Make the boundary recoverable
 
@@ -132,11 +136,16 @@ automatic expiration. Live checkpoints count toward checkpoint storage. To
 enable automatic cleanup, pass an inclusive value from `3_600` to
 `315_360_000` seconds (1 hour to 10 years).
 
-The public Training API can list checkpoints. It can download an interactive
-checkpoint when the team has weight-download access. The SDK also supports
-checkpoint deletion, publication, retention, and
-storage-usage methods. These are SDK operations, not public Training API routes.
-Do not construct adapter requests or assume an undocumented retention period.
+The public Training API saves training state through
+[`save-weights`](/api-reference/training-jobs/interactive/save-weights) and
+sampling weights through
+[`save-weights-for-sampler`](/api-reference/training-jobs/interactive/save-sampler-weights).
+The direct load and sample routes accept a checkpoint name or the same job's
+`tinker://` path. Sampling remains available after the job is stopped. The
+shared list and download routes cover interactive checkpoints, and download
+still requires weight-download access. Tinker provides matching SDK methods.
+Do not construct private compatibility child routes or assume an undocumented
+retention period.
 
 ## 6. Verify the continuation
 
@@ -151,13 +160,14 @@ Before scaling the resumed workload:
 5. Save a new state checkpoint under a new name.
 6. Persist the next loop record.
 
-Use the SDK for all interactive model operations.
+Use either the native JSON operations or the supported Tinker SDK for
+interactive model operations.
 
 ## Diagnose recovery errors
 
 | Symptom | Check |
 | --- | --- |
-| A future fails | Record the job ID and operation result. Do not advance dependent application state |
+| A future fails | Record the job ID and future result. Do not advance dependent application state |
 | A checkpoint cannot be loaded | Verify its job, checkpoint kind, and client-owned recovery record |
 | Source checkpoint is rejected | Confirm its source job, checkpoint kind, and persisted `state_path`; do not require the new job ID to equal the source ID |
 | Resumed job lookup fails | Confirm that the ID came from the resumed client's `get_info().model_id` and that the same Fastino team is authenticated |

@@ -1,0 +1,12 @@
+---
+title: "Échantillonner depuis une tâche interactive"
+sidebarTitle: "Échantillonner"
+description: "Échantillonnez depuis une tâche interactive avec l'API d'entraînement native."
+api: "POST /v1/training/jobs/{job_id}/sample"
+---
+
+`POST /v1/training/jobs/{job_id}/sample`
+
+Met en attente un échantillonnage depuis `checkpoint` et renvoie un `future_id`. Utilisez le nom d'un checkpoint d'échantillonnage ou le chemin `tinker://<job_id>/sampler_weights/<name>` de cette même tâche. L'échantillonnage reste disponible après l'arrêt de la tâche interactive. Interrogez [Obtenir une future](/fr/api-reference/training-jobs/interactive/get-future) jusqu'à un état terminal.
+
+Consultez [la boucle d'entraînement personnalisée](/fr/training/training-loop) pour le cycle de vie complet.
