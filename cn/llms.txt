@@ -122,19 +122,19 @@
 - [获取训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/get.md): 通过规范的 Fastino 任务 ID 获取配置训练任务或交互式训练任务。
 - [更新训练任务的项目](https://docs.fastino.ai/cn/api-reference/training-jobs/update-project.md): 调用 PATCH /v1/training/jobs/{job_id}，将训练任务分配到项目，或发送 null 取消分配。相关的部署和推理记录保持不变。
 - [删除训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/delete.md): 调用 DELETE /v1/training/jobs/{job_id}，永久删除训练任务及其检查点和存储的工件；如果任务处于活动状态，会先将其停止。
-- [重命名训练后的模型](https://docs.fastino.ai/cn/api-reference/training-jobs/update-model-name.md): 通过 PATCH /v1/training/jobs/{job_id}/model-name 重命名训练模型，名称限 1–64 个字母、数字、连字符或下划线。
+- [停止训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/stop.md): 停止运行中的 Fastino 训练任务并保留停止前创建的检查点。JSON 请求体为可选，可附带停止原因、数值指标和检查点路径。
+- [终止训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/terminate.md): 停止活动的 config 训练任务并请求提供方取消。默认保留现有检查点和工件，设置 delete_checkpoints 会在取消后永久删除它们。
+- [同步训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/sync.md): 调用 POST /v1/training/jobs/{job_id}/sync 并传入训练任务 ID，从训练提供方刷新该训练任务的状态。
 - [获取训练日志](https://docs.fastino.ai/cn/api-reference/training-jobs/logs.md): 获取 Fastino 训练任务结构化的 stdout 和 stderr 日志条目快照。该端点不流式传输，需轮询以跟随运行中的任务。
 - [获取训练任务的计费信息](https://docs.fastino.ai/cn/api-reference/training-jobs/billing.md): 通过 GET /v1/training/jobs/{job_id}/billing 查询 Fastino 训练任务是否已计费，以及费用金额和 GPU 分钟数。
 - [列出训练检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/checkpoints.md): 列出配置或交互式训练任务的检查点。交互式任务还返回 run_id，下载时传入 checkpoint_id，而不是配置检查点的 id。
 - [下载交互式检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/download-checkpoint.md): 获取交互式训练任务中某个检查点的短时有效签名下载 URL。该 URL 在 15 分钟后过期，此操作需要团队的权重下载权限。
 - [部署训练检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/deploy-checkpoint.md): 使用列表端点返回的检查点 ID，将 Fastino 训练任务中一个可部署的检查点部署到托管的多模型推理端点。
 - [列出训练任务的部署](https://docs.fastino.ai/cn/api-reference/training-jobs/deployments.md): 调用 GET /v1/training/jobs/{job_id}/deployments 并传入任务 ID，列出由训练任务创建或与其关联的部署。
+- [重命名训练后的模型](https://docs.fastino.ai/cn/api-reference/training-jobs/update-model-name.md): 通过 PATCH /v1/training/jobs/{job_id}/model-name 重命名训练模型，名称限 1–64 个字母、数字、连字符或下划线。
 - [下载训练后的权重](https://docs.fastino.ai/cn/api-reference/training-jobs/download.md): 调用 GET /v1/training/jobs/{job_id}/download，获取训练工件的临时预签名下载 URL、有效期和建议的文件名。
 - [将训练模型推送到 Hugging Face Hub](https://docs.fastino.ai/cn/api-reference/training-jobs/push-to-hub.md): 调用 push-to-hub 端点，将训练模型推送到 Hugging Face Hub。请求参数、响应架构和认证要求以 OpenAPI 规范为准。
-- [停止训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/stop.md): 停止运行中的 Fastino 训练任务并保留停止前创建的检查点。JSON 请求体为可选，可附带停止原因、数值指标和检查点路径。
-- [终止训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/terminate.md): 停止活动的 config 训练任务并请求提供方取消。默认保留现有检查点和工件，设置 delete_checkpoints 会在取消后永久删除它们。
-- [同步训练任务](https://docs.fastino.ai/cn/api-reference/training-jobs/sync.md): 调用 POST /v1/training/jobs/{job_id}/sync 并传入训练任务 ID，从训练提供方刷新该训练任务的状态。
-- [创建交互式模型](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/create-model.md): 通过 base_model 创建交互式 LoRA 作业，或使用可选的 load_optimizer 从 from_checkpoint 恢复。响应返回 job_id 和 future_id。
+- [创建交互式模型](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/create-model.md): 通过 base_model 创建交互式 LoRA 训练作业，或从已保存的 from_checkpoint 恢复；作业在 create future 完成后就绪。
 - [排队前向操作](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/forward.md): 在交互式训练作业上排队一次不计算梯度的前向传播，然后轮询返回的 future_id，直到状态为 completed、failed 或 cancelled。
 - [排队前向-反向操作](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/forward-backward.md): 在交互式训练作业上排队一次累积梯度的前向-反向传播，然后轮询返回的 future_id，直到其达到终态。
 - [排队优化器步骤](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/optim-step.md): 在交互式训练作业上基于累积梯度排队一次优化器步骤。请求体是可选的，响应返回一个可供轮询的 future_id。
@@ -144,7 +144,7 @@
 - [保存采样器权重](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/save-weights-for-sampler.md): 将交互式作业的 LoRA 权重以指定名称保存，用于采样和 PEFT 下载。响应包含 future_id、检查点 ID 和 tinker:// 路径。
 - [加载训练权重](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/load-weights.md): 从状态名称或此作业的 tinker:// 路径向交互式作业排队加载。设置 optimizer 可恢复优化器状态，然后轮询 future_id。
 - [从交互式作业采样](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/sample.md): 从采样器检查点名称或此作业的 tinker:// 路径排队采样并获取 future_id。交互式作业停止后仍可采样。
-- [部署交互式任务检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/deploy-checkpoint.md): 调用 POST /v1/training/jobs/{job_id}/checkpoints/sampler_weights/{name}/deploy，将 sampler 检查点作为训练好的模型提供服务。
+- [部署交互式任务检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/deploy-checkpoint.md): 将交互式任务的 sampler 检查点部署为训练好的模型，再通过 POST /v1/chat/completions 调用。
 - [获取交互式检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/get-checkpoint.md): 按 kind 和 name 返回交互式训练作业中的一个检查点，其中 kind 为 weights 或 sampler_weights。
 - [删除交互式检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/delete-checkpoint.md): 从交互式训练作业中删除 weights 或 sampler_weights 检查点。操作同步完成，且没有响应体。
 - [发布交互式检查点](https://docs.fastino.ai/cn/api-reference/training-jobs/interactive/publish-checkpoint.md): 发布交互式训练作业中的 weights 或 sampler_weights 检查点。发布并不会授予其他团队加载该检查点的权限。
