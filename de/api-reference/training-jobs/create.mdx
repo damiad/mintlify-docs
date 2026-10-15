@@ -42,7 +42,7 @@ Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
 </ParamField>
 
 <ParamField body="base_model" type="string" required>
-  Eine trainierbare Encoder-ID aus `GET /v1/base-models?supports_training=true` oder eine unterstützte Checkpoint-UUID. Der ausgewählte `training_type` muss eine kompatible Dispatch-Route haben. Ein Decoder-Basismodell gibt `400` zurück.
+  Eine trainierbare Encoder-ID aus `GET /v1/base-models?supports_training=true`. Der ausgewählte `training_type` muss eine kompatible Dispatch-Route haben. Checkpoint-UUIDs und Decoder-Basismodelle geben `400` zurück.
 </ParamField>
 
 <ParamField body="datasets" type="object[]" required>
@@ -103,19 +103,19 @@ Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
   </ParamField>
 
   <ParamField body="warmup_ratio" type="number">
-    Warmup-Anteil von `0` bis `1`. `warmup_steps` hat Vorrang.
+    Warmup-Anteil von `0` bis `1`. Verwenden Sie dieses Feld für GLiNER-Jobs.
   </ParamField>
 
   <ParamField body="warmup_steps" type="integer">
-    Absolute Anzahl an Warmup-Schritten von `1` bis `2147483647`.
+    Absolute Anzahl an Warmup-Schritten von `1` bis `2147483647`. GLiNER-Jobs lehnen dieses Feld mit `422 unsupported_encoder_scheduling` ab; verwenden Sie `warmup_ratio`.
   </ParamField>
 
-  <ParamField body="lr_scheduler_type" type="string" default="cosine">
-    Zeitplan für die Lernrate: `constant`, `linear` oder `cosine`.
+  <ParamField body="lr_scheduler_type" type="string">
+    Zeitplan für die Lernrate: `constant`, `linear` oder `cosine`. Ohne dieses Feld verwendet GLiNER `linear`; nur ein expliziter Wert wird weitergegeben.
   </ParamField>
 
-  <ParamField body="weight_decay" type="number" default="0.01">
-    Nicht-negativer AdamW-Weight-Decay.
+  <ParamField body="weight_decay" type="number">
+    Wird aus Kompatibilitätsgründen akzeptiert, aber nicht an das GLiNER-Training weitergegeben. GLiNER verwendet den Container-Standardwert `0.01`.
   </ParamField>
 
   <ParamField body="early_stopping_patience" type="integer" default="3">
@@ -197,7 +197,7 @@ curl -X POST https://api.fastino.ai/v1/training/jobs \
   -H "Content-Type: application/json" \
   -d '{
     "model_name": "my-model-name",
-    "base_model": "fastino/gliner2-multi-v1",
+    "base_model": "fastino/gliner2-base-v1",
     "datasets": [{"name": "my-ready-dataset"}],
     "training_type": "lora",
     "nr_epochs": 5,
@@ -219,7 +219,7 @@ Gibt `200` mit dem vollständigen Trainings-Job-Datensatz zurück, einschließli
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
   "type": "config",
   "model_name": "my-model-name",
-  "base_model": "fastino/gliner2-multi-v1",
+  "base_model": "fastino/gliner2-base-v1",
   "status": "requested",
   "training_type": "lora",
   "nr_epochs": 5,
@@ -248,7 +248,12 @@ Ein Decoder-Basismodell gibt `400` zurück:
 
 ```json
 {
-  "detail": "Decoder training on this route is retired: 'Qwen/Qwen3.6-35B-A3B' cannot be trained here. Train decoders step by step with the training job routes under /v1/training/jobs (see https://docs.fastino.ai/training/quickstart)."
+  "error": {
+    "message": "Decoder training on this route is retired: 'Qwen/Qwen3.6-35B-A3B' cannot be trained here. Train decoders step by step with the training job routes under /v1/training/jobs (see https://docs.fastino.ai/training/quickstart).",
+    "type": "invalid_request_error",
+    "param": null,
+    "code": null
+  }
 }
 ```
 
