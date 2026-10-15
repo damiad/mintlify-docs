@@ -1,6 +1,6 @@
 ---
 title: "Démarrage rapide"
-description: "Exécutez une inférence sur Fastino. Ce guide vous présente le moyen le plus rapide d'obtenir une intégration Fastino fonctionnelle."
+description: "Effectuez votre premier appel d'inférence GLiDE et créez un job d'entraînement de décodeur sur Fastino."
 sidebarTitle: "Démarrage rapide"
 ---
 
@@ -167,6 +167,26 @@ Voici à quoi ressemble une réponse réussie :
 
   Pour les modèles encodeurs (GLiNER), l'objet `schema` définit la tâche et peut inclure `entities`, `classifications`, `structures` et `relations`. Pour les modèles décodeurs (LLM), omettez `schema` et envoyez un message de chat classique. Consultez l'[API d'inférence](/fr/inference/chat-completions) pour le contrat complet, des exemples Python/JavaScript et les codes d'erreur.
 </Accordion>
+
+## Créer un job d'entraînement de décodeur
+
+Créez un job LoRA interactif lorsque votre application contrôle l'entraînement
+du décodeur étape par étape :
+
+```bash
+curl -X POST "https://api.fastino.ai/v1/training/jobs/create-model" \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "base_model": "Qwen/Qwen3.6-35B-A3B",
+    "lora_config": {"rank": 32}
+  }'
+```
+
+La réponse contient le `job_id` et son `future_id` de création. Poursuivez avec
+le [démarrage rapide de l'API d'entraînement](/fr/training/quickstart) pour
+exécuter les opérations forward-backward et d'optimisation, puis enregistrer un
+checkpoint.
 
 ## Étapes suivantes
 

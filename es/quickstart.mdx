@@ -1,6 +1,6 @@
 ---
 title: "Guía rápida"
-description: "Ejecuta inferencia en Fastino. Esta guía te muestra el camino más rápido hacia una integración de Fastino que funcione."
+description: "Realiza tu primera llamada de inferencia con GLiDE y crea un trabajo de entrenamiento de decodificador en Fastino."
 sidebarTitle: "Guía rápida"
 ---
 
@@ -167,6 +167,25 @@ Una respuesta correcta tiene este aspecto:
 
   Para modelos encoder (GLiNER), el objeto `schema` define la tarea y puede incluir `entities`, `classifications`, `structures` y `relations`. Para modelos decoder (LLM), omite `schema` y envía un mensaje de chat normal. Consulta la [API de inferencia](/es/inference/chat-completions) para ver el contrato completo, ejemplos en Python/JavaScript y los códigos de error.
 </Accordion>
+
+## Crea un trabajo de entrenamiento de decodificador
+
+Crea un trabajo LoRA interactivo cuando tu aplicación controle el entrenamiento
+del decodificador paso a paso:
+
+```bash
+curl -X POST "https://api.fastino.ai/v1/training/jobs/create-model" \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "base_model": "Qwen/Qwen3.6-35B-A3B",
+    "lora_config": {"rank": 32}
+  }'
+```
+
+La respuesta contiene el `job_id` y su `future_id` de creación. Continúa con la
+[guía rápida de la API de entrenamiento](/es/training/quickstart) para ejecutar
+operaciones forward-backward y del optimizador y guardar un checkpoint.
 
 ## Próximos pasos
 
