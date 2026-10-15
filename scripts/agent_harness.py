@@ -59,7 +59,8 @@ REQUIRED_DISCOVERY_LINKS = {
     "GLiNER inference": "/inference/chat-completions.md",
     "datasets": "/concepts/datasets.md",
     "training": "/training.md",
-    "training quickstart": "/training/quickstart.md",
+    "encoder quickstart": "/training/encoder-quickstart.md",
+    "decoder quickstart": "/training/decoder-quickstart.md",
     "Tinker migration": "/training/migrate-from-tinker.md",
     "training loop": "/training/training-loop.md",
     "verifiable rewards": "/training/verifiable-rewards.md",
@@ -90,7 +91,8 @@ JOURNEY_PAGES = (
     "inference/systemone.mdx",
     "inference/chat-completions.mdx",
     "training.mdx",
-    "training/quickstart.mdx",
+    "training/encoder-quickstart.mdx",
+    "training/decoder-quickstart.mdx",
     "training/migrate-from-tinker.mdx",
     "training/training-loop.mdx",
     "training/verifiable-rewards.mdx",
@@ -110,7 +112,8 @@ COOKBOOK_ENDPOINTS = {
 }
 TRAINING_NAVIGATION = [
     "training",
-    "training/quickstart",
+    "training/encoder-quickstart",
+    "training/decoder-quickstart",
     "training/migrate-from-tinker",
     "concepts/datasets",
     "guides/fine-tune-gliner",
@@ -127,7 +130,8 @@ TRAINING_NAVIGATION = [
 ]
 TRAINING_SIDEBAR_TITLES = {
     "training": "Overview",
-    "training/quickstart": "Quickstart",
+    "training/encoder-quickstart": "Encoder Quickstart",
+    "training/decoder-quickstart": "Decoder Quickstart",
     "training/migrate-from-tinker": "Migrate from Tinker",
     "concepts/datasets": "Datasets",
     "guides/fine-tune-gliner": "Fine-tune GLiNER",

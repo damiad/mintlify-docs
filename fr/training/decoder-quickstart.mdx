@@ -1,14 +1,15 @@
 ---
-title: "Démarrage rapide de l'API d'entraînement"
-sidebarTitle: "Démarrage rapide"
-description: "Lancez un job d'entraînement géré ou une boucle d'entraînement contrôlée par l'application, puis vérifiez son ID de job canonique."
+title: "Démarrage rapide du décodeur"
+sidebarTitle: "Démarrage rapide du décodeur"
+description: "Lancez une boucle d'entraînement contrôlée par l'application pour un LLM décodeur, puis vérifiez son ID de job canonique."
 ---
 
-Ce démarrage rapide couvre les deux voies de l'API d'entraînement. Utilisez
-l'entraînement géré pour fine-tuner un encodeur GLiNER pendant que Fastino
-exécute la boucle. Utilisez une boucle d'entraînement personnalisée pour
-entraîner un LLM décodeur lorsque votre application doit contrôler
-l'échantillonnage, les récompenses et les mises à jour du modèle.
+Utilisez une boucle d'entraînement personnalisée pour entraîner un LLM décodeur
+Nemotron ou Qwen lorsque votre application doit contrôler l'échantillonnage, les
+récompenses et les mises à jour du modèle.
+
+Pour fine-tuner un encodeur GLiNER avec l'entraînement géré, consultez le
+[démarrage rapide de l'encodeur](/fr/training/encoder-quickstart).
 
 ## 1. S'authentifier
 
@@ -34,76 +35,6 @@ Envoyez cette clé sous la forme `X-API-Key: $FASTINO_API_KEY`. Consultez
 [Authentification](/fr/authentication) pour le contrat d'authentification
 complet.
 
-## 2. Choisir une voie
-
-| Objectif | Voie |
-| --- | --- |
-| Fine-tuner un encodeur GLiNER à partir d'un dataset et laisser Fastino exécuter l'entraînement | [Entraînement géré](#managed-training) |
-| Entraîner un LLM décodeur et contrôler l'échantillonnage, les récompenses et les mises à jour dans votre application | [Boucle d'entraînement personnalisée](#custom-training-loop) |
-
-<span id="managed-training" />
-
-## Entraînement géré
-
-### 3. Préparer un dataset
-
-[Importez et traitez un dataset d'entraînement](/fr/concepts/datasets), puis
-attendez que sa version soit `ready`.
-
-### 4. Choisir un modèle
-
-L'entraînement géré prend en charge `fastino/gliner2-multi-v1` et
-`fastino/GLiNER-2.5-Decide`. Interrogez le catalogue actif avant la soumission :
-
-```bash
-curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-Conservez l'ID du modèle sélectionné.
-
-### 5. Créer le job
-
-```bash
-curl -X POST "https://api.fastino.ai/v1/training/jobs" \
-  -H "X-API-Key: $FASTINO_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: $(uuidgen)" \
-  -d '{
-    "model_name": "my-trained-model",
-    "base_model": "MODEL_ID_FROM_CATALOG",
-    "datasets": [
-      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
-    ],
-    "training_type": "lora"
-  }'
-```
-
-Conservez l'`id` renvoyé. Il s'agit du `job_id` utilisé par chaque route propre
-à un job. Réutilisez la même valeur `Idempotency-Key` uniquement lorsque vous
-réessayez exactement cette requête de création.
-
-### 6. Interroger le job
-
-```bash
-curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-Pour les jobs de configuration :
-
-- `status` est la valeur persistée du cycle de vie, telle que `errored`.
-- `normalized_status` est la valeur stable d'interrogation, telle que `failed`.
-- `is_terminal_status` indique à votre client quand arrêter les interrogations.
-- `error_message` décrit un échec lorsque cette information est disponible.
-
-Continuez jusqu'à ce que `is_terminal_status` soit `true`, puis examinez le
-statut final, les checkpoints, les logs et l'admissibilité au déploiement.
-
-<span id="custom-training-loop" />
-
-## Boucle d'entraînement personnalisée
-
 Choisissez une interface prise en charge :
 
 - Les clients JSON natifs appellent
@@ -117,42 +48,14 @@ Choisissez une interface prise en charge :
 Les clients natifs n'envoient ni `seq_id` ni signal de présence. Le serveur
 attribue l'ordre des opérations et maintient la session interne active. Une
 requête avec `wait=true` attend au maximum 25 secondes. Le client doit donc
-continuer à interroger un future non final. Consultez
-[Construire une boucle d'entraînement personnalisée](/fr/training/training-loop)
-pour la séquence des routes natives.
-
-### Voie JSON native
-
-1. Appelez
-   [`POST /v1/training/jobs/create-model`](/fr/api-reference/training-jobs/interactive/create-model)
-   avec `base_model`, ou avec `from_checkpoint` et `load_optimizer`.
-2. Interrogez le `future_id` de création via
-   [Obtenir un future](/fr/api-reference/training-jobs/interactive/get-future)
-   jusqu'à l'état `completed`, `failed` ou `cancelled`.
-3. Mettez en file
-   [forward-backward](/fr/api-reference/training-jobs/interactive/forward-backward)
-   et interrogez son `future_id` jusqu'à ce qu'il se termine avec succès. Mettez
-   ensuite seulement en file
-   [une étape d'optimiseur](/fr/api-reference/training-jobs/interactive/optim-step)
-   et interrogez ce future jusqu'à un état final.
-4. [Enregistrez les poids du sampler](/fr/api-reference/training-jobs/interactive/save-weights-for-sampler)
-   et interrogez le future d'enregistrement jusqu'à un état final.
-5. Arrêtez le job via
-   [l'opération d'arrêt partagée](/fr/api-reference/training-jobs/stop).
-6. [Échantillonnez depuis le checkpoint enregistré](/fr/api-reference/training-jobs/interactive/sample)
-   après l'arrêt, puis interrogez le future d'échantillonnage jusqu'à un état
-   final.
-
-Seul un future d'échantillonnage en file ou en cours peut être annulé. Un refus
-HTTP signifie que le serveur n'a pas mis l'appel en file. Un future en file peut
-en revanche se terminer avec `status: "failed"`.
-
-### Voie REST native
+continuer à interroger une opération non finale. Après ce démarrage rapide,
+consultez [Construire une boucle d'entraînement personnalisée](/fr/training/training-loop)
+pour ajouter des récompenses, des rollouts répétés et la récupération.
 
 L'exemple REST natif nécessite Python 3.11 ou une version ultérieure. Pour
 configurer le SDK Tinker, consultez [Migrer depuis Tinker](/fr/training/migrate-from-tinker).
 
-### 3. Installer les bibliothèques clientes
+## 2. Installer les bibliothèques clientes
 
 Python 3.11 ou une version ultérieure est requis. `transformers` fournit le
 tokenizer du modèle ; l'entraînement lui-même s'exécute sur Fastino.
@@ -182,7 +85,7 @@ pip install requests transformers
 
 </CodeGroup>
 
-### 4. Choisir un modèle
+## 3. Choisir un modèle
 
 | ID du modèle | Longueur de contexte (tokens) |
 | --- | --- |
@@ -204,7 +107,7 @@ $env:FASTINO_TRAINING_MODEL = "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16"
 
 </CodeGroup>
 
-### 5. Créer le job
+## 4. Créer le job
 
 ```bash
 curl -X POST "https://api.fastino.ai/v1/training/jobs/create-model" \
@@ -235,7 +138,7 @@ curl "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/futures/$FUTURE_I
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 
-### 6. Entraîner, enregistrer et échantillonner
+## 5. Entraîner, enregistrer et échantillonner
 
 Le script ci-dessous exécute toute la boucle : il crée un job, exécute trois
 passes forward-backward et étapes d'optimiseur, enregistre un checkpoint
@@ -341,7 +244,7 @@ finally:
 ```
 
 Le script attend la réussite de la passe forward-backward avant d'envoyer
-l'étape d'optimiseur. Si l'un des futures échoue ou est annulé, `wait` lève une
+l'étape d'optimiseur. Si une future échoue ou est annulée, `wait` lève une
 erreur et l'opération dépendante n'est pas envoyée.
 
 `enable_thinking=False` ferme le bloc de raisonnement du modèle avant le début
@@ -364,7 +267,7 @@ Copiez la valeur affichée après `TRAINING_JOB_ID=`.
   sampler.
 </Note>
 
-### 7. Vérifier le job canonique
+## 6. Vérifier le job canonique
 
 <CodeGroup>
 
@@ -391,8 +294,8 @@ l'API canonique des jobs pour les lectures documentées.
 ## Continuer
 
 <CardGroup cols={3}>
-  <Card title="Jeux de données" icon="database" href="/fr/concepts/datasets">
-    Préparez et validez des données d'entraînement GLiNER.
+  <Card title="Démarrage rapide de l'encodeur" icon="database" href="/fr/training/encoder-quickstart">
+    Fine-tunez un encodeur GLiNER avec l'entraînement géré.
   </Card>
   <Card title="Référence des jobs interactifs" icon="book" href="/fr/api-reference/training-jobs/interactive/create-model">
     Consultez chaque requête et réponse des jobs interactifs.

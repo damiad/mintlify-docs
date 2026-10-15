@@ -1,13 +1,12 @@
 ---
-title: "Training API quickstart"
-sidebarTitle: "Quickstart"
-description: "Start a managed training job or an application-controlled training loop, then verify its canonical job ID."
+title: "Decoder Quickstart"
+sidebarTitle: "Decoder Quickstart"
+description: "Train a Nemotron or Qwen decoder LLM with the native REST interactive training loop."
 ---
 
-This quickstart covers both Training API paths. Use managed training to
-fine-tune a GLiNER encoder while Fastino runs the loop. Use a custom training
-loop to train a decoder LLM when your application must control sampling,
-rewards, and model updates.
+This quickstart trains a decoder LLM when your application must control
+sampling, rewards, and model updates. To fine-tune a GLiNER encoder with a
+managed config job, use the [Encoder Quickstart](/training/encoder-quickstart).
 
 ## 1. Authenticate
 
@@ -32,71 +31,6 @@ $env:FASTINO_API_KEY = "fast_sk_..."
 Send this key as `X-API-Key: $FASTINO_API_KEY`. See
 [Authentication](/authentication) for the complete authentication contract.
 
-## 2. Choose a path
-
-| Goal | Path |
-| --- | --- |
-| Fine-tune a GLiNER encoder from a dataset and let Fastino run training | [Managed training](#managed-training) |
-| Train a decoder LLM and control sampling, rewards, and updates in your application | [Custom training loop](#custom-training-loop) |
-
-## Managed training
-
-### 3. Prepare a dataset
-
-[Upload and process a training dataset](/concepts/datasets), then wait until its
-version is `ready`.
-
-### 4. Choose a model
-
-Managed training supports `fastino/gliner2-multi-v1` and
-`fastino/GLiNER-2.5-Decide`. Query the live catalog before submission:
-
-```bash
-curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-Save the selected model ID.
-
-### 5. Create the job
-
-```bash
-curl -X POST "https://api.fastino.ai/v1/training/jobs" \
-  -H "X-API-Key: $FASTINO_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: $(uuidgen)" \
-  -d '{
-    "model_name": "my-trained-model",
-    "base_model": "MODEL_ID_FROM_CATALOG",
-    "datasets": [
-      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
-    ],
-    "training_type": "lora"
-  }'
-```
-
-Save the returned `id`. It is the `job_id` used by every job-specific route.
-Reuse the same `Idempotency-Key` only when retrying this exact create request.
-
-### 6. Poll the job
-
-```bash
-curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-For config jobs:
-
-- `status` is the persisted lifecycle value, such as `errored`.
-- `normalized_status` is the stable polling value, such as `failed`.
-- `is_terminal_status` tells your client when to stop polling.
-- `error_message` describes a failure when available.
-
-Continue until `is_terminal_status` is `true`, then inspect the final status,
-checkpoints, logs, and deployment eligibility.
-
-## Custom training loop
-
 Choose one supported interface:
 
 - Native JSON clients call
@@ -110,38 +44,9 @@ Native clients send no `seq_id` and no heartbeat. The server assigns operation
 ordering and keeps the internal session alive. A request with `wait=true` waits
 for at most 25 seconds, so a client must continue polling a nonterminal
 future. Follow [Build a custom training loop](/training/training-loop) for
-the native route sequence.
+rewards, repeated rollouts, and recovery after this quickstart.
 
-### Native JSON path
-
-1. Call
-   [`POST /v1/training/jobs/create-model`](/api-reference/training-jobs/interactive/create-model)
-   with `base_model`, or with `from_checkpoint` and `load_optimizer`.
-2. Poll the returned create `future_id` through
-   [Get a future](/api-reference/training-jobs/interactive/get-future)
-   until `completed`, `failed`, or `cancelled`.
-3. Queue
-   [forward-backward](/api-reference/training-jobs/interactive/forward-backward)
-   and poll its `future_id` until it completes successfully. Only then queue
-   [an optimizer step](/api-reference/training-jobs/interactive/optim-step)
-   and poll that future to a terminal status.
-4. [Save sampler weights](/api-reference/training-jobs/interactive/save-weights-for-sampler)
-   and poll the save future to a terminal status.
-5. Stop the job through the shared
-   [stop operation](/api-reference/training-jobs/stop).
-6. [Sample from the saved checkpoint](/api-reference/training-jobs/interactive/sample)
-   after stop, then poll the sample future to a terminal status.
-
-Only a queued or running sample future can be cancelled. An HTTP rejection
-means that the server did not queue the call. A queued future can
-instead finish with `status: "failed"`.
-
-### Native REST path
-
-The native REST example requires Python 3.11 or later. For Tinker SDK setup,
-see [Migrate from Tinker](/training/migrate-from-tinker).
-
-### 3. Install the client libraries
+## 2. Install the client libraries
 
 You need Python 3.11 or later. `transformers` provides the model's tokenizer;
 the training itself runs on Fastino.
@@ -171,7 +76,7 @@ pip install requests transformers
 
 </CodeGroup>
 
-### 4. Choose a model
+## 3. Choose a model
 
 | Model ID | Context length |
 | --- | --- |
@@ -193,7 +98,7 @@ $env:FASTINO_TRAINING_MODEL = "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16"
 
 </CodeGroup>
 
-### 5. Create the job
+## 4. Create the job
 
 ```bash
 curl -X POST "https://api.fastino.ai/v1/training/jobs/create-model" \
@@ -223,7 +128,7 @@ curl "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/futures/$FUTURE_I
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 
-### 6. Train, save, and sample
+## 5. Train, save, and sample
 
 The script below runs the whole loop: create a job, run three
 forward-backward passes and optimizer steps, save a sampler checkpoint, sample
@@ -352,7 +257,7 @@ Copy the value printed after `TRAINING_JOB_ID=`.
   checkpoints.
 </Note>
 
-### 7. Verify the canonical job
+## 6. Verify the canonical job
 
 <CodeGroup>
 
@@ -379,8 +284,8 @@ use the canonical jobs API for documented job reads.
 ## Continue
 
 <CardGroup cols={3}>
-  <Card title="Datasets" icon="database" href="/concepts/datasets">
-    Prepare and validate GLiNER training data.
+  <Card title="Encoder Quickstart" icon="database" href="/training/encoder-quickstart">
+    Fine-tune a GLiNER encoder with a managed config job.
   </Card>
   <Card title="Interactive jobs reference" icon="book" href="/api-reference/training-jobs/interactive/create-model">
     Review every interactive-job request and response.

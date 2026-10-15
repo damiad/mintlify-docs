@@ -155,7 +155,8 @@
                 "expanded": true,
                 "pages": [
                   "training",
-                  "training/quickstart",
+                  "training/encoder-quickstart",
+                  "training/decoder-quickstart",
                   "training/migrate-from-tinker",
                   "concepts/datasets",
                   "guides/fine-tune-gliner",
@@ -503,7 +504,8 @@
                 "expanded": true,
                 "pages": [
                   "cn/training",
-                  "cn/training/quickstart",
+                  "cn/training/encoder-quickstart",
+                  "cn/training/decoder-quickstart",
                   "cn/training/migrate-from-tinker",
                   "cn/concepts/datasets",
                   "cn/guides/fine-tune-gliner",
@@ -851,7 +853,8 @@
                 "expanded": true,
                 "pages": [
                   "es/training",
-                  "es/training/quickstart",
+                  "es/training/encoder-quickstart",
+                  "es/training/decoder-quickstart",
                   "es/training/migrate-from-tinker",
                   "es/concepts/datasets",
                   "es/guides/fine-tune-gliner",
@@ -1199,7 +1202,8 @@
                 "expanded": true,
                 "pages": [
                   "fr/training",
-                  "fr/training/quickstart",
+                  "fr/training/encoder-quickstart",
+                  "fr/training/decoder-quickstart",
                   "fr/training/migrate-from-tinker",
                   "fr/concepts/datasets",
                   "fr/guides/fine-tune-gliner",
@@ -1547,7 +1551,8 @@
                 "expanded": true,
                 "pages": [
                   "de/training",
-                  "de/training/quickstart",
+                  "de/training/encoder-quickstart",
+                  "de/training/decoder-quickstart",
                   "de/training/migrate-from-tinker",
                   "de/concepts/datasets",
                   "de/guides/fine-tune-gliner",
@@ -1848,6 +1853,31 @@
     {
       "source": "/de/index",
       "destination": "/de/introduction",
+      "permanent": true
+    },
+    {
+      "source": "/training/quickstart",
+      "destination": "/training/decoder-quickstart",
+      "permanent": true
+    },
+    {
+      "source": "/cn/training/quickstart",
+      "destination": "/cn/training/decoder-quickstart",
+      "permanent": true
+    },
+    {
+      "source": "/es/training/quickstart",
+      "destination": "/es/training/decoder-quickstart",
+      "permanent": true
+    },
+    {
+      "source": "/fr/training/quickstart",
+      "destination": "/fr/training/decoder-quickstart",
+      "permanent": true
+    },
+    {
+      "source": "/de/training/quickstart",
+      "destination": "/de/training/decoder-quickstart",
       "permanent": true
     },
     {

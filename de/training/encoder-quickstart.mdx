@@ -1,0 +1,102 @@
+---
+title: "Encoder-Schnellstart"
+sidebarTitle: "Encoder-Schnellstart"
+description: "Starten Sie einen verwalteten Trainingsjob für einen GLiNER-Encoder und prüfen Sie anschließend seine kanonische Job-ID."
+---
+
+Dieser Schnellstart zeigt, wie Sie einen GLiNER-Encoder mit einem verwalteten
+Config-Job feinabstimmen, während Fastino den Trainingsloop ausführt. Um ein
+Nemotron- oder Qwen-Decoder-LLM mit einem anwendungsgesteuerten Trainingsloop
+zu trainieren, verwenden Sie den [Decoder-Schnellstart](/de/training/decoder-quickstart).
+
+## 1. Authentifizieren
+
+1. Erstellen Sie ein [Fastino-Konto](https://agent.fastino.ai/).
+2. Öffnen Sie [API-Schlüssel](https://agent.fastino.ai/api-keys).
+3. Erstellen Sie einen Schlüssel und kopieren Sie ihn, sobald er angezeigt wird.
+
+Speichern Sie den Schlüssel in einer Umgebungsvariable:
+
+<CodeGroup>
+
+```bash macOS/Linux
+export FASTINO_API_KEY="fast_sk_..."
+```
+
+```powershell Windows
+$env:FASTINO_API_KEY = "fast_sk_..."
+```
+
+</CodeGroup>
+
+Senden Sie diesen Schlüssel als `X-API-Key: $FASTINO_API_KEY`. Den vollständigen
+Authentifizierungsvertrag finden Sie unter
+[Authentifizierung](/de/authentication).
+
+## 2. Datensatz vorbereiten
+
+[Laden Sie einen Trainingsdatensatz hoch und verarbeiten Sie ihn](/de/concepts/datasets).
+Warten Sie anschließend, bis seine Version den Status `ready` hat.
+
+## 3. Modell auswählen
+
+Verwaltetes Training unterstützt `fastino/gliner2-multi-v1` und
+`fastino/GLiNER-2.5-Decide`. Fragen Sie vor der Übermittlung den Live-Katalog ab:
+
+```bash
+curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+Speichern Sie die ID des ausgewählten Modells.
+
+## 4. Job erstellen
+
+```bash
+curl -X POST "https://api.fastino.ai/v1/training/jobs" \
+  -H "X-API-Key: $FASTINO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $(uuidgen)" \
+  -d '{
+    "model_name": "my-trained-model",
+    "base_model": "MODEL_ID_FROM_CATALOG",
+    "datasets": [
+      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
+    ],
+    "training_type": "lora"
+  }'
+```
+
+Speichern Sie die zurückgegebene `id`. Sie ist die `job_id`, die von jeder
+jobspezifischen Route verwendet wird. Verwenden Sie denselben
+`Idempotency-Key` nur dann erneut, wenn Sie exakt diesen Erstellungsrequest
+wiederholen.
+
+## 5. Job abfragen
+
+```bash
+curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
+  -H "X-API-Key: $FASTINO_API_KEY"
+```
+
+Für Config-Jobs gilt:
+
+- `status` ist der gespeicherte Lebenszykluswert, beispielsweise `errored`.
+- `normalized_status` ist der stabile Polling-Wert, beispielsweise `failed`.
+- `is_terminal_status` zeigt Ihrem Client an, wann er das Polling beenden soll.
+- `error_message` beschreibt einen Fehler, sofern verfügbar.
+
+Fragen Sie den Job weiter ab, bis `is_terminal_status` den Wert `true` hat.
+Prüfen Sie anschließend den endgültigen Status, die Checkpoints, Logs und die
+Eignung für die Bereitstellung.
+
+## Weiter
+
+<CardGroup cols={2}>
+  <Card title="Datensätze" icon="database" href="/de/concepts/datasets">
+    GLiNER-Trainingsdaten vorbereiten und validieren.
+  </Card>
+  <Card title="Decoder-Schnellstart" icon="code" href="/de/training/decoder-quickstart">
+    Nemotron- und Qwen-Decoder mit einem anwendungsgesteuerten Loop trainieren.
+  </Card>
+</CardGroup>

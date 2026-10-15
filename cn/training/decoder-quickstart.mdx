@@ -1,11 +1,12 @@
 ---
-title: "训练 API 快速入门"
-sidebarTitle: "快速入门"
-description: "完成身份验证后选择路径：通过托管训练微调 GLiNER 编码器，或使用自定义训练循环训练解码器 LLM，由你的应用控制采样、奖励和更新。"
+title: "解码器快速入门"
+sidebarTitle: "解码器快速入门"
+description: "完成身份验证后，使用原生 REST 接口创建 Nemotron 或 Qwen 解码器任务，运行训练、保存和采样操作，然后验证规范任务 ID。"
 ---
 
-本快速入门涵盖训练 API 的两种路径。要微调 GLiNER 编码器并由 Fastino 运行循环，请使用托管训练。
-要训练解码器 LLM，且你的应用必须控制采样、奖励和模型更新时，请使用自定义训练循环。
+本快速入门介绍如何训练 Nemotron 或 Qwen 解码器 LLM，并在你的应用中控制采样、奖励和模型更新。
+要基于数据集微调 GLiNER 编码器并由 Fastino 运行训练，请参阅
+[编码器快速入门](/cn/training/encoder-quickstart)。
 
 ## 1. 身份验证
 
@@ -30,94 +31,20 @@ $env:FASTINO_API_KEY = "fast_sk_..."
 以 `X-API-Key: $FASTINO_API_KEY` 发送此密钥。完整的身份验证契约请参阅
 [身份验证](/cn/authentication)。
 
-## 2. 选择路径
-
-| 目标 | 路径 |
-| --- | --- |
-| 基于数据集微调 GLiNER 编码器，由 Fastino 运行训练 | [托管训练](#managed-training) |
-| 训练解码器 LLM，并在你的应用中控制采样、奖励和更新 | [自定义训练循环](#custom-training-loop) |
-
-<span id="managed-training" />
-
-## 托管训练
-
-### 3. 准备数据集
-
-[上传并处理训练数据集](/cn/concepts/datasets)，然后等待其版本变为 `ready`。
-
-### 4. 选择模型
-
-托管训练支持 `fastino/gliner2-multi-v1` 和 `fastino/GLiNER-2.5-Decide`。提交前查询实时目录：
-
-```bash
-curl "https://api.fastino.ai/v1/base-models?supports_training=true" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-保存所选模型的 ID。
-
-### 5. 创建任务
-
-```bash
-curl -X POST "https://api.fastino.ai/v1/training/jobs" \
-  -H "X-API-Key: $FASTINO_API_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Idempotency-Key: $(uuidgen)" \
-  -d '{
-    "model_name": "my-trained-model",
-    "base_model": "MODEL_ID_FROM_CATALOG",
-    "datasets": [
-      {"name": "my-ready-dataset", "version": "VERSION_NUMBER"}
-    ],
-    "training_type": "lora"
-  }'
-```
-
-保存返回的 `id`。它就是所有任务专属路由使用的 `job_id`。仅在重试完全相同的创建请求时复用同一个 `Idempotency-Key`。
-
-### 6. 轮询任务
-
-```bash
-curl "https://api.fastino.ai/v1/training/jobs/JOB_ID" \
-  -H "X-API-Key: $FASTINO_API_KEY"
-```
-
-对于配置任务：
-
-- `status` 是持久化的生命周期值，例如 `errored`。
-- `normalized_status` 是稳定的轮询值，例如 `failed`。
-- `is_terminal_status` 告知客户端何时停止轮询。
-- `error_message` 在可用时说明失败原因。
-
-继续轮询，直到 `is_terminal_status` 为 `true`，然后检查最终状态、检查点、日志和部署资格。
-
-<span id="custom-training-loop" />
-
-## 自定义训练循环
-
 选择一种受支持的接口：
 
-- 原生 JSON 客户端调用 [`POST /v1/training/jobs/create-model`](/cn/api-reference/training-jobs/interactive/create-model)，在 `/v1/training/jobs/{job_id}` 下排队模型操作，并轮询返回的每个 `future_id`，直到状态变为 `completed`、`failed` 或 `cancelled`。
-- 现有 Tinker 程序继续使用 `tinker==0.32.0`；SDK 设置请参阅[从 Tinker 迁移](/cn/training/migrate-from-tinker)。
+- 原生 JSON 客户端调用
+  [`POST /v1/training/jobs/create-model`](/cn/api-reference/training-jobs/interactive/create-model)，
+  在 `/v1/training/jobs/{job_id}` 下排队模型操作，并轮询返回的每个
+  `future_id`，直到状态变为 `completed`、`failed` 或 `cancelled`。
+- 现有 Tinker 程序保留 `tinker==0.32.0`；SDK 设置请参阅
+  [从 Tinker 迁移](/cn/training/migrate-from-tinker)。
 
-原生客户端不发送 `seq_id` 或心跳。服务器负责分配操作顺序并保持内部会话处于活动状态。带有 `wait=true` 的请求最多等待 25 秒，因此客户端必须继续轮询尚未结束的 future。原生路由顺序请参阅[构建自定义训练循环](/cn/training/training-loop)。
+原生客户端不发送 `seq_id` 或心跳。服务器分配操作顺序并保持内部会话处于活动状态。
+带有 `wait=true` 的请求最多等待 25 秒，因此客户端必须继续轮询未终止的操作。完成此快速入门后，
+请参阅[构建自定义训练循环](/cn/training/training-loop)以了解奖励、重复 rollout 和恢复。
 
-### 原生 JSON 路径
-
-1. 使用 `base_model`，或使用 `from_checkpoint` 和 `load_optimizer`，调用 [`POST /v1/training/jobs/create-model`](/cn/api-reference/training-jobs/interactive/create-model)。
-2. 通过[获取 future](/cn/api-reference/training-jobs/interactive/get-future)轮询返回的创建 `future_id`，直到状态变为 `completed`、`failed` 或 `cancelled`。
-3. 排队 [forward-backward](/cn/api-reference/training-jobs/interactive/forward-backward) 并轮询其 `future_id`，直到它成功完成。只有在此之后，才排队[优化器步骤](/cn/api-reference/training-jobs/interactive/optim-step)，并轮询该 future 直到其进入终止状态。
-4. [保存采样器权重](/cn/api-reference/training-jobs/interactive/save-weights-for-sampler)，并轮询保存 future 直到其进入终止状态。
-5. 通过共享的[停止操作](/cn/api-reference/training-jobs/stop)停止任务。
-6. 停止后，[从已保存的检查点采样](/cn/api-reference/training-jobs/interactive/sample)，然后轮询采样 future 直到其进入终止状态。
-
-只有已排队或正在运行的 sample future 可以取消。HTTP 拒绝表示服务器没有将调用排队。已排队的 future 可能改为以 `status: "failed"` 结束。
-
-### 原生 REST 路径
-
-原生 REST 示例需要 Python 3.11 或更高版本。Tinker SDK 设置请参阅[从 Tinker 迁移](/cn/training/migrate-from-tinker)。
-
-### 3. 安装客户端库
+## 2. 安装客户端库
 
 需要 Python 3.11 或更高版本。`transformers` 提供模型的 tokenizer；训练本身在 Fastino 上运行。
 
@@ -146,7 +73,7 @@ pip install requests transformers
 
 </CodeGroup>
 
-### 4. 选择模型
+## 3. 选择模型
 
 | 模型 ID | 上下文长度（token） |
 | --- | --- |
@@ -168,7 +95,7 @@ $env:FASTINO_TRAINING_MODEL = "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-BF16"
 
 </CodeGroup>
 
-### 5. 创建任务
+## 4. 创建任务
 
 ```bash
 curl -X POST "https://api.fastino.ai/v1/training/jobs/create-model" \
@@ -196,7 +123,7 @@ curl "https://api.fastino.ai/v1/training/jobs/$TRAINING_JOB_ID/futures/$FUTURE_I
   -H "X-API-Key: $FASTINO_API_KEY"
 ```
 
-### 6. 训练、保存并采样
+## 5. 训练、保存并采样
 
 下面的脚本运行完整循环：创建任务，运行三次 forward-backward 和优化器步骤，保存 sampler 检查点，从中采样，然后停止任务。
 
@@ -299,9 +226,11 @@ finally:
     call("POST", f"{jobs}/stop")
 ```
 
-脚本会等待 forward-backward 成功完成，然后再提交优化器步骤。如果任一 future 失败或被取消，`wait` 会抛出异常，依赖它的操作也不会被提交。
+脚本会等待 forward-backward 成功完成，然后再提交优化器步骤。如果任一 future 失败或被取消，
+`wait` 会引发异常，不会提交依赖 operation。
 
-`enable_thinking=False` 会在监督答案开始之前关闭模型的推理块。它是 tokenizer 模板参数，而不是训练 API 请求字段。
+`enable_thinking=False` 会在监督答案开始之前关闭模型的推理块。它是 tokenizer
+模板参数，而不是训练 API 请求字段。
 
 运行脚本：
 
@@ -312,10 +241,11 @@ python quickstart.py
 复制 `TRAINING_JOB_ID=` 后打印的值。
 
 <Note>
-  交互式任务 30 分钟内没有调用就会被释放，其检查点会保留。停止操作会立即返回并阻止新调用，但已排队的操作可能会在资源释放前完成，用量也可能持续到资源释放。你仍可从其 sampler 检查点采样并下载。
+  交互式任务 30 分钟内没有调用就会被释放，其检查点会保留。停止操作会立即返回并阻止新调用，
+  但已排队的 operation 可能会在资源释放前完成，用量也可能持续到资源释放。你仍可从其 sampler 检查点采样并下载。
 </Note>
 
-### 7. 验证规范任务
+## 6. 验证规范任务
 
 <CodeGroup>
 
@@ -335,13 +265,14 @@ Invoke-RestMethod `
 
 </CodeGroup>
 
-响应描述的是通过原生 REST 端点创建的同一任务。请继续通过公开的交互式操作页面执行模型操作，并使用规范任务 API 执行有文档说明的任务读取。
+响应描述的是通过原生 REST 端点创建的同一任务。继续使用公开的交互式 operation 页面执行
+模型操作，并使用规范任务 API 执行有文档说明的任务读取。
 
 ## 继续
 
 <CardGroup cols={3}>
-  <Card title="数据集" icon="database" href="/cn/concepts/datasets">
-    准备并验证 GLiNER 训练数据。
+  <Card title="从 Tinker 迁移" icon="arrow-right-arrow-left" href="/cn/training/migrate-from-tinker">
+    为现有 Tinker 程序配置 SDK。
   </Card>
   <Card title="交互式任务参考" icon="book" href="/cn/api-reference/training-jobs/interactive/create-model">
     查看交互式任务的每个请求和响应。
