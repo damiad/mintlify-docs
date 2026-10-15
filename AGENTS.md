@@ -43,6 +43,10 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
   jobs let Fastino run the loop, while `interactive` jobs let the application
   direct each step. Check OpenAPI before using an operation because some routes
   support only one job type.
+- Start managed GLiNER `config` training with the
+  [Encoder Quickstart](https://docs.fastino.ai/training/encoder-quickstart).
+  Start application-controlled Nemotron or Qwen `interactive` training with
+  the [Decoder Quickstart](https://docs.fastino.ai/training/decoder-quickstart).
 - Create a managed `config` job with `POST /v1/training/jobs` for the GLiNER
   encoders `fastino/gliner2-base-v1` and `fastino/GLiNER-2.5-Decide` only; a
   decoder base model returns `400`. Decoders train only in `interactive` jobs.
@@ -71,7 +75,7 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
   Auto Train is private access and has no public route. Direct interested
   users to `sales@fastino.ai`.
 - For custom loops, start with the
-  [Training quickstart](https://docs.fastino.ai/training/quickstart#custom-training-loop).
+  [Training loop](https://docs.fastino.ai/training/training-loop).
   Use the focused guides for verifiable rewards and recovery.
 - Tinker clients query `ServiceClient.get_server_capabilities()` before
   selecting a model for a custom loop.
@@ -82,7 +86,7 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
 - The SDK training run ID is the interactive Fastino job ID. Use that same ID
   with documented canonical job reads.
 - Do not invent routes, model IDs, request fields, or response fields.
-- Use [Migrate from Tinker](https://docs.fastino.ai/training/migrate-from-tinker#supported-client-behavior)
+- Use [Migrate from Tinker](https://docs.fastino.ai/training/migrate-from-tinker#tinker-sdk-compatibility)
   for client support boundaries. The pinned `tinker==0.32.0` package defines
   method signatures, but Fastino's documented unsupported list takes
   precedence. Use [Training loop](https://docs.fastino.ai/training/training-loop)
