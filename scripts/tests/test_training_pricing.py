@@ -43,21 +43,21 @@ MODEL_SECTION_HEADINGS = {
 EXPECTED_RATES = {
     "Nemotron 3.5 Super VL": (
         r"\$0.16",
-        r"\$0.032",
-        r"\$0.72",
-        r"\$0.96",
+        r"\$0.04",
+        r"\$0.65",
+        r"\$0.65",
     ),
     "Nemotron 3.5 Lightning": (
-        r"\$0.05",
-        r"\$0.01",
+        r"\$0.35",
+        r"\$0.07",
         r"\$0.35",
         r"\$0.30",
     ),
     "Qwen3.6-35B-A3B": (
+        r"\$0.40",
         r"\$0.08",
-        r"\$0.016",
-        r"\$0.35",
-        r"\$0.35",
+        r"\$0.44",
+        r"\$0.44",
     ),
 }
 CALLABLE_IDS = {
@@ -69,11 +69,17 @@ ENCODER_IDS = (
     "fastino/gliner2-base-v1",
     "fastino/GLiNER-2.5-Decide",
 )
+INFERENCE_SUPER_ID = "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B-NVFP4"
 
 
 def _interactive_rates(page: Path) -> dict[str, tuple[str, ...]]:
+    text = page.read_text(encoding="utf-8")
+    start_heading, end_heading = (
+        SECTION_HEADINGS.get(page) or MODEL_SECTION_HEADINGS[page]
+    )
+    interactive_section = text[text.index(start_heading) : text.index(end_heading)]
     rows: dict[str, tuple[str, ...]] = {}
-    for line in page.read_text(encoding="utf-8").splitlines():
+    for line in interactive_section.splitlines():
         if not line.startswith("|"):
             continue
         for display_name in EXPECTED_RATES:
@@ -104,7 +110,7 @@ class TrainingPricingTests(unittest.TestCase):
                 self.assertIn("GPU", text)
                 self.assertEqual(text.count("per 1M tokens"), 1 if page == ROOT / "pricing.mdx" else 0)
 
-    def test_super_display_name_includes_version_and_vl(self) -> None:
+    def test_training_super_uses_product_display_name(self) -> None:
         for page in PRICING_PAGES:
             with self.subTest(page=page.relative_to(ROOT)):
                 self.assertIn("Nemotron 3.5 Super VL", page.read_text(encoding="utf-8"))
@@ -122,6 +128,23 @@ class TrainingPricingTests(unittest.TestCase):
                 for display_name, model_id in CALLABLE_IDS.items():
                     self.assertIn(display_name, text)
                     self.assertIn(f"`{model_id}`", text)
+                self.assertIn(f"`{INFERENCE_SUPER_ID}`", text)
+
+    def test_inference_super_has_distinct_pricing(self) -> None:
+        for page in PRICING_PAGES:
+            lines = page.read_text(encoding="utf-8").splitlines()
+            with self.subTest(page=page.relative_to(ROOT)):
+                rows = [line for line in lines if "Nemotron 3.5 Super VL" in line]
+                self.assertEqual(len(rows), 2)
+                self.assertTrue(
+                    any(r"\$0.08" in row and r"\$0.45" in row for row in rows)
+                )
+                self.assertTrue(
+                    any(
+                        all(rate in row for rate in EXPECTED_RATES["Nemotron 3.5 Super VL"])
+                        for row in rows
+                    )
+                )
 
     def test_model_catalogs_publish_encoder_training_rates(self) -> None:
         for page in MODEL_CATALOG_PAGES:
@@ -156,13 +179,10 @@ class TrainingPricingTests(unittest.TestCase):
                         f"interactive rates must remain on approved pages: {page}",
                     )
 
-    def test_stale_promotional_rates_are_absent(self) -> None:
-        stale_rates = (r"\$0.65", r"\$0.44")
+    def test_promotional_markers_are_absent(self) -> None:
         for page in PRICING_PAGES + MODEL_CATALOG_PAGES:
             text = page.read_text(encoding="utf-8")
             with self.subTest(page=page.relative_to(ROOT)):
-                for rate in stale_rates:
-                    self.assertNotIn(rate, text)
                 self.assertNotIn("Limited-time discount", text)
                 self.assertNotIn("~~", text)
 
@@ -171,7 +191,8 @@ class TrainingPricingTests(unittest.TestCase):
             text = page.read_text(encoding="utf-8")
             with self.subTest(page=page.relative_to(ROOT)):
                 self.assertIn('"effective_rate_usd_per_gigabyte_month": 0.05', text)
-                self.assertIn('"estimated_monthly_cost_usd": 0.0375', text)
+                self.assertIn('"size_gigabytes": 0.805306368', text)
+                self.assertIn('"estimated_monthly_cost_usd": 0.0402653184', text)
 
 
 if __name__ == "__main__":
