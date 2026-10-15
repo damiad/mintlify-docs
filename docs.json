@@ -222,9 +222,7 @@
                   "pricing",
                   {
                     "group": "FAQ",
-                    "pages": [
-                      "faq"
-                    ],
+                    "pages": [],
                     "hidden": true
                   },
                   "trust-safety"
@@ -256,8 +254,6 @@
                 "icon": "sparkles",
                 "pages": [
                   "api-reference/overview",
-                  "api-reference/prompt-caching",
-                  "api-reference/rate-limits",
                   "api-reference/inference/overview",
                   "api-reference/inference/models",
                   "api-reference/inference/systemone",
