@@ -58,21 +58,21 @@ configurer le SDK Tinker, consultez [Migrer depuis Tinker](/fr/training/migrate-
 ## 2. Installer les bibliothèques clientes
 
 Python 3.11 ou une version ultérieure est requis. `transformers` fournit le
-tokenizer du modèle ; l'entraînement lui-même s'exécute sur Fastino.
+tokenizer du modèle et `jinja2` génère son modèle de chat ; l'entraînement lui-même s'exécute sur Fastino.
 
 <CodeGroup>
 
 ```bash uv
 uv init fastino-training
 cd fastino-training
-uv add requests transformers
+uv add requests transformers jinja2
 ```
 
 ```bash pip
 mkdir fastino-training && cd fastino-training
 python -m venv .venv
 source .venv/bin/activate
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 ```powershell pip · Windows
@@ -80,7 +80,7 @@ mkdir fastino-training
 cd fastino-training
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 </CodeGroup>

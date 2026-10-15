@@ -48,22 +48,22 @@ rewards, repeated rollouts, and recovery after this quickstart.
 
 ## 2. Install the client libraries
 
-You need Python 3.11 or later. `transformers` provides the model's tokenizer;
-the training itself runs on Fastino.
+You need Python 3.11 or later. `transformers` provides the model's tokenizer and
+`jinja2` renders its chat template; the training itself runs on Fastino.
 
 <CodeGroup>
 
 ```bash uv
 uv init fastino-training
 cd fastino-training
-uv add requests transformers
+uv add requests transformers jinja2
 ```
 
 ```bash pip
 mkdir fastino-training && cd fastino-training
 python -m venv .venv
 source .venv/bin/activate
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 ```powershell pip · Windows
@@ -71,7 +71,7 @@ mkdir fastino-training
 cd fastino-training
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 </CodeGroup>

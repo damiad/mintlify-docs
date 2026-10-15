@@ -9,6 +9,8 @@ api: "GET /v1/training/jobs"
 
 返回已认证账户可见的配置训练任务和交互式训练任务。
 
+未指定 `type` 时，每页先列出配置任务（从新到旧），再列出交互式任务（从新到旧）。传入 `type=interactive` 只列出交互式任务。
+
 ## 请求
 
 <ParamField header="X-API-Key" type="string" required>

@@ -46,21 +46,21 @@ $env:FASTINO_API_KEY = "fast_sk_..."
 
 ## 2. 安装客户端库
 
-需要 Python 3.11 或更高版本。`transformers` 提供模型的 tokenizer；训练本身在 Fastino 上运行。
+需要 Python 3.11 或更高版本。`transformers` 提供模型的 tokenizer，`jinja2` 渲染其聊天模板；训练本身在 Fastino 上运行。
 
 <CodeGroup>
 
 ```bash uv
 uv init fastino-training
 cd fastino-training
-uv add requests transformers
+uv add requests transformers jinja2
 ```
 
 ```bash pip
 mkdir fastino-training && cd fastino-training
 python -m venv .venv
 source .venv/bin/activate
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 ```powershell pip · Windows
@@ -68,7 +68,7 @@ mkdir fastino-training
 cd fastino-training
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 </CodeGroup>

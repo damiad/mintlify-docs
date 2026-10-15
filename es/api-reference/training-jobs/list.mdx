@@ -10,6 +10,10 @@ api: "GET /v1/training/jobs"
 Devuelve los trabajos de entrenamiento de configuración e interactivos visibles
 para la cuenta autenticada.
 
+Sin `type`, una página lista primero los trabajos de configuración (del más
+reciente al más antiguo) y después los interactivos (del más reciente al más
+antiguo). Pasa `type=interactive` para listar solo los trabajos interactivos.
+
 ## Solicitud
 
 <ParamField header="X-API-Key" type="string" required>
