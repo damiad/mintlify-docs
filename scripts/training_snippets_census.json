@@ -80,7 +80,7 @@
     "rule": "powershell-shape-env"
   },
   {
-    "body_sha256": "3db62693ee3bd39e5bdb671b0e3c6ce1d2975c375363208d3a779d00183a5750",
+    "body_sha256": "d954fcf9a576ea7f1c68f25c95a38c0bfe94d606623ffaae7fbd665c1542cf38",
     "coverage": "static",
     "kind": "bash-install",
     "language": "bash",
@@ -90,7 +90,7 @@
     "rule": "bash-n-install"
   },
   {
-    "body_sha256": "f104014af2748aad1cd6bd69bd276bbea5f86f571712ff0854488af296a1da8a",
+    "body_sha256": "b157841ee2c308c3c1a62618ae3155e6b946cd1136772495f5f74381acbb8432",
     "coverage": "static",
     "kind": "bash-install",
     "language": "bash",
@@ -100,7 +100,7 @@
     "rule": "bash-n-install"
   },
   {
-    "body_sha256": "65e98c57f381bfd97687bee493b45ea942161df12c1fd803f696245e9136fc0a",
+    "body_sha256": "033547e6cadd5462b4c9bf8f6ebe845a6ee37137dcce3f1ab0d2068526a7cb74",
     "coverage": "static",
     "kind": "powershell-install",
     "language": "powershell",

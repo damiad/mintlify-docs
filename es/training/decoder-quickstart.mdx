@@ -57,21 +57,21 @@ de Tinker, consulta [Migrar desde Tinker](/es/training/migrate-from-tinker).
 ## 2. Instala las bibliotecas cliente
 
 Necesitas Python 3.11 o posterior. `transformers` aporta el tokenizador del
-modelo; el entrenamiento se ejecuta en Fastino.
+modelo y `jinja2` genera su plantilla de chat; el entrenamiento se ejecuta en Fastino.
 
 <CodeGroup>
 
 ```bash uv
 uv init fastino-training
 cd fastino-training
-uv add requests transformers
+uv add requests transformers jinja2
 ```
 
 ```bash pip
 mkdir fastino-training && cd fastino-training
 python -m venv .venv
 source .venv/bin/activate
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 ```powershell pip · Windows
@@ -79,7 +79,7 @@ mkdir fastino-training
 cd fastino-training
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install requests transformers
+pip install requests transformers jinja2
 ```
 
 </CodeGroup>

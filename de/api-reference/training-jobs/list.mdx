@@ -10,6 +10,9 @@ api: "GET /v1/training/jobs"
 Gibt die für den authentifizierten Account sichtbaren Config- und
 Interactive-Trainingsjobs zurück.
 
+Ohne `type` listet eine Seite zuerst Config-Jobs (neueste zuerst) und danach
+interaktive Jobs (neueste zuerst). Übergib `type=interactive`, um nur interaktive Jobs aufzulisten.
+
 ## Request
 
 <ParamField header="X-API-Key" type="string" required>
