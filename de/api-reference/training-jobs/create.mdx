@@ -11,13 +11,16 @@ Native Clients erstellen einen `interactive`-Job über [`POST /v1/training/jobs/
 
 Erstellt einen asynchronen `config`-Trainingsjob und gibt dessen Job-Datensatz
 zurück. Bei einem Config-Job stellen Sie einen Datensatz und eine Konfiguration
-bereit, und Fastino führt den Trainingsloop aus. Um den Loop Schritt für Schritt
-zu steuern, folgen Sie dem
-[Pfad für einen eigenen Trainingsablauf](/de/training/quickstart#custom-training-loop).
-Dieser Pfad erstellt einen `interactive`-Job über den unterstützten SDK-Client.
-Dieser REST-Endpunkt erstellt keine Interactive-Jobs. Nach der Erstellung
-verwenden beide Jobtypen ihre kanonischen IDs mit den dokumentierten
-Lebenszyklusoperationen unter `/v1/training/jobs/{job_id}`.
+bereit, und Fastino führt den Trainingsloop aus. Config-Jobs unterstützen
+GLiNER-Encoder und Decoder-LoRA-Training. Hochgeladene Decoder-Chat-Datensätze
+unterstützen SFT und GRPO. Das Request-Schema akzeptiert auch DPO-Einstellungen,
+öffentliche Decoder-Uploads erfordern derzeit jedoch `messages`.
+
+Um das Decoder-Training Schritt für Schritt zu steuern, erstellen Sie einen `interactive`-Job mit
+[`POST /v1/training/jobs/create-model`](/de/api-reference/training-jobs/interactive/create-model)
+und folgen dem [Pfad für einen eigenen Trainingsablauf](/de/training/quickstart#custom-training-loop).
+Nach der Erstellung verwenden beide Jobtypen ihre kanonischen IDs mit den
+dokumentierten Lebenszyklusoperationen unter `/v1/training/jobs/{job_id}`.
 
 Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
 
@@ -93,11 +96,11 @@ Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
   </ParamField>
 
   <ParamField body="packing" type="boolean">
-    Packt kurze Beispiele für kompatible Decoder-LoRA-Jobs.
+    Packt kurze Beispiele für kompatible Decoder-LoRA-Jobs. Weglassen verwendet den Katalogstandard des ausgewählten Modells.
   </ParamField>
 
   <ParamField body="mask_history" type="boolean" default="false">
-    Option zur Loss-Maskierung im Decoder. Nicht unterstützte Kombinationen werden abgelehnt.
+    Option für die Loss-Maskierung bei Decoder-SFT. Der aktive Trainer lehnt nicht unterstützte Kombinationen ab.
   </ParamField>
 
   <ParamField body="warmup_ratio" type="number">
@@ -129,7 +132,7 @@ Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
   </ParamField>
 
   <ParamField body="system_prompt" type="string">
-    Kanonischer System-Prompt für kompatibles Decoder-Training.
+    Kanonischer System-Prompt für Decoder-Training und Inferenz. Für Datensätze mit gemischten Prompts nicht setzen.
   </ParamField>
 
   <ParamField body="encoder_learning_rate" type="number">
@@ -165,12 +168,13 @@ Dieser Endpunkt ist auf 20 Anfragen pro Minute pro Benutzer begrenzt.
   </ParamField>
 
   <ParamField body="training_algorithm" type="string" default="sft">
-    `sft`, `grpo` oder `dpo`. GRPO erfordert `rl_config.reward_type`. DPO-Datensätze benötigen die Spalten `prompt`, `chosen` und `rejected`.
+    `sft`, `grpo` oder `dpo`. GRPO erfordert `rl_config.reward_type`. DPO erfordert einen kompatiblen Präferenzdatensatz. Öffentliche Uploads mit `dataset_type: decoder` erfordern `messages`; reine DPO-Zeilen mit `prompt`, `chosen` und `rejected` bestehen die Upload-Validierung nicht.
   </ParamField>
 
   <ParamField body="rl_config" type="object">
-    Algorithmusspezifische Einstellungen. Gemeinsame Schlüssel sind `max_steps` und `logging_steps`. GRPO unterstützt `reward_type`, `kl_beta`, `group_size`, `sampling_temperature` und `max_completion_length`. DPO unterstützt `dpo_beta` und `loss_type`. Der GRPO-Reward `llm_as_judge` unterstützt außerdem `llm_judge_model`, `llm_judge_rubric`, `llm_judge_score_scale`, `llm_judge_timeout_s`, `llm_judge_max_concurrent`, `llm_judge_max_retries` und `llm_judge_retry_backoff_s`.
+    Algorithmuseinstellungen. GRPO unterstützt `reward_type`, `kl_beta`, `group_size`, `sampling_temperature` und `max_completion_length`. DPO unterstützt `dpo_beta` und `loss_type`. Beide unterstützen `max_steps` und `logging_steps`.
   </ParamField>
+
 </Expandable>
 
 <RequestExample>

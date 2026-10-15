@@ -78,7 +78,8 @@ REQUIRED_DISCOVERY_LINKS = {
     "retries": "/troubleshooting/retries.md",
 }
 REQUIRED_OPERATIONS = {
-    (method.lower(), path) for method, path in EXPECTED_OPERATIONS
+    (method.lower(), path)
+    for method, path in EXPECTED_OPERATIONS
 }
 JOURNEY_PAGES = (
     "authentication.mdx",
@@ -1122,9 +1123,8 @@ def _discover_training_model(api_key: str) -> str:
     configured = os.getenv("FASTINO_DOCS_CANARY_BASE_MODEL", "")
     candidates = (
         configured,
-        "fastino/gliner2-base-v1",
-        "fastino/gliner2.5-base-v1",
-        "fastino/gliner2.5-multi-v1",
+        "fastino/gliner2-multi-v1",
+        "fastino/GLiNER-2.5-Decide",
     )
     selected = next((candidate for candidate in candidates if candidate in identifiers), "")
     if not selected:

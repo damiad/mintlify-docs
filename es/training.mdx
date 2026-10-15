@@ -14,8 +14,7 @@ trabajo.
     entrenamiento.
   </Card>
   <Card title="Bucle de entrenamiento personalizado" icon="code" href="/es/training/quickstart#custom-training-loop">
-    Usa un cliente del SDK compatible mientras tu aplicación controla cada
-    actualización.
+    Llama a rutas REST para cada pasada forward-backward, paso del optimizador y muestreo.
   </Card>
   <Card title="Auto Train" icon="sparkles" href="/es/training/auto">
     Delega el ciclo de vida del entrenamiento en el agente de entrenamiento
@@ -28,16 +27,16 @@ trabajo.
 
 Cada trabajo tiene un `type`:
 
-| Tipo | ¿Quién controla el bucle? | Cómo se inicia |
-| --- | --- | --- |
-| `config` | Fastino | Envía un dataset y una configuración a `POST /v1/training/jobs`. |
-| `interactive` | Tu aplicación | Crea un cliente de entrenamiento mediante un cliente del SDK compatible. |
+| Tipo | ¿Quién controla el bucle? | Modelos | Cómo se inicia |
+| --- | --- | --- | --- |
+| `config` | Fastino | Codificadores y decodificadores compatibles | Envía un dataset y una configuración a `POST /v1/training/jobs`. |
+| `interactive` | Tu aplicación | Decodificadores compatibles | Envía un modelo base a `POST /v1/training/jobs/create-model`. |
 
 Ambos tipos comparten la misma identidad de trabajo. Las lecturas canónicas usan
 `GET /v1/training/jobs`, `GET /v1/training/jobs/{job_id}` y
 `GET /v1/training/jobs/{job_id}/checkpoints`.
 
-Los clientes JSON nativos usan las operaciones públicas de OpenAPI bajo `/v1/training/jobs` y `/v1/training/usage`. Los clientes Tinker existentes mantienen `tinker==0.32.0` y configuran solo `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` y `TINKER_CREDENTIAL_CMD`. No construyas rutas hijas privadas de compatibilidad.
+Los clientes JSON nativos usan las operaciones públicas de OpenAPI bajo `/v1/training/jobs`. Los clientes Tinker existentes mantienen `tinker==0.32.0` y configuran solo `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` y `TINKER_CREDENTIAL_CMD`.
 
 ## Ciclo de vida de los trabajos de configuración
 
@@ -62,6 +61,19 @@ no deduzcas su ciclo de vida a partir de esta tabla.
 `failed` para un fallo terminal. `status` conserva el valor persistido, como
 `errored`.
 
+## Ciclo de vida de los trabajos interactivos
+
+Un trabajo interactivo ejecuta las operaciones que le envías, en el orden en que
+las recibe. Cada llamada devuelve un `future_id`; lee su resultado en
+`GET /v1/training/jobs/{job_id}/futures/{future_id}`.
+
+- No numeras las solicitudes ni envías heartbeats.
+- Un trabajo sin llamadas durante 30 minutos se libera. Sus checkpoints se conservan.
+- `POST /v1/training/jobs/{job_id}/stop` responde de inmediato y deja de aceptar
+  llamadas nuevas. Las operaciones ya encoladas pueden terminar antes de que
+  se liberen los recursos. El uso puede continuar hasta esa liberación. Los checkpoints sampler se pueden seguir muestreando
+  y descargando después.
+
 ## Compatibilidad de las operaciones
 
 | Operación | `config` | `interactive` |
@@ -69,6 +81,9 @@ no deduzcas su ciclo de vida a partir de esta tabla.
 | [Listar trabajos](/es/api-reference/training-jobs/list) | Compatible | Compatible |
 | [Obtener un trabajo](/es/api-reference/training-jobs/get) | Compatible | Compatible |
 | [Listar checkpoints](/es/api-reference/training-jobs/checkpoints) | Compatible | Compatible |
+| [Crear](/es/api-reference/training-jobs/create) | Compatible | [Crear un trabajo interactivo](/es/api-reference/training-jobs/interactive/create-model) |
+| [Forward, forward-backward y paso del optimizador](/es/api-reference/training-jobs/interactive/forward-backward) | — | Compatible |
+| [Guardar, cargar y muestrear checkpoints](/es/api-reference/training-jobs/interactive/save-weights) | — | Compatible |
 | [Descargar un checkpoint interactivo](/es/api-reference/training-jobs/download-checkpoint) | — | Compatible |
 | Crear mediante REST nativo | [Trabajo config](/es/api-reference/training-jobs/create) | [Trabajo interactivo](/es/api-reference/training-jobs/interactive/create-model) |
 | Actualizar o eliminar el trabajo | Compatible | — |
@@ -97,8 +112,8 @@ la cuenta y del proyecto siguen aplicándose al iniciar o ampliar el cómputo.
     Ejecuta un entrenamiento gestionado o inicia un bucle de entrenamiento
     personalizado.
   </Card>
-  <Card title="Migrar desde Tinker" icon="arrow-right-arrow-left" href="/es/training/migrate-from-tinker">
-    Traslada a Fastino una carga de trabajo compatible existente.
+  <Card title="Bucle de entrenamiento" icon="repeat-2" href="/es/training/training-loop">
+    Construye datums, actualiza el modelo y muestrea desde checkpoints.
   </Card>
   <Card title="Ajustar GLiNER" icon="tags" href="/es/guides/fine-tune-gliner">
     Prepara datos de entidades y entrena un modelo GLiNER.

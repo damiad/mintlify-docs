@@ -1,7 +1,7 @@
 ---
 title: "Préparer et importer des datasets d'entraînement"
 sidebarTitle: "Datasets"
-description: "Formatez, importez, validez et inspectez des datasets NER, de classification ou de décodeur avant de lancer un job d'entraînement Fastino."
+description: "Formatez, importez, validez et inspectez des datasets NER ou de classification avant de lancer un job d'entraînement GLiNER Fastino."
 ---
 
 Les jobs d'entraînement référencent des datasets prêts par leur nom. Préparez un fichier JSONL, importez-le via
@@ -32,13 +32,28 @@ Utilisez `label` pour des données à étiquette unique ou `labels` pour des don
 {"text":"The request needs billing and technical help.","labels":["billing","technical"]}
 ```
 
-### Fine-tuning de décodeur
+### SFT et GRPO de décodeur
 
-Utilisez un tableau `messages` contenant des messages `system`, `user` ou `assistant`.
+Définissez `dataset_type` sur `decoder`. SFT utilise un tableau `messages` avec
+les rôles et le contenu du chat. GRPO accepte les mêmes données de prompt et
+utilise `training_algorithm: "grpo"` avec `rl_config` dans le job de configuration.
 
 ```jsonl
-{"messages":[{"role":"user","content":"What is 2 + 2?"},{"role":"assistant","content":"4"}]}
+{"messages":[{"role":"user","content":"What is 2+2?"},{"role":"assistant","content":"4"}]}
 ```
+
+<Warning>
+  Les imports publics avec `dataset_type: decoder` exigent un tableau
+  `messages` dans chaque ligne. Les lignes DPO contenant uniquement `prompt`,
+  `chosen` et `rejected` échouent à la validation de l'import.
+</Warning>
+
+<Note>
+  Les datasets de décodeur fonctionnent avec les
+  [jobs de configuration](/fr/api-reference/training-jobs/create) gérés.
+  Utilisez un [job interactif](/fr/training/quickstart#custom-training-loop)
+  lorsque votre application doit tokeniser les exemples et contrôler chaque étape.
+</Note>
 
 ## Importer un dataset
 
@@ -92,7 +107,7 @@ jobs d'entraînement](/fr/api-reference/training-jobs/create) :
 ```json
 {
   "model_name": "my-ner-model",
-  "base_model": "fastino/gliner2-base-v1",
+  "base_model": "fastino/gliner2-multi-v1",
   "datasets": [
     {"name": "docs-example-ner", "version": "VERSION_NUMBER_FROM_UPLOAD"}
   ],

@@ -64,7 +64,14 @@ Each line of your JSONL must be a single JSON object. The required columns depen
 
 **Decoder (`dataset_type: "decoder"`)**
 
-- `messages` (list of `{role, content}` objects) — chat-style supervision. `role` must be one of `system`, `user`, `assistant`.
+Managed config jobs train decoders from uploaded datasets with
+`POST /v1/training/jobs`. Use `training_algorithm` to select `sft`, `dpo`, or
+`grpo`. Interactive jobs are an additional option through
+`POST /v1/training/jobs/create-model` when the application must tokenize
+examples and control each training step.
+
+- SFT and GRPO use `messages` with `{role, content}` objects.
+- DPO uses `prompt`, `chosen`, and `rejected`.
 
 ```jsonl
 {"messages": [{"role": "user", "content": "What is 2+2?"}, {"role": "assistant", "content": "4"}]}

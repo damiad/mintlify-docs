@@ -11,12 +11,17 @@ Los clientes nativos crean un trabajo `interactive` con [`POST /v1/training/jobs
 
 Crea un trabajo de entrenamiento asíncrono `config` y devuelve su registro. En
 un trabajo de configuración, proporcionas un dataset y una configuración, y
-Fastino ejecuta el bucle. Para controlar el bucle paso a paso, sigue la
-[ruta del bucle de entrenamiento personalizado](/es/training/quickstart#custom-training-loop),
-que crea un trabajo `interactive` mediante el cliente SDK compatible. Este
-endpoint REST no crea trabajos interactive. Después de la creación, ambos tipos
-de trabajo usan sus IDs canónicos con las operaciones documentadas del ciclo de
-vida en `/v1/training/jobs/{job_id}`.
+Fastino ejecuta el bucle. Los trabajos de configuración admiten codificadores
+GLiNER y entrenamiento LoRA de decodificadores. Los datasets de chat de
+decodificador subidos admiten SFT y GRPO. El esquema de solicitud también
+acepta ajustes de DPO, pero las cargas públicas de decodificadores requieren
+actualmente `messages`.
+
+Para controlar paso a paso el entrenamiento de un decodificador, crea un trabajo `interactive` con
+[`POST /v1/training/jobs/create-model`](/es/api-reference/training-jobs/interactive/create-model)
+y sigue la [ruta del bucle de entrenamiento personalizado](/es/training/quickstart#custom-training-loop).
+Después de la creación, ambos tipos de trabajo usan sus IDs canónicos con las
+operaciones documentadas del ciclo de vida en `/v1/training/jobs/{job_id}`.
 
 Este endpoint está limitado a 20 solicitudes por minuto por usuario.
 
@@ -86,10 +91,10 @@ Este endpoint está limitado a 20 solicitudes por minuto por usuario.
     Dropout de LoRA. Omítelo para usar la receta del modelo.
   </ParamField>
   <ParamField body="packing" type="boolean">
-    Empaqueta ejemplos cortos para trabajos LoRA de decodificador compatibles.
+    Empaqueta ejemplos cortos para trabajos LoRA de decodificador compatibles. Si se omite, usa el valor del catálogo del modelo.
   </ParamField>
   <ParamField body="mask_history" type="boolean" default="false">
-    Opción de enmascaramiento de pérdida del decodificador. Las combinaciones no compatibles se rechazan.
+    Opción de enmascarado de pérdida para SFT de decodificador. El entrenador activo rechaza combinaciones no compatibles.
   </ParamField>
   <ParamField body="warmup_ratio" type="number">
     Fracción de warmup de `0` a `1`. `warmup_steps` tiene prioridad.
@@ -113,7 +118,7 @@ Este endpoint está limitado a 20 solicitudes por minuto por usuario.
     Fija un proveedor de entrenamiento compatible. Omítelo para la selección automática.
   </ParamField>
   <ParamField body="system_prompt" type="string">
-    Prompt de sistema canónico para el entrenamiento de decodificadores compatibles.
+    Prompt de sistema canónico para entrenamiento e inferencia de decodificadores. Déjalo sin definir para datasets con prompts mixtos.
   </ParamField>
   <ParamField body="encoder_learning_rate" type="number">
     Tasa de aprendizaje del codificador de GLiNER. Si se omite, usa `learning_rate`.
@@ -140,10 +145,10 @@ Este endpoint está limitado a 20 solicitudes por minuto por usuario.
     Pasos mínimos del optimizador de GLiNER.
   </ParamField>
   <ParamField body="training_algorithm" type="string" default="sft">
-    `sft`, `grpo` o `dpo`. GRPO requiere `rl_config.reward_type`. Los datasets de DPO requieren las columnas `prompt`, `chosen` y `rejected`.
+    `sft`, `grpo` o `dpo`. GRPO requiere `rl_config.reward_type`. DPO requiere un dataset de preferencias compatible. Las cargas públicas con `dataset_type: decoder` requieren `messages`; las filas exclusivas de DPO con `prompt`, `chosen` y `rejected` no superan la validación de carga.
   </ParamField>
   <ParamField body="rl_config" type="object">
-    Ajustes específicos del algoritmo. Las claves compartidas incluyen `max_steps` y `logging_steps`. GRPO admite `reward_type`, `kl_beta`, `group_size`, `sampling_temperature` y `max_completion_length`. DPO admite `dpo_beta` y `loss_type`. La recompensa `llm_as_judge` de GRPO también admite `llm_judge_model`, `llm_judge_rubric`, `llm_judge_score_scale`, `llm_judge_timeout_s`, `llm_judge_max_concurrent`, `llm_judge_max_retries` y `llm_judge_retry_backoff_s`.
+    Ajustes del algoritmo. GRPO admite `reward_type`, `kl_beta`, `group_size`, `sampling_temperature` y `max_completion_length`. DPO admite `dpo_beta` y `loss_type`. Ambos admiten `max_steps` y `logging_steps`.
   </ParamField>
 </Expandable>
 

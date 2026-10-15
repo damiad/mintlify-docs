@@ -5,8 +5,6 @@ description: "Listez les checkpoints des jobs config ou interactive et utilisez 
 api: "GET /v1/training/jobs/{job_id}/checkpoints"
 ---
 
-Les clients natifs créent une tâche `interactive` avec [`POST /v1/training/jobs/create-model`](/fr/api-reference/training-jobs/interactive/create-model). Les clients Tinker créent le même type via le SDK pris en charge.
-
 `GET /v1/training/jobs/{job_id}/checkpoints`
 
 Renvoie les checkpoints visibles pour un job d'entraînement.
@@ -18,7 +16,7 @@ Renvoie les checkpoints visibles pour un job d'entraînement.
 </ParamField>
 
 <ParamField path="job_id" type="string" required>
-  UUID d'un job config ou ID de job interactive renvoyé par le SDK pris en charge.
+  UUID d'un job config, ou le `job_id` interactif renvoyé par `POST /v1/training/jobs/create-model`.
 </ParamField>
 
 <RequestExample>

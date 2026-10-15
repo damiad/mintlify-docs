@@ -88,6 +88,39 @@ class AgentHarnessTests(unittest.TestCase):
         self.assertNotIn("preview", create.get("description", "").lower())
         self.assertIn("type", response["properties"])
 
+    def test_config_create_documents_decoder_training_contract(self) -> None:
+        document = HARNESS._load_openapi()
+        properties = document["components"]["schemas"]["TrainingJobCreate"]["properties"]
+        decoder_fields = {
+            "packing",
+            "mask_history",
+            "system_prompt",
+            "training_algorithm",
+            "rl_config",
+        }
+
+        self.assertTrue(decoder_fields <= set(properties))
+        self.assertEqual(
+            set(properties["training_algorithm"]["enum"]),
+            {"sft", "dpo", "grpo"},
+        )
+        for locale in ("", "cn", "de", "es", "fr"):
+            prefix = f"{locale}/" if locale else ""
+            create = (
+                HARNESS.ROOT / f"{prefix}api-reference/training-jobs/create.mdx"
+            ).read_text(encoding="utf-8")
+            for field in decoder_fields:
+                self.assertIn(f'<ParamField body="{field}"', create)
+
+            datasets = (
+                HARNESS.ROOT / f"{prefix}concepts/datasets.mdx"
+            ).read_text(encoding="utf-8")
+            self.assertIn('"messages"', datasets)
+            self.assertNotIn(
+                '{"prompt":"Write a concise greeting.","chosen":"Hello!"',
+                datasets,
+            )
+
     def test_english_config_create_requests_use_base_model_and_omit_type(self) -> None:
         found = 0
         for page in CONFIG_CREATE_PAGES:
@@ -107,6 +140,7 @@ class AgentHarnessTests(unittest.TestCase):
         document = HARNESS._load_openapi()
         operations = HARNESS._validate_openapi(document)
 
+        self.assertEqual(len(HARNESS.REQUIRED_OPERATIONS), 52)
         self.assertEqual(HARNESS.REQUIRED_OPERATIONS, set(operations))
 
     def test_every_openapi_operation_has_one_visible_reference_binding(self) -> None:
@@ -271,6 +305,21 @@ class AgentHarnessTests(unittest.TestCase):
         )
         self.assertFalse(CHECKS._path_matches_route("/tinker", {}))
         self.assertFalse(CHECKS._path_matches_route("/not-a-public-route", {}))
+
+    def test_skill_routes_do_not_accept_the_sdk_compatibility_base(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            skill = root / ".mintlify/skills/example/SKILL.md"
+            skill.parent.mkdir(parents=True)
+            skill.write_text("Call GET /v1/training/compat/tinker.\n")
+
+            self.assertEqual(
+                CHECKS._skill_route_findings(root, {"paths": {}}),
+                [
+                    ".mintlify/skills/example/SKILL.md:1: "
+                    "GET /v1/training/compat/tinker is not a public OpenAPI operation"
+                ],
+            )
 
     def test_training_routes_require_the_canonical_deployed_route(self) -> None:
         deployed = {"GET": [CHECKS.re.compile(r"^/v1/training/jobs/?$")]}

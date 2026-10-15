@@ -48,6 +48,17 @@ description: "Identifiants, paramètres, fenêtres de contexte et tarifs d'infé
 Les prix sont indiqués par million de tokens. Consultez les [tarifs](/fr/pricing) pour les coûts d'entraînement et les détails des crédits.
 Utilisez `GET /v1/base-models` pour connaître la disponibilité et les prix actuels.
 
+## Modèles entraînables
+
+Appelez `GET /v1/base-models?supports_training=true` pour obtenir les modèles
+actuellement entraînables et leurs capacités.
+
+Les [jobs de configuration](/fr/api-reference/training-jobs/create) exécutent
+un entraînement géré à partir de datasets d'encodeur ou de décodeur importés.
+Les [jobs interactifs](/fr/api-reference/training-jobs/interactive/create-model) offrent une
+autre option pour les décodeurs lorsque votre code doit contrôler chaque étape.
+Consultez l'[API d'entraînement](/fr/training).
+
 ## Catalogues de modèles API
 
 <CardGroup cols={2}>

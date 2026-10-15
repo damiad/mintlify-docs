@@ -52,13 +52,12 @@ Use the published Fastino documentation and canonical public OpenAPI specificati
   `tinker://` path. Sampling remains available after stop.
 - For custom loops, start with the
   [Training quickstart](https://docs.fastino.ai/training/quickstart#custom-training-loop).
-  Use the focused guides for migration, verifiable rewards, and recovery.
+  Use the focused guides for verifiable rewards and recovery.
 - Treat every workload as a job under `GET /v1/training/jobs`. Config jobs let
   Fastino run the loop; interactive jobs let the application direct each step.
 - Tinker clients query `ServiceClient.get_server_capabilities()` before
   selecting a model for a custom loop.
-- Do not construct private compatibility child routes. Configure the supported
-  Tinker SDK with
+- Configure the supported Tinker SDK with
   `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` and
   `TINKER_CREDENTIAL_CMD` that prints the normal `fast_sk_...` credential.
 - Never wrap a Fastino key with `tml-`; `tml-` credentials are rejected.

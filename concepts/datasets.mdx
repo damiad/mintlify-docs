@@ -1,7 +1,7 @@
 ---
 title: "Prepare and upload training datasets"
 sidebarTitle: "Datasets"
-description: "Format, upload, validate, and inspect NER, classification, or decoder datasets before starting a Fastino training job."
+description: "Format, upload, validate, and inspect NER or classification datasets before starting a Fastino GLiNER training job."
 ---
 
 Training jobs reference ready datasets by name. Prepare a JSONL file, upload it through the
@@ -32,13 +32,27 @@ Use `label` for single-label data or `labels` for multi-label data.
 {"text":"The request needs billing and technical help.","labels":["billing","technical"]}
 ```
 
-### Decoder fine-tuning
+### Decoder SFT and GRPO
 
-Use a `messages` array containing `system`, `user`, or `assistant` messages.
+Set `dataset_type` to `decoder`. For SFT, use a `messages` array with chat
+roles and content. GRPO accepts the same prompt data and uses
+`training_algorithm: "grpo"` with `rl_config` in the config job.
 
 ```jsonl
-{"messages":[{"role":"user","content":"What is 2 + 2?"},{"role":"assistant","content":"4"}]}
+{"messages":[{"role":"user","content":"What is 2+2?"},{"role":"assistant","content":"4"}]}
 ```
+
+<Warning>
+  Public uploads with `dataset_type: decoder` require a `messages` array in
+  every row. DPO-only rows containing `prompt`, `chosen`, and `rejected` fail
+  upload validation.
+</Warning>
+
+<Note>
+  Decoder datasets work with managed [config jobs](/api-reference/training-jobs/create).
+  Use an [interactive job](/training/quickstart#custom-training-loop) when your
+  application must tokenize examples and control each training step.
+</Note>
 
 ## Upload a dataset
 
@@ -92,7 +106,7 @@ endpoint](/api-reference/training-jobs/create):
 ```json
 {
   "model_name": "my-ner-model",
-  "base_model": "fastino/gliner2-base-v1",
+  "base_model": "fastino/gliner2-multi-v1",
   "datasets": [
     {"name": "docs-example-ner", "version": "VERSION_NUMBER_FROM_UPLOAD"}
   ],

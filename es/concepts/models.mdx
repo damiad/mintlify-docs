@@ -48,6 +48,17 @@ description: "IDs, parámetros, ventanas de contexto y precios de inferencia de 
 Los precios se indican por 1M de tokens. Consulta [Precios](/es/pricing) para las tarifas de entrenamiento y los detalles de los créditos.
 Usa `GET /v1/base-models` para consultar la disponibilidad y los precios actuales.
 
+## Modelos entrenables
+
+Llama a `GET /v1/base-models?supports_training=true` para consultar los modelos
+entrenables actuales y sus capacidades.
+
+Los [trabajos de configuración](/es/api-reference/training-jobs/create)
+ejecutan entrenamiento gestionado desde datasets de codificador o decodificador
+subidos. Los [trabajos interactivos](/es/api-reference/training-jobs/interactive/create-model)
+son otra opción para decodificadores cuando tu código debe controlar cada paso.
+Consulta la [API de entrenamiento](/es/training).
+
 ## Catálogos de modelos API
 
 <CardGroup cols={2}>

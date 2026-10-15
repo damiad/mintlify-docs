@@ -91,11 +91,11 @@ This endpoint is limited to 20 requests per minute per user.
   </ParamField>
 
   <ParamField body="packing" type="boolean">
-    Pack short examples for compatible decoder LoRA jobs.
+    Pack short examples for compatible decoder LoRA jobs. Omit it to use the selected model's catalog default.
   </ParamField>
 
   <ParamField body="mask_history" type="boolean" default="false">
-    Decoder loss-masking option. Unsupported combinations are rejected.
+    Decoder SFT loss-masking option. The active trainer rejects unsupported combinations.
   </ParamField>
 
   <ParamField body="warmup_ratio" type="number">
@@ -127,7 +127,7 @@ This endpoint is limited to 20 requests per minute per user.
   </ParamField>
 
   <ParamField body="system_prompt" type="string">
-    Canonical system prompt for compatible decoder training.
+    Canonical system prompt for decoder training and inference. Leave it unset for mixed-prompt datasets.
   </ParamField>
 
   <ParamField body="encoder_learning_rate" type="number">
@@ -163,12 +163,13 @@ This endpoint is limited to 20 requests per minute per user.
   </ParamField>
 
   <ParamField body="training_algorithm" type="string" default="sft">
-    `sft`, `grpo`, or `dpo`. GRPO requires `rl_config.reward_type`. DPO datasets require `prompt`, `chosen`, and `rejected` columns.
+    `sft`, `grpo`, or `dpo`. GRPO requires `rl_config.reward_type`. DPO requires a compatible preference dataset. Public `dataset_type: decoder` uploads require `messages`; DPO-only rows containing `prompt`, `chosen`, and `rejected` fail upload validation.
   </ParamField>
 
   <ParamField body="rl_config" type="object">
-    Algorithm-specific settings. Shared keys include `max_steps` and `logging_steps`. GRPO supports `reward_type`, `kl_beta`, `group_size`, `sampling_temperature`, and `max_completion_length`. DPO supports `dpo_beta` and `loss_type`. The `llm_as_judge` GRPO reward also supports `llm_judge_model`, `llm_judge_rubric`, `llm_judge_score_scale`, `llm_judge_timeout_s`, `llm_judge_max_concurrent`, `llm_judge_max_retries`, and `llm_judge_retry_backoff_s`.
+    Algorithm settings. GRPO supports `reward_type`, `kl_beta`, `group_size`, `sampling_temperature`, and `max_completion_length`. DPO supports `dpo_beta` and `loss_type`. Both support `max_steps` and `logging_steps`.
   </ParamField>
+
 </Expandable>
 
 <RequestExample>

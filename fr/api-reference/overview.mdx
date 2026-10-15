@@ -218,7 +218,7 @@ d'un compte Fastino et d'un terminal.
       -H "Content-Type: application/json" \
       -d '{
         "model_name": "my-gliner-model",
-        "base_model": "fastino/gliner2-base-v1",
+        "base_model": "fastino/gliner2-multi-v1",
         "datasets": [{"name": "my-dataset"}],
         "training_type": "lora",
         "nr_epochs": 5,
@@ -238,7 +238,7 @@ d'un compte Fastino et d'un terminal.
         },
         json={
             "model_name": "my-gliner-model",
-            "base_model": "fastino/gliner2-base-v1",
+            "base_model": "fastino/gliner2-multi-v1",
             "datasets": [{"name": "my-dataset"}],
             "training_type": "lora",
             "nr_epochs": 5,
@@ -255,7 +255,7 @@ d'un compte Fastino et d'un terminal.
     Une fois que le job atteint le statut `complete`, déployez l'artefact sélectionné avant d'utiliser
     l'ID du job comme `model` dans `/v1/chat/completions`.
 
-Les clients JSON natifs utilisent les opérations publiques d'OpenAPI sous `/v1/training/jobs` et `/v1/training/usage`. Les clients Tinker existants conservent `tinker==0.32.0` et configurent uniquement `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` et `TINKER_CREDENTIAL_CMD`. Ne construisez pas de routes enfants privées de compatibilité.
+Les clients JSON natifs utilisent les opérations publiques d'OpenAPI sous `/v1/training/jobs` et `/v1/training/usage`. Les clients Tinker existants conservent `tinker==0.32.0` et configurent uniquement `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` et `TINKER_CREDENTIAL_CMD`.
 
     Les statuts persistés du job progressent de `requested` → `running` →
     `complete`, ou se terminent par `errored` ou `stopped`. Le statut normalisé

@@ -13,8 +13,7 @@ boucle d'entraînement, puis utilisez `/v1/training/jobs` pour inspecter le job.
     d'entraînement.
   </Card>
   <Card title="Boucle d'entraînement personnalisée" icon="code" href="/fr/training/quickstart#custom-training-loop">
-    Utilisez un client SDK pris en charge pendant que votre application contrôle
-    chaque mise à jour.
+    Appelez des routes REST pour chaque passe forward-backward, étape d’optimiseur et échantillonnage.
   </Card>
   <Card title="Auto Train" icon="sparkles" href="/fr/training/auto">
     Déléguez le cycle de vie de l'entraînement à l'agent d'entraînement autonome
@@ -25,18 +24,18 @@ boucle d'entraînement, puis utilisez `/v1/training/jobs` pour inspecter le job.
 
 ## Choisir un type de job
 
-Chaque job possède un `type` :
+Chaque job a un `type` :
 
-| Type | Qui contrôle la boucle ? | Mode de démarrage |
-| --- | --- | --- |
-| `config` | Fastino | Envoyez un dataset et une configuration à `POST /v1/training/jobs`. |
-| `interactive` | Votre application | Créez un client d'entraînement via un client SDK pris en charge. |
+| Type | Qui contrôle la boucle ? | Modèles | Démarrage |
+| --- | --- | --- | --- |
+| `config` | Fastino | Encodeurs et décodeurs pris en charge | Envoyez un dataset et une configuration à `POST /v1/training/jobs`. |
+| `interactive` | Votre application | Décodeurs pris en charge | Envoyez un modèle de base à `POST /v1/training/jobs/create-model`. |
 
 Les deux types partagent la même identité de job. Les lectures canoniques
 utilisent `GET /v1/training/jobs`, `GET /v1/training/jobs/{job_id}` et
 `GET /v1/training/jobs/{job_id}/checkpoints`.
 
-Les clients JSON natifs utilisent les opérations publiques d'OpenAPI sous `/v1/training/jobs` et `/v1/training/usage`. Les clients Tinker existants conservent `tinker==0.32.0` et configurent uniquement `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` et `TINKER_CREDENTIAL_CMD`. Ne construisez pas de routes enfants privées de compatibilité.
+Les clients JSON natifs utilisent les opérations publiques d'OpenAPI sous `/v1/training/jobs`. Les clients Tinker existants conservent `tinker==0.32.0` et configurent uniquement `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` et `TINKER_CREDENTIAL_CMD`.
 
 ## Cycle de vie d'un job de configuration
 
@@ -61,6 +60,19 @@ leur cycle de vie à partir de ce tableau.
 `failed` en cas d'échec terminal. `status` reste la valeur persistée, telle que
 `errored`.
 
+## Cycle de vie d’un job interactif
+
+Un job interactif exécute les opérations que vous lui envoyez, dans l’ordre de
+réception. Chaque appel renvoie un `future_id` ; lisez son résultat sur
+`GET /v1/training/jobs/{job_id}/futures/{future_id}`.
+
+- Vous ne numérotez pas les requêtes et n’envoyez pas de heartbeats.
+- Un job sans appel pendant 30 minutes est libéré. Ses checkpoints sont conservés.
+- `POST /v1/training/jobs/{job_id}/stop` répond immédiatement et n'accepte plus
+  de nouveaux appels. Les opérations déjà en file peuvent se terminer avant la
+  libération des ressources. L'utilisation peut continuer jusqu'à cette libération. Les checkpoints sampler restent échantillonnables
+  et téléchargeables ensuite.
+
 ## Prise en charge des opérations
 
 | Opération | `config` | `interactive` |
@@ -68,6 +80,9 @@ leur cycle de vie à partir de ce tableau.
 | [Lister les jobs](/fr/api-reference/training-jobs/list) | Pris en charge | Pris en charge |
 | [Obtenir un job](/fr/api-reference/training-jobs/get) | Pris en charge | Pris en charge |
 | [Lister les checkpoints](/fr/api-reference/training-jobs/checkpoints) | Pris en charge | Pris en charge |
+| [Créer](/fr/api-reference/training-jobs/create) | Pris en charge | [Créer un job interactif](/fr/api-reference/training-jobs/interactive/create-model) |
+| [Forward, forward-backward et étape d’optimiseur](/fr/api-reference/training-jobs/interactive/forward-backward) | — | Pris en charge |
+| [Enregistrer, charger et échantillonner des checkpoints](/fr/api-reference/training-jobs/interactive/save-weights) | — | Pris en charge |
 | [Télécharger un checkpoint interactif](/fr/api-reference/training-jobs/download-checkpoint) | — | Pris en charge |
 | Créer via l'API REST native | [Tâche config](/fr/api-reference/training-jobs/create) | [Tâche interactive](/fr/api-reference/training-jobs/interactive/create-model) |
 | Mettre à jour ou supprimer le job | Pris en charge | — |
@@ -75,7 +90,7 @@ leur cycle de vie à partir de ce tableau.
 | Endpoints de [logs](/fr/api-reference/training-jobs/logs) et de [facturation](/fr/api-reference/training-jobs/billing) des jobs de configuration | Pris en charge | — |
 | Déploiements et déploiement de checkpoints | Pris en charge | — |
 | [Télécharger le modèle final](/fr/api-reference/training-jobs/download) | Pris en charge | — |
-| Renommer ou envoyer vers Hugging Face Hub | Pris en charge | — |
+| Renommer ou publier sur Hugging Face Hub | Pris en charge | — |
 
 ## Facturation des jobs interactifs
 
@@ -93,13 +108,13 @@ s'appliquer au démarrage ou à l'extension du calcul. `GET /v1/training/usage` 
 
 <CardGroup cols={3}>
   <Card title="Démarrage rapide" icon="play" href="/fr/training/quickstart">
-    Lancez un entraînement géré ou démarrez une boucle d'entraînement
+    Lancez un entraînement géré ou démarrez une boucle d’entraînement
     personnalisée.
   </Card>
-  <Card title="Migrer depuis Tinker" icon="arrow-right-arrow-left" href="/fr/training/migrate-from-tinker">
-    Transférez vers Fastino un workload compatible existant.
+  <Card title="Boucle d’entraînement" icon="repeat-2" href="/fr/training/training-loop">
+    Construisez des datums, mettez à jour le modèle et échantillonnez depuis des checkpoints.
   </Card>
   <Card title="Fine-tuner GLiNER" icon="tags" href="/fr/guides/fine-tune-gliner">
-    Préparez des données d'entités et entraînez un modèle GLiNER.
+    Préparez des données d’entités et entraînez un modèle GLiNER.
   </Card>
 </CardGroup>

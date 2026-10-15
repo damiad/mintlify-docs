@@ -36,7 +36,7 @@ Both types share the same job identity. Canonical reads use
 Native JSON clients use the public interactive operations under
 `/v1/training/jobs`. Existing Tinker clients keep `tinker==0.32.0` and set only
 `TINKER_BASE_URL=https://api.fastino.ai/v1/training/compat/tinker` and
-`TINKER_CREDENTIAL_CMD`. Do not construct private compatibility child routes.
+`TINKER_CREDENTIAL_CMD`.
 
 ## Config-job lifecycle
 
@@ -59,6 +59,19 @@ have caller-controlled behavior; do not infer their lifecycle from this table.
 `normalized_status` provides the stable polling value, including `failed` for a
 terminal failure. `status` remains the persisted value, such as `errored`.
 
+## Interactive-job lifecycle
+
+An interactive job runs the calls you send it, in the order it receives
+them. Each call returns a `future_id`; read its result at
+`GET /v1/training/jobs/{job_id}/futures/{future_id}`.
+
+- You don't number requests or send heartbeats.
+- A job with no calls for 30 minutes is released. Its checkpoints are kept.
+- `POST /v1/training/jobs/{job_id}/stop` returns immediately and stops accepting
+  new calls. Already queued operations may finish before resources are released.
+  Usage may continue until that release. Sampler checkpoints can still be
+  sampled and downloaded after a stop.
+
 ## Operation support
 
 | Operation | `config` | `interactive` |
@@ -66,10 +79,13 @@ terminal failure. `status` remains the persisted value, such as `errored`.
 | [List jobs](/api-reference/training-jobs/list) | Supported | Supported |
 | [Get a job](/api-reference/training-jobs/get) | Supported | Supported |
 | [List checkpoints](/api-reference/training-jobs/checkpoints) | Supported | Supported |
+| [Create](/api-reference/training-jobs/create) | Supported | [Create an interactive job](/api-reference/training-jobs/interactive/create-model) |
+| [Forward, forward-backward, and optimizer step](/api-reference/training-jobs/interactive/forward-backward) | — | Supported |
+| [Save, load, and sample checkpoints](/api-reference/training-jobs/interactive/save-weights) | — | Supported |
 | [Download an interactive checkpoint](/api-reference/training-jobs/download-checkpoint) | — | Supported |
 | Create through native REST | [Config job](/api-reference/training-jobs/create) | [Interactive job](/api-reference/training-jobs/interactive/create-model) |
 | Forward, forward-backward, and optimizer operations | — | [Supported](/api-reference/training-jobs/interactive/forward) |
-| Interactive checkpoint administration and sampling | — | [Supported](/api-reference/training-jobs/interactive/save-sampler-weights) |
+| Interactive checkpoint administration and sampling | — | [Supported](/api-reference/training-jobs/interactive/save-weights-for-sampler) |
 | Update or delete the job | Supported | — |
 | [Stop](/api-reference/training-jobs/stop), [terminate](/api-reference/training-jobs/terminate), or [sync](/api-reference/training-jobs/sync) | Supported | — |
 | Config-job [logs](/api-reference/training-jobs/logs) and [billing](/api-reference/training-jobs/billing) endpoints | Supported | — |
@@ -97,10 +113,13 @@ above is for config jobs.
   <Card title="Quickstart" icon="play" href="/training/quickstart">
     Run managed training or start a custom training loop.
   </Card>
-  <Card title="Migrate from Tinker" icon="arrow-right-arrow-left" href="/training/migrate-from-tinker">
-    Move an existing compatible workload to Fastino.
+  <Card title="Training loop" icon="repeat-2" href="/training/training-loop">
+    Build datums, update the model, and sample from checkpoints.
   </Card>
   <Card title="Fine-tune GLiNER" icon="tags" href="/guides/fine-tune-gliner">
     Prepare entity data and train a GLiNER model.
   </Card>
 </CardGroup>
+
+Moving an existing Tinker SDK workload? See
+[Migrate from Tinker](/training/migrate-from-tinker).

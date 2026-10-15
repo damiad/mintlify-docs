@@ -1,11 +1,17 @@
 ---
 name: fastino-fine-tune
-description: Fine-tune a GLiNER or decoder model on Fastino from a labeled dataset, then monitor training until the model is ready for inference.
+description: Fine-tune a GLiNER model on Fastino from a labeled dataset, then monitor training until the model is ready for inference.
 ---
 
 # Fastino Fine-Tune
 
-Fine-tune a custom model on Fastino's GPU infrastructure.
+Run managed config training from an uploaded encoder or decoder dataset.
+Decoder config jobs support LoRA with SFT, DPO, or GRPO. Query
+`GET /v1/base-models?supports_training=true` before selecting a base model.
+
+When the application must control decoder training step by step, create an
+interactive job with `POST /v1/training/jobs/create-model` and follow
+https://docs.fastino.ai/training/quickstart#custom-training-loop.
 
 ## Authentication
 
@@ -38,7 +44,7 @@ Content-Type: application/json
 
 {
   "model_name": "my-ner-model",
-  "base_model": "fastino/gliner2-base-v1",
+  "base_model": "fastino/gliner2-multi-v1",
   "datasets": [{"name": "YOUR_DATASET_NAME"}],
   "training_type": "lora",
   "nr_epochs": 5,

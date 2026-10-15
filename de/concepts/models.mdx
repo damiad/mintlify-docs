@@ -48,6 +48,17 @@ description: "Fastino-Modell-IDs, Parameter, Kontextfenster und Inferenzpreise f
 Die Preise gelten pro 1 Mio. Token. Informationen zu Trainingspreisen und Credits finden Sie unter [Preise](/de/pricing).
 Verwenden Sie `GET /v1/base-models`, um aktuelle Verfügbarkeit und Preise abzurufen.
 
+## Trainierbare Modelle
+
+Rufen Sie `GET /v1/base-models?supports_training=true` auf, um die aktuell
+trainierbaren Modelle und ihre Funktionen abzurufen.
+
+[Config-Jobs](/de/api-reference/training-jobs/create) führen verwaltetes
+Training mit hochgeladenen Encoder- oder Decoder-Datensätzen aus.
+[Interaktive Jobs](/de/api-reference/training-jobs/interactive/create-model) sind eine
+zusätzliche Decoder-Option, wenn Ihr Code jeden Trainingsschritt steuern muss.
+Siehe die [Training API](/de/training).
+
 ## API-Modellkataloge
 
 <CardGroup cols={2}>
