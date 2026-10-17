@@ -7485,7 +7485,7 @@
             "title": "Operation"
           },
           "status": {
-            "description": "`accepted`: a call with this key was accepted, and may still be running (sending it again returns its first answer, or a 409 while it runs). `not_found`: no receipt is visible in the caller's scope; this does not prove no work was accepted. Reconcile using the original key and request, not a fresh key.",
+            "description": "`accepted`: a call with this key was accepted and its job was recorded (work may still be running). `not_found`: no receipt is visible in the caller's scope, including while a native call is still admitting; this does not prove no work was accepted. Reconcile using the original key and request, not a fresh key.",
             "enum": [
               "accepted",
               "not_found"
@@ -12162,7 +12162,7 @@
     },
     "/v1/training/operations/{idempotency_key}": {
       "get": {
-        "description": "Whether a call to an interactive job route (create-model, forward, forward-backward, optim-step, save-weights, save-weights-for-sampler, load-weights, sample, stop), or a `POST /v1/training/jobs` create, sent with this `Idempotency-Key` was accepted (also while it is still running), and the job and future it made. A key no call of your team used is `not_found` with a 200, so a client that lost every answer can tell an accepted call from one that never arrived before sending it again.",
+        "description": "Whether a call to an interactive job route (create-model, forward, forward-backward, optim-step, save-weights, save-weights-for-sampler, load-weights, sample, stop), or a `POST /v1/training/jobs` create, sent with this `Idempotency-Key` was accepted, and the job and future it made. A native call still admitting, before its job is recorded, reads as `not_found` with a 200 because its owner and Experiment cannot yet be verified. `not_found` does not prove the call never arrived: retry the original request with the same key, never a fresh key.",
         "operationId": "get_operation_v1_training_operations__idempotency_key__get",
         "parameters": [
           {

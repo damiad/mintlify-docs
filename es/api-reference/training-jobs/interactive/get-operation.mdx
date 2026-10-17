@@ -7,9 +7,9 @@ api: "GET /v1/training/operations/{idempotency_key}"
 
 `GET /v1/training/operations/{idempotency_key}`
 
-Envía la clave original usada en un POST interactivo nativo o al crear un trabajo encoder. Las claves pertenecen al equipo; una llamada desconocida o inaccesible devuelve `not_found`.
+Envía la clave original usada en un POST interactivo nativo o al crear un trabajo encoder. Las claves pertenecen al equipo. `not_found` significa que no hay un recibo visible; también ocurre mientras se admite una llamada nativa antes de registrar su trabajo, y no demuestra que la llamada nunca llegara.
 
-Un recibo `accepted` indica admisión, no ejecución exitosa. Durante la admisión, `job_id`, `future_id` y `future_status` pueden ser null. Una vez disponibles, consulta el future original para conocer el resultado. Stop no tiene future; la creación encoder devuelve solo el trabajo.
+Un recibo `accepted` indica que se registró el trabajo, no que se ejecutó con éxito. Si existe un future, consulta el original para conocer el resultado. Stop no tiene future; la creación encoder devuelve solo el trabajo.
 
 Para reintentar una solicitud nativa incierta, repite el cuerpo, la ruta y la clave. Otra solicitud con la misma clave devuelve 422; una primera llamada en curso devuelve 409. Usa una clave nueva para trabajo intencionadamente nuevo. Este endpoint no garantiza retención ni caducidad del recibo.
 

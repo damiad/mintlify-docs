@@ -7,9 +7,9 @@ api: "GET /v1/training/operations/{idempotency_key}"
 
 `GET /v1/training/operations/{idempotency_key}`
 
-Envoyez la clé initiale utilisée pour un POST interactif natif ou la création d’un job encoder. Les clés sont propres à l’équipe ; un appel inconnu ou inaccessible renvoie `not_found`.
+Envoyez la clé initiale utilisée pour un POST interactif natif ou la création d’un job encoder. Les clés sont propres à l’équipe. `not_found` signifie qu’aucun reçu n’est visible ; c’est aussi le cas pendant l’admission d’un appel natif, avant l’enregistrement de son job, et ne prouve pas que l’appel n’est jamais arrivé.
 
-Un reçu `accepted` indique l’admission, pas la réussite de l’exécution. Pendant l’admission, `job_id`, `future_id` et `future_status` peuvent être null. Une fois connus, consultez le future initial pour obtenir le résultat. Stop n’a pas de future ; la création encoder renvoie uniquement le job.
+Un reçu `accepted` indique que le job a été enregistré, pas que l’exécution a réussi. Si un future existe, consultez le future initial pour obtenir le résultat. Stop n’a pas de future ; la création encoder renvoie uniquement le job.
 
 Pour réessayer une requête native incertaine, conservez le corps, la route et la clé. Une requête différente avec la même clé renvoie 422 ; un premier appel en cours renvoie 409. Utilisez une nouvelle clé pour un nouveau travail intentionnel. Cet endpoint ne garantit ni rétention ni expiration des reçus.
 
