@@ -1,0 +1,38 @@
+---
+title: "Consultar una operación de entrenamiento"
+sidebarTitle: "Consultar operación"
+description: "Recupera el trabajo y el future de un Idempotency-Key sin volver a enviar el trabajo."
+api: "GET /v1/training/operations/{idempotency_key}"
+---
+
+`GET /v1/training/operations/{idempotency_key}`
+
+Envía la clave original usada en un POST interactivo nativo o al crear un trabajo encoder. Las claves pertenecen al equipo; una llamada desconocida o inaccesible devuelve `not_found`.
+
+Un recibo `accepted` indica admisión, no ejecución exitosa. Durante la admisión, `job_id`, `future_id` y `future_status` pueden ser null. Una vez disponibles, consulta el future original para conocer el resultado. Stop no tiene future; la creación encoder devuelve solo el trabajo.
+
+Para reintentar una solicitud nativa incierta, repite el cuerpo, la ruta y la clave. Otra solicitud con la misma clave devuelve 422; una primera llamada en curso devuelve 409. Usa una clave nueva para trabajo intencionadamente nuevo. Este endpoint no garantiza retención ni caducidad del recibo.
+
+<ParamField header="X-API-Key" type="string" required>
+  Fastino API key.
+</ParamField>
+
+<ParamField path="idempotency_key" type="string" required>
+  Idempotency-Key.
+</ParamField>
+
+<ResponseExample>
+
+```json
+{
+  "idempotency_key": "training-step-1",
+  "status": "accepted",
+  "operation": "forward-backward",
+  "job_id": "SESSION_ID:train:0",
+  "future_id": "FUTURE_ID",
+  "future_status": "completed"
+}
+```
+
+</ResponseExample>
+
